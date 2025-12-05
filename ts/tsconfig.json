@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "target": "es6", // Or a later version if desired
+    "lib": ["es2015", "dom"], // Ensures 'fill' and DOM types are available
+    "module": "commonjs"
+  },
+    "include": ["logic.ts"]
+}
