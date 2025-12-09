@@ -1,6 +1,6 @@
 /**
  * @name Lyndon Factorization
- * @kind disabled
+ * @kind disable
  * @type factor
  */
 function compute_lyndon_factorization(text: string, inverse_suffix_array: number[]): boolean[] {
@@ -260,7 +260,7 @@ function construct_first_array(text: string): string {
 
 /**
  * @name Index Array
- * @kind enabled
+ * @kind enable
  * @type index
  */
 function construct_index_array(n: number): number[] {
@@ -269,7 +269,7 @@ function construct_index_array(n: number): number[] {
 
 /**
  * @name Suffix Array
- * @kind enabled
+ * @kind enable
  * @type index
  */
 function construct_suffix_array(text: string): number[] {
@@ -423,8 +423,9 @@ function lcp_query(text: string, index1: number, index2: number): number {
 
 /**
  * @name LCP Array
- * @kind disabled
+ * @kind disable
  * @type length
+ * @description Longest Common Prefix array
  */
 function construct_lcp_array(text: string, suffix_array: number[]): number[] {
     if (suffix_array.length === 0) {
@@ -833,7 +834,7 @@ function compute_necklace_conjugate_transform(text: string): string {
 
 /**
  * @name &Phi; Array
- * @kind enabled|disabled|hidden
+ * @kind enable|disable|hidden
  * @type string|length|index|factor
  *
  * construct_XXX_YYY

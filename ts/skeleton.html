@@ -1,0 +1,161 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+
+    <title>QuickArrays</title>
+
+    <!-- <link rel="stylesheet" type="text/css" href="../font-awesome-4.6.3/css/font-awesome.min.css"> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../fonts/fonts.css"/> -->
+    <link rel="stylesheet" type="text/css" href="css/qa.css"/>
+
+    <!-- <link rel="icon" type="image/svg+xml" href="../tudocomp-icon.svg"> -->
+    <!-- <link rel="icon" type="image/png" href="../tudocomp-icon.png"> -->
+
+</head>
+<body>
+    
+    <div class="qa-header">
+        <h1><i class="fa fa-circle-o-notch"></i> QuickArrays</h1>
+    </div>
+    
+    <div class="qa-main">
+        <div class="qa-description">Enter your text below to generate useful data structures!</div>
+        <textarea class="qa-textarea" id="textSource" placeholder="MISSISSIPPI"></textarea>
+
+        <div class="qa-structures">
+            <div class="div">
+                <input type="checkbox" id="qa-structures-enabled-transform"/>
+                Text Transform: 
+                <span id='qa-structures-active-span' style="display: none">
+                    <input type="checkbox" id="qa-structures-active-transform"/> activate
+                </span>
+            <label for="predefined-transform">Transforms:</label>
+            <select id="predefined-transform" name="predefined-transform">
+                <option value="custom">Custom</option>
+                <option value="invert">Invert</option>
+                <option value="revert">Revert</option>
+            </select>
+            </div>
+            <textarea class="qa-textarea" id="textTransform" style="display: none" placeholder="text[i] == 'a' ? 'b' : 'a'"></textarea>
+        </div>
+
+        <div class="qa-description">Choose your data structures and factorizations (drag and drop or double-click):<br />
+        You can use drag and drop to reorder your selection!</div>
+        <div class="qa-structures">
+            <div id="qa-structures-enabled">
+                <input type="checkbox" id="qa-structures-enabled-visible" value="1" checked="checked"></input>
+                <div class="qa-structures-header">Enabled: </div>
+                <div class="qa-structure qa-structure-string" data-ds="text">Input Text</div>
+                {{gen/ds_enable.html}}
+            </div>
+            <div id="qa-structures-disabled">
+                <input type="checkbox" id="qa-structures-disabled-visible" value="1" checked="checked"></input>
+                <div class="qa-structures-header">Disabled: </div>
+                {{gen/ds_disable.html}}
+            </div>
+        </div>
+        <div class="qa-options">
+            <label class="qa-option"><input class="qa-option-cbx" data-opt="dollar" type="checkbox" checked>Append '$'</label>
+            <label class="qa-option"><input class="qa-option-cbx" data-opt="baseone" type="checkbox" checked>Base Indices on '1'</label>
+            <label class="qa-option"><input class="qa-option-cbx" data-opt="whitespace" type="checkbox" checked>Whitespaces as &bbrk; and &crarr;</label>
+            <label class="qa-option"><input class="qa-option-cbx" data-opt="facttext" type="checkbox" checked>Factorization as Bars</label>
+            <label class="qa-option"><input class="qa-option-cbx" data-opt="tabularize" type="checkbox" checked>Tabularize Text</label>
+            <label class="qa-option">Separator:&nbsp;&nbsp;<input id="separatorSource" type="text" class="qa-separator"></label>
+        </div>
+        <div class="qa-description">QuickArrays built the following data structures and factorizations for you:</div>
+        <textarea class="qa-textarea" style="flex-grow:1;line-height:175%;" id="arraysDestination" readonly></textarea>
+		<div id="stats">
+			character runs (
+			text:
+			<span id="textruns">
+			</span>
+			,
+			bbwt:
+			<span id="bbwtruns">
+			</span>
+			,
+			bwt:
+			<span id="bwtruns">
+			</span>
+			);
+			
+			#factors (
+			LZ77:
+			<span id="lz77factors">
+			</span>
+                        ,
+			revLZ77:
+			<span id="revlz77factors">
+			</span>
+			,
+			Lyndon:
+			<span id="lyndonfactors">
+			</span>
+,
+			lexparse:
+			<span id="lexparsefactors">
+			</span>
+,
+			<span id="substring_complexity">
+			</span>
+			)
+		Exponent: 
+			<span id="exponent">
+			</span>
+			;
+			Period: 
+			<span id="period">
+			</span>
+			;
+			Type:
+			<span id="regularity">
+			</span>
+
+		</div>
+
+
+        <!-- <div class="qa-structures"> -->
+        <!--     <div class="div"> -->
+        <!--         <input type="checkbox" id="qa-structures-counter-enabled"/> -->
+        <!--         Counters:  -->
+        <!--         <span id='qa-structures-active-span' style="display: none"> -->
+        <!--             <input type="checkbox" id="qa-structures-active-transform"/> activate -->
+        <!--         </span> -->
+        <!--     <label for="predefined-transform">Transforms:</label> -->
+        <!--     <select id="predefined-transform" name="predefined-transform"> -->
+        <!--         <option value="custom">Custom</option> -->
+        <!--         <option value="invert">Invert</option> -->
+        <!--         <option value="revert">Revert</option> -->
+        <!--     </select> -->
+        <!--     </div> -->
+        <!--     <textarea class="qa-textarea" id="textTransform" style="display: none" placeholder="text[i] == 'a' ? 'b' : 'a'"></textarea> -->
+        <!-- </div> -->
+
+
+
+
+         <div class="qa-description">
+             The state of QuickArrays is stored in the URL.<br />
+             By creating a bookmark, you can return to the current state at any time.
+         </div>
+         <div style="text-align:right">
+             Questions or problems? Feel free to use our <a href="https://github.com/tudocomp/tudocomp.github.io/issues">bug tracker</a>, or drop <a href="../fame.html">Jonas or Dominik a mail</a>.
+         </div>
+</div>
+</body>
+
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="js/jquery.query-object.js"></script>
+<script src="js/sortable.min.js"></script>
+<script src="js/ds.js"></script>
+<script src="js/pipeline.js"></script>
+<!-- <script src="js/text_logic.js"></script> -->
+<script src="js/text_ds_element.js"></script>
+<script src="js/text_opt_element.js"></script>
+<script src="js/text_dom.js"></script>
+
+</html>
+
+<html>
