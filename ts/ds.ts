@@ -1,14 +1,7 @@
 /**
- *
- * @param {string} text - The input string.
- * @param {number[]} inverse_suffix_array - An array of numerical ranks, typically an Inverse Suffix Array.
- *                         It must have a length of at least `text.length`.
- *                         Elements `inverse_suffix_array[0]` and `inverse_suffix_array[i+1]` (up to `i = text.length - 2`) are accessed.
- * @returns {number[]} An array `result` of the same length as `text`.
- *                     `result[i]` is `1` if `inverse_suffix_arrayval` (the minimum `inverse_suffix_array` value encountered
- *                     since `inverse_suffix_array[0]` or the last `1` output) was greater than `inverse_suffix_array[i+1]`,
- *                     and `0` otherwise.
- * @throws {Error} If `inverse_suffix_array` has a length less than `text.length`, as required for safe access.
+ * @name Lyndon Factorization
+ * @kind disabled
+ * @type factor
  */
 function compute_lyndon_factorization(text: string, inverse_suffix_array: number[]): boolean[] {
     const n: number = text.length;
@@ -57,23 +50,23 @@ function compute_lyndon_factorization(text: string, inverse_suffix_array: number
  * @returns A tuple `[bestLength, bestValue]`, where `bestLength` is the 1-based index `k` that yielded the maximum ratio `sc[k-1]/k`, and `bestValue` is that maximum ratio.
  * @throws {Error} If the input array `sc` is empty, as a meaningful computation cannot be performed.
  */
-function count_delta(sc: number[]): [number, number] {
-    if (sc.length === 0) {
-        throw new Error("Input array 'sc' cannot be empty.");
+function count_delta(substring_complexity: number[]): [number, number] {
+    if (substring_complexity.length === 0) {
+        throw new Error("Input array 'substring_complexity' cannot be empty.");
     }
 
     let bestlength: number = 1;
-    // The initial bestval is sc[0] / (0+1) which is simply sc[0].
+    // The initial bestval is substring_complexity[0] / (0+1) which is simply substring_complexity[0].
     // We explicitly type these variables for strictness.
-    let bestval: number = sc[0];
+    let bestval: number = substring_complexity[0];
 
     // Loop starts from the second element (index 1) as the first element (index 0)
     // is already considered for initialization.
-    for (let i = 1; i < sc.length; ++i) {
-        // Calculate the current ratio for sc[i] corresponding to 1-based length (i+1).
-        // The `1.0 * sc[i]` from the original JS is redundant in TypeScript's `number` type
+    for (let i = 1; i < substring_complexity.length; ++i) {
+        // Calculate the current ratio for substring_complexity[i] corresponding to 1-based length (i+1).
+        // The `1.0 * substring_complexity[i]` from the original JS is redundant in TypeScript's `number` type
         // as division already handles floating point results.
-        const currentRatio: number = sc[i] / (i + 1);
+        const currentRatio: number = substring_complexity[i] / (i + 1);
         
         // If the current ratio is strictly greater than the best found so far, update.
         if (currentRatio > bestval) {
@@ -266,23 +259,18 @@ function construct_first_array(text: string): string {
 }
 
 /**
- * Constructs an array of numbers from 0 to n-1.
- *
- * @param {number} n The upper limit (exclusive) for the index values.
- * @returns {number[]} An array containing numbers from 0 up to n-1.
+ * @name Index Array
+ * @kind enabled
+ * @type index
  */
 function construct_index_array(n: number): number[] {
     return Array.from(Array(n).keys());
 }
 
 /**
- * Constructs a suffix array for the given text.
- * A suffix array is a sorted array of all suffixes of a string,
- * storing the starting index of each suffix in the original string.
- *
- * @param {string} text The input string for which to construct the suffix array.
- * @returns {number[]} An array of numbers, where each number is the starting index
- *                      of a sorted suffix in the original text.
+ * @name Suffix Array
+ * @kind enabled
+ * @type index
  */
 function construct_suffix_array(text: string): number[] {
     const n: number = text.length;
@@ -434,16 +422,9 @@ function lcp_query(text: string, index1: number, index2: number): number {
 }
 
 /**
- * Computes the Longest Common Prefix (LCP) array for a given text and its suffix array.
- * The LCP array stores the lengths of the longest common prefixes between adjacent suffixes
- * in the sorted suffix array.
- *
- * @param {string} text The input text string.
- * @param {number[]} suffix_array The suffix array, which contains the starting indices of the
- *                                  sorted suffixes of the text.
- * @returns {number[]} The LCP array, where `lcp_array[i]` is the length of the LCP between
- *                      the suffix starting at `suffix_array[i]` and the suffix starting at
- *                      `suffix_array[i-1]`. `lcp_array[0]` is always 0.
+ * @name LCP Array
+ * @kind disabled
+ * @type length
  */
 function construct_lcp_array(text: string, suffix_array: number[]): number[] {
     if (suffix_array.length === 0) {
@@ -620,7 +601,7 @@ function compute_lexparse_factorization(plcp_array: number[]): boolean[] {
  *                             The ranks are used to compare suffixes.
  * @returns An array of numbers representing the NSS array.
  */
-function compute_nss_array(text: string, inverse_suffix_array: number[]): number[] {
+function construct_nss_array(text: string, inverse_suffix_array: number[]): number[] {
     const n: number = text.length;
     /* In JavaScript, 'result' would become a global variable if not declared with var/let/const.
        In TypeScript, this would be a compile-time error without explicit declaration. */
@@ -646,7 +627,7 @@ function compute_nss_array(text: string, inverse_suffix_array: number[]): number
  * @param inverse_suffix_array An array where `inverse_suffix_array[i]` is the rank of the suffix starting at index `i` in the sorted list of all suffixes.
  * @returns An array where `result[i]` is the PSS value for index `i`.
  */
-function compute_pss_array(text: string, inverse_suffix_array: number[]): number[] {
+function construct_pss_array(text: string, inverse_suffix_array: number[]): number[] {
     const n: number = text.length;
     const result: number[] = new Array<number>(n);
 
@@ -668,7 +649,7 @@ function compute_pss_array(text: string, inverse_suffix_array: number[]): number
  * @param {string} text The input string for which to compute the border array.
  * @returns {number[]} The computed border array. Each element `P[i]` represents the length of the longest proper prefix of `text[0...i]` that is also a suffix of `text[0...i]`.
  */
-function compute_border_array(text: string): number[] {
+function construct_border_array(text: string): number[] {
   const n: number = text.length;
   if (n === 0) {
       return [];
@@ -697,7 +678,7 @@ function compute_border_array(text: string): number[] {
  * @returns An array of numbers, where each element `result[i]` is the length of the Lyndon word
  *          starting at `text[i]`.
  */
-function compute_lyndon_array(text: string, nss_array: number[]): number[] {
+function construct_lyndon_array(text: string, nss_array: number[]): number[] {
     const n: number = text.length;
     if (nss_array.length !== n) {
         throw new Error("The length of nss_array must match the length of text.");
@@ -718,7 +699,7 @@ function compute_lyndon_array(text: string, nss_array: number[]): number[] {
  * @param {string} text The input string.
  * @returns {string} The lexicographically smallest cyclic shift of the input string.
  */
-function necklace_conjugate_transform(text: string): string {
+function compute_necklace_conjugate_transform(text: string): string {
     const n: number = text.length;
     if (n === 0) {
         return "";
@@ -849,3 +830,25 @@ function necklace_conjugate_transform(text: string): string {
 //
 //     return result;
 // }
+
+/**
+ * @name &Phi; Array
+ * @kind enabled|disabled|hidden
+ * @type string|length|index|factor
+ *
+ * construct_XXX_YYY
+ * YYY: array, factorization, transform
+ *
+ * counter 
+ * - number_of_ones for factorization
+ * - number_of_runs for transform
+ *
+ *
+ *  base : only substract when @@type = index
+ *
+ *  if string -> qa-structure-text
+ *  if length -> qa-structure-length
+ *  if factor -> qa-structure-factorization
+ *  if index -> qa-structure-index
+ *
+ */

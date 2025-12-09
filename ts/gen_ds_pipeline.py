@@ -87,11 +87,18 @@ def main():
 	with open(prgargs.outfile, "w", encoding="utf-8") as out_f:
 		# Emit runnable TypeScript
 		print("// Auto-generated wiring", file=out_f)
+		print("function construct_ds(ds_text) {", file=out_f)
+		print(" const ds_n = ds_text.length;", file=out_f)
 		for f in order:
-			fargs = funcs[f]
+			fargs = map(lambda x: "ds_" + x, funcs[f])
 			outv = out_var_name(f)
-			print(f"const {outv} = {f}({', '.join(fargs)});", file=out_f)
+			print(f"const ds_{outv} = {f}({', '.join(fargs)});", file=out_f)
+		print("return {", file=out_f)
+		for f in order:
+			outv = out_var_name(f)
+			print(f"  {outv}: ds_{outv},", file=out_f)
+		print("};", file=out_f)
+		print("}", file=out_f)
 
 if __name__ == "__main__":
 	main()
-
