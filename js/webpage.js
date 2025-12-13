@@ -15,14 +15,14 @@ function changeVisibility(element, is_visible) {
 }
 
 function getOwnText(element) {
-  let text = '';
-  for (const node of element.childNodes) {
-    // Check if the node is a text node (nodeType === 3)
-    if (node.nodeType === Node.TEXT_NODE) {
-      text += node.textContent;
-    }
-  }
-  return text;
+	let text = '';
+	for (const node of element.childNodes) {
+		// Check if the node is a text node (nodeType === 3)
+		if (node.nodeType === Node.TEXT_NODE) {
+			text += node.textContent;
+		}
+	}
+	return text;
 }
 
 var qa_counter_automatic;
@@ -224,8 +224,11 @@ function updateArrays() {
 				result.push("Function " + dsName + ": not defined");
 				return;
 			}
-			if(dataStructures.isIndex(dsName) && varBase != 0) {
-				varDs = increment_array(varDs);
+			if(dataStructures.isIndex(dsName)) {
+				varDs = replace_invalid_position(varDs, ds_text.length);
+				if(varBase != 0) {
+					varDs = increment_array(varDs);
+				}
 			}
 			if(dataStructures.isString(dsName)) {
 				if(options.enabled("whitespace")) {
@@ -366,9 +369,6 @@ window.onload = function () {
 		toggleVisibility('qa-counter-enabled', this.checked);
 	});
 
-
-
-
 	document.querySelectorAll(".qa-structure").forEach((elem) => { ds_name2html[elem.dataset.ds] = getOwnText(elem); });
 	document.querySelectorAll(".qa-counter").forEach((elem) => { counter_name2html[elem.dataset.ds] = getOwnText(elem); });
 
@@ -416,76 +416,81 @@ window.onload = function () {
 };
 
 
-///// UTILITY
-
-function number_of_runs(text) {
-	var runs = 1;
-	var runchar = text[0];
-	for(var i = 1; i < text.length; ++i) {
-		if(text[i] != runchar) {
-			++runs;
-			runchar = text[i];
-		}
-	}
-	return runs;
-}
-
-function number_of_ones(text) {
-	var count = 0;
-	for(var i = 0; i < text.length; ++i) {
-		if(text[i] == 1) {
-			++count;
-		}
-	}
-	return count;
-}
-
-function padRight(str, char, len) {
-	while(str.length < len) str += char;
-	return str;
-}
-
-function padLeft(str, char, len) {
-	while(str.length < len) str = char + str;
-	return str;
-}
-
-
-function increment_array(array, inc = 1) {
-	return array.map((x) => x + inc);
-}
-
-function prettify_string(string, sep = " ", base = 0, doTabularize = true) {
-	string = string.replace("\0", "$");
-	var width = doTabularize ? ("" + (string.length + base - 1).toString()).length : 0
-	if(!doTabularize) {
-		sep = '';
-	}
-	return string.split('').map((x) => padLeft("" + x, ' ', width)).join(sep);
-}
-
-function prettify_array(array, sep = " ", base = 0) {
-	var width = ("" + (array.length + base - 1).toString()).length
-	return array.map((x) => padLeft("" + x, ' ', width)).join(sep);
-}
-
-function encodeWhitespaces(string) {
-	return string.replace(/\n/g, '\u21b5').replace(/\s/g, '\u23b5');
-}
-
-function decodeWhitespaces(string) {
-	return string.replace(/\u21b5/g, '\n').replace(/\u23b5/g, ' ');
-}
-
-/* fact[i] = 1 means that a factor ends at position i */
-function prettify_factorization(string, fact, sep = " ", base = 0) {
-    var n = string.length;
-
-    var width = ("" + (n + base - 1).toString()).length
-    var result = "";
-    for(var i = 0; i < n; ++i) {
-        result += padLeft("" + ((i == n-1 && string[i] == '\0') ? '$' : string[i]), ' ', width);
-        result += (fact[i] == 1) ? ('|'+sep.substring(1))  : sep;
-    }
-    return result;
-}
+// ///// UTILITY
+//
+// function number_of_runs(text) {
+// 	var runs = 1;
+// 	var runchar = text[0];
+// 	for(var i = 1; i < text.length; ++i) {
+// 		if(text[i] != runchar) {
+// 			++runs;
+// 			runchar = text[i];
+// 		}
+// 	}
+// 	return runs;
+// }
+//
+// function number_of_ones(text) {
+// 	var count = 0;
+// 	for(var i = 0; i < text.length; ++i) {
+// 		if(text[i] == 1) {
+// 			++count;
+// 		}
+// 	}
+// 	return count;
+// }
+//
+// function padRight(str, char, len) {
+// 	while(str.length < len) str += char;
+// 	return str;
+// }
+//
+// function padLeft(str, char, len) {
+// 	while(str.length < len) str = char + str;
+// 	return str;
+// }
+//
+//
+// function increment_array(array, inc = 1) {
+// 	return array.map((x) => x + inc);
+// }
+//
+// function replace_invalid_position(array, max_length) {
+// 	return array.map((x) => (x >= max_length) ? '-' : x);
+// }
+//
+// function prettify_string(string, sep = " ", base = 0, doTabularize = true) {
+// 	string = string.replace("\0", "$");
+// 	var width = doTabularize ? ("" + (string.length + base - 1).toString()).length : 0
+// 	if(!doTabularize) {
+// 		sep = '';
+// 	}
+// 	return string.split('').map((x) => padLeft("" + x, ' ', width)).join(sep);
+// }
+//
+// function prettify_array(array, sep = " ", base = 0) {
+// 	var width = ("" + (array.length + base - 1).toString()).length
+// 	return array.map((x) => padLeft("" + x, ' ', width)).join(sep);
+// }
+//
+// function encodeWhitespaces(string) {
+// 	return string.replace(/\n/g, '\u21b5').replace(/\s/g, '\u23b5');
+// }
+//
+// function decodeWhitespaces(string) {
+// 	return string.replace(/\u21b5/g, '\n').replace(/\u23b5/g, ' ');
+// }
+//
+//
+// /* fact[i] = 1 means that a factor ends at position i */
+// function prettify_factorization(string, fact, sep = " ", base = 0) {
+//     var n = string.length;
+//
+//     var width = ("" + (n + base - 1).toString()).length
+//     var result = "";
+//     for(var i = 0; i < n; ++i) {
+//         result += padLeft("" + ((i == n-1 && string[i] == '\0') ? '$' : string[i]), ' ', width);
+//         result += (fact[i] == 1) ? ('|'+sep.substring(1))  : sep;
+//     }
+//     return result;
+// }

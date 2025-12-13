@@ -12,6 +12,9 @@ BLOCK_FUNC_RE = re.compile(
 	re.MULTILINE
 )
 
+TS_FILE = 'string_generator.ts'
+
+
 def parse_annotation(block):
 	ann = {}
 	for line in block.split("\n"):

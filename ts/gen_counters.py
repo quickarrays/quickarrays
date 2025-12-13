@@ -87,10 +87,10 @@ def main():
 		arg = args[0] if args else ""
 		js.append(f"\t\t{prop} : {fname}(ds.{arg}),")
 
-	# ---- *_factorization → XXX_factorization : number_of_ones(ds.XXX_factorization)
+	# ---- *_factorization → XXX_factorization : number_of_factors(ds.XXX_factorization)
 	for fname, args in factor_funcs:
 		prop = short_prop(fname)
-		js.append(f"\t\t{prop} : number_of_ones(ds.{prop}),")
+		js.append(f"\t\t{prop} : number_of_factors(ds.{prop}),")
 
 	# ---- *_transform → XXX_transform : number_of_runs(ds.XXX_transform)
 	for fname, args in transform_funcs:
@@ -100,7 +100,7 @@ def main():
 	js.append("\t}")
 	js.append("}")
 
-	Path("gen/counters.js").write_text("\n".join(js))
+	Path("js/counters.js").write_text("\n".join(js))
 
 	# ---------------- HTML OUTPUT ----------------
 

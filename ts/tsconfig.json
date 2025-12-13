@@ -3,7 +3,7 @@
     "target": "es6", // Or a later version if desired
     "lib": ["es2015", "dom"], // Ensures 'fill' and DOM types are available
     "module": "commonjs",
-    "outDir": "gen"
+    "outDir": "js"
   },
-    "include": ["ds.ts", "string_generator.ts"]
+    "include": ["algorithm.ts", "string_generator.ts", "utility.ts"]
 }
