@@ -61,7 +61,7 @@ def main():
 			dsname = fname
 
 		html = (
-			f'<div class="qa-structure qa-structure-{ann["type"]}" '
+			f'<div class="qa-item qa-structure qa-structure-{ann["type"]}" '
 			f'data-ds="{dsname}">{ann["name"]}'
 		)
 		if 'description' in ann:

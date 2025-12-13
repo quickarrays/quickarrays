@@ -21,121 +21,130 @@
     </div>
     
     <div class="qa-main">
-        <div class="qa-description">Enter your text below to generate useful data structures!</div>
-        <textarea class="qa-textarea" id="textSource" placeholder="MISSISSIPPI"></textarea>
-
-        <div class="qa-structures">
-            <div class="div">
-                <input type="checkbox" id="qa-structures-enabled-transform"/>
-                Text Transform: 
-                <span id='qa-structures-active-span' style="display: none">
-                    <input type="checkbox" id="qa-structures-active-transform"/> activate
-                </span>
-            <label for="predefined-transform">Transforms:</label>
-            <select id="predefined-transform" name="predefined-transform">
+        <div class="qa-description">
+            <label for="qa-generate-string-list">Enter your text below or generate it:</label>
+            <select id="qa-generate-string-list" name="qa-generate-string-list">
                 <option value="custom">Custom</option>
-                <option value="invert">Invert</option>
-                <option value="revert">Revert</option>
+                {{gen/string_generators.html}}
             </select>
+            <span id="qa-generate-string-span" class="qa-hidden">
+                <label for="qa-generate-string-range">Order:</label>
+                <input type="range" id="qa-generate-string-range" name="qa-generate-string-range" min="0" max="10" value="3" step="1">
+                <span id="qa-generate-string-rank">3</span>
+            </span>
+        </div>
+        <textarea class="qa-textarea" id="qa-text" placeholder="MISSISSIPPI"></textarea>
+
+        <div class="qa-itemlist">
+            <div class="div">
+            <label for="qa-transform-list">Text Transforms:</label>
+            <select id="qa-transform-list" name="qa-transform-list">
+                <option value="none">None</option>
+                {{gen/transforms.html}}
+                <option value="custom">Custom</option>
+            </select>
+            <span id='qa-transform-active-span' class='qa-hidden'> 
+                    <input type="checkbox" id="qa-transform-active" name="qa-transform-active"/> <label for="qa-transform-active">activate</label>
+            </span>
             </div>
-            <textarea class="qa-textarea" id="textTransform" style="display: none" placeholder="text[i] == 'a' ? 'b' : 'a'"></textarea>
+            <textarea class="qa-textarea qa-hidden" id="qa-transform-input" placeholder="text[i] == 'a' ? 'b' : 'a'"></textarea>
         </div>
 
         <div class="qa-description">Choose your data structures and factorizations (drag and drop or double-click):<br />
         You can use drag and drop to reorder your selection!</div>
-        <div class="qa-structures">
-            <div id="qa-structures-enabled">
+        <div class="qa-itemlist">
+            <div id="qa-structures-enabled" class="qa-itemlist-enabled">
                 <input type="checkbox" id="qa-structures-enabled-visible" value="1" checked="checked"></input>
-                <div class="qa-structures-header">Enabled: </div>
-                <div class="qa-structure qa-structure-string" data-ds="text">Input Text</div>
+                <div class="qa-itemlist-header">Enabled: </div>
+                <div class="qa-item qa-structure qa-structure-string" data-ds="text">T</div>
                 {{gen/ds_enable.html}}
             </div>
-            <div id="qa-structures-disabled">
+            <div id="qa-structures-disabled" class="qa-itemlist-disabled">
                 <input type="checkbox" id="qa-structures-disabled-visible" value="1" checked="checked"></input>
-                <div class="qa-structures-header">Disabled: </div>
+                <div class="qa-itemlist-header">Disabled: </div>
                 {{gen/ds_disable.html}}
             </div>
         </div>
         <div class="qa-options">
-            <label class="qa-option"><input class="qa-option-cbx" data-opt="dollar" type="checkbox" checked>Append '$'</label>
-            <label class="qa-option"><input class="qa-option-cbx" data-opt="baseone" type="checkbox" checked>Base Indices on '1'</label>
-            <label class="qa-option"><input class="qa-option-cbx" data-opt="whitespace" type="checkbox" checked>Whitespaces as &bbrk; and &crarr;</label>
-            <label class="qa-option"><input class="qa-option-cbx" data-opt="facttext" type="checkbox" checked>Factorization as Bars</label>
-            <label class="qa-option"><input class="qa-option-cbx" data-opt="tabularize" type="checkbox" checked>Tabularize Text</label>
-            <label class="qa-option">Separator:&nbsp;&nbsp;<input id="separatorSource" type="text" class="qa-separator"></label>
+            <label class="qa-option">Prepend:&nbsp;<input type="text" id="qa-prepend-input" name="qa-prepend-input" type="text" class="qa-shorttext"></label>
+            <label class="qa-option">Append:&nbsp; <input type="text" id="qa-append-input"  name="qa-append-input" type="text" class="qa-shorttext"></label>
+            <label class="qa-option"><input type="checkbox" class="qa-option-cbx" name="qa-option-dollar"  type data-opt="dollar"   checked>Append '$'</label>
+            <label class="qa-option"><input type="checkbox" class="qa-option-cbx" name="qa-option-baseone"    data-opt="baseone"    checked>Base Indices on '1'</label>
+            <label class="qa-option"><input type="checkbox" class="qa-option-cbx" name="qa-option-whitespace" data-opt="whitespace" checked>Whitespaces as &bbrk; and &crarr;</label>
+            <label class="qa-option"><input type="checkbox" class="qa-option-cbx" name="qa-option-facttext"   data-opt="facttext"   checked>Factorization as Bars</label>
+            <label class="qa-option"><input type="checkbox" class="qa-option-cbx" name="qa-option-tabularize" data-opt="tabularize" checked>Tabularize Text</label>
+            <label class="qa-option">Separator:&nbsp;&nbsp;<input id="qa-separator-input" type="text" class="qa-shorttext"></label>
         </div>
         <div class="qa-description">QuickArrays built the following data structures and factorizations for you:</div>
-        <textarea class="qa-textarea" style="flex-grow:1;line-height:175%;" id="arraysDestination" readonly></textarea>
-		<div id="stats">
-			character runs (
-			text:
-			<span id="textruns">
-			</span>
-			,
-			bbwt:
-			<span id="bbwtruns">
-			</span>
-			,
-			bwt:
-			<span id="bwtruns">
-			</span>
-			);
-			
-			#factors (
-			LZ77:
-			<span id="lz77factors">
-			</span>
-                        ,
-			revLZ77:
-			<span id="revlz77factors">
-			</span>
-			,
-			Lyndon:
-			<span id="lyndonfactors">
-			</span>
-,
-			lexparse:
-			<span id="lexparsefactors">
-			</span>
-,
-			<span id="substring_complexity">
-			</span>
-			)
-		Exponent: 
-			<span id="exponent">
-			</span>
-			;
-			Period: 
-			<span id="period">
-			</span>
-			;
-			Type:
-			<span id="regularity">
-			</span>
+        <textarea class="qa-textarea" style="flex-grow:1;line-height:175%;" id="qa-ds-output" readonly></textarea>
 
+		<div id="qa-counter-output">AA
 		</div>
+<!-- 			character runs ( -->
+<!-- 			text: -->
+<!-- 			<span id="textruns"> -->
+<!-- 			</span> -->
+<!-- 			, -->
+<!-- 			bbwt: -->
+<!-- 			<span id="bbwtruns"> -->
+<!-- 			</span> -->
+<!-- 			, -->
+<!-- 			bwt: -->
+<!-- 			<span id="bwtruns"> -->
+<!-- 			</span> -->
+<!-- 			); -->
+<!-- 			 -->
+<!-- 			#factors ( -->
+<!-- 			LZ77: -->
+<!-- 			<span id="lz77factors"> -->
+<!-- 			</span> -->
+<!--                         , -->
+<!-- 			revLZ77: -->
+<!-- 			<span id="revlz77factors"> -->
+<!-- 			</span> -->
+<!-- 			, -->
+<!-- 			Lyndon: -->
+<!-- 			<span id="lyndonfactors"> -->
+<!-- 			</span> -->
+<!-- , -->
+<!-- 			lexparse: -->
+<!-- 			<span id="lexparsefactors"> -->
+<!-- 			</span> -->
+<!-- , -->
+<!-- 			<span id="substring_complexity"> -->
+<!-- 			</span> -->
+<!-- 			) -->
+<!-- 		Exponent:  -->
+<!-- 			<span id="exponent"> -->
+<!-- 			</span> -->
+<!-- 			; -->
+<!-- 			Period:  -->
+<!-- 			<span id="period"> -->
+<!-- 			</span> -->
+<!-- 			; -->
+<!-- 			Type: -->
+<!-- 			<span id="regularity"> -->
+<!-- 			</span> -->
+<!--  -->
 
-
-        <!-- <div class="qa-structures"> -->
-        <!--     <div class="div"> -->
-        <!--         <input type="checkbox" id="qa-structures-counter-enabled"/> -->
-        <!--         Counters:  -->
-        <!--         <span id='qa-structures-active-span' style="display: none"> -->
-        <!--             <input type="checkbox" id="qa-structures-active-transform"/> activate -->
-        <!--         </span> -->
-        <!--     <label for="predefined-transform">Transforms:</label> -->
-        <!--     <select id="predefined-transform" name="predefined-transform"> -->
-        <!--         <option value="custom">Custom</option> -->
-        <!--         <option value="invert">Invert</option> -->
-        <!--         <option value="revert">Revert</option> -->
-        <!--     </select> -->
-        <!--     </div> -->
-        <!--     <textarea class="qa-textarea" id="textTransform" style="display: none" placeholder="text[i] == 'a' ? 'b' : 'a'"></textarea> -->
-        <!-- </div> -->
-
-
-
-
+<div class="qa-description">Choose your counters
+        <input type="checkbox" id="qa-counter-automatic" value="1" checked="checked"></input>
+        <label for="qa-counter-automatic">automatically</label>.
+        &nbsp;&nbsp;
+        A text counters returns the size of its run length encoding, a factorization counter the numbers of its factors.
+</div>
+<div class="qa-itemlist qa-hidden" id="qa-counter-itemlists">
+    <div id="qa-counter-enabled" class="qa-itemlist-enabled">
+        <input type="checkbox" id="qa-counter-enabled-visible" value="1" checked="checked"></input>
+        <div class="qa-itemlist-header">Enabled: </div>
+        <div class="qa-item qa-counter" data-ds="text">T</div>
+    </div>
+    <div id="qa-counter-disabled" class="qa-itemlist-disabled">
+        <input type="checkbox" id="qa-counter-disabled-visible" value="1" checked="checked"></input>
+        <div class="qa-itemlist-header">Disabled: </div>
+        {{gen/counters.html}}
+    </div>
+</div>
          <div class="qa-description">
              The state of QuickArrays is stored in the URL.<br />
              By creating a bookmark, you can return to the current state at any time.
@@ -151,8 +160,11 @@
 <script src="js/sortable.min.js"></script>
 <script src="js/ds.js"></script>
 <script src="js/pipeline.js"></script>
-<!-- <script src="js/text_logic.js"></script> -->
-<script src="js/text_ds_element.js"></script>
+<script src="js/ds_list.js"></script>
+<script src="js/counter_list.js"></script>
+<script src="ts/gen/counters.js"></script>
+<script src="ts/gen/string_generator.js"></script>
+<script src="ts/gen/string_generators.js"></script>
 <script src="js/text_opt_element.js"></script>
 <script src="js/text_dom.js"></script>
 

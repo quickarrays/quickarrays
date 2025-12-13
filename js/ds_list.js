@@ -1,16 +1,18 @@
-function DataStructureList(enabledParent, disabledParent, onChange, enableDblClick) {
-    this.dictionary = {};
-    this.enParent = enabledParent;
-    this.disParent = disabledParent;
-    this.onChange = onChange;
-    this.enableDblClick = enableDblClick;
+class DataStructureList {
+    constructor(enabledParent, disabledParent, onChange, enableDblClick) {
+        this.dictionary = {};
+        this.enParent = enabledParent;
+        this.disParent = disabledParent;
+        this.onChange = onChange;
+        this.enableDblClick = enableDblClick;
+    }
+    add(domElement) {
+        this.dictionary[domElement.dataset.ds] = domElement;
+        var self = this;
+        domElement.ondblclick = function() { self.toggle(domElement.dataset.ds); };
+    }
 }
 
-DataStructureList.prototype.add = function(domElement) {
-    this.dictionary[domElement.dataset.ds] = domElement;
-    var self = this;
-    domElement.ondblclick = function() { self.toggle(domElement.dataset.ds); };
-};
 
 DataStructureList.prototype.getEnabled = function() {
     var result = "";
@@ -20,7 +22,7 @@ DataStructureList.prototype.getEnabled = function() {
         if(this.enabled(dsName))
             result += dsName + '-';
     }
-    return result.substr(0, Math.max(0, result.length - 1));
+    return result.slice(0, Math.max(0, result.length - 1));
 };
 
 DataStructureList.prototype.setEnabled = function(dsList) {

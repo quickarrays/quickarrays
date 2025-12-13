@@ -27,10 +27,6 @@ def parse_args(arglist):
 def provider_for(arg):
 	if arg in ("text", "n"):
 		return None
-	if arg.endswith("_array"):
-		return f"construct_{arg}"
-	if arg.endswith("_factorization"):
-		return f"compute_{arg}"
 	return f"construct_{arg}"
 
 def out_var_name(func):
@@ -65,18 +61,23 @@ def main():
 			p = provider_for(a)
 			if p in funcs:
 				deps[f].append(p)
+			elif a not in ['n', 'text']:
+				print(f"Note: argument {a} of function {f} has no provider function.", file=sys.stderr)
 
 	# Topological sort
 	in_degree = {f: 0 for f in funcs}
 	for f in funcs:
-		for _ in deps[f]:
-			in_degree[f] += 1
+		in_degree[f] = len(deps[f])
 
 	q = deque([f for f in funcs if in_degree[f] == 0])
 	order = []
 
 	while q:
 		f = q.popleft()
+		# print(f'Processing {f} with deps {deps[f]}', file=sys.stderr)
+		assert f not in order, f"Cyclic dependency detected at {f}"
+		for dep in deps[f]:
+			assert dep in order, f"Dependency {dep} of {f} not resolved"
 		order.append(f)
 		for g in funcs:
 			if f in deps[g]:
