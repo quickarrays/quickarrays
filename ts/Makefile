@@ -1,36 +1,26 @@
 JS_DIR=js
+HTML_DIR=html
 TS_FILES := $(wildcard *.ts)
 # JS_FILES := $(TS_FILES:.ts=.js)
 JS_FILES := $(patsubst %.ts,${JS_DIR}/%.js,$(TS_FILES))
+JS_FOLDER=../js/
 
-all: $(JS_FILES) js/pipeline.js gen/index.html gen/counters.html gen/transforms.html
+all: $(JS_FILES) ${HTML_DIR}/index.html $(JS_FOLDER)/generated.js
 
-${JS_DIR}/%.js: %.ts
+$(JS_FILES): $(TS_FILES)
 	npx tsc -p .
 
-gen/string_generators.html: gen_strings.py string_generator.ts
-	python3 gen_strings.py -i string_generator.ts -o gen/string_generators.html -j js/string_generators.js
+${JS_DIR}/algorithm_pipeline.js: algorithm.py algorithm.ts
+	python3 algorithm.py
 
-js/pipeline.js: algorithm.ts
-	python3 gen_ds_pipeline.py -i algorithm.ts -o js/pipeline.js
+${JS_DIR}/generator_pipeline.js: generator.py generator.ts
+	python3 generator.py
 
-gen/ds_disable.html: algorithm.ts gen_ds_html.py
-	python3 gen_ds_html.py -i algorithm.ts
+${HTML_DIR}/index.html: ${JS_DIR}/algorithm_pipeline.js ${JS_DIR}/generator_pipeline.js skeleton.html
+	python3 skeleton.py -i $< -o $@
 
-gen/ds_enable.html: algorithm.ts gen_ds_html.py
-	python3 gen_ds_html.py -i algorithm.ts
-
-gen/index.html: skeleton.html gen/ds_disable.html gen/ds_enable.html gen/counters.html gen/transforms.html gen/string_generators.html
-	python3 gen_html.py -i skeleton.html -o gen/index.html
-
-gen/counters.html: gen_counters.py algorithm.ts
-	python3 gen_counters.py -i algorithm.ts 
-
-js/counters.js: gen/counters.html
-	python3 gen_counters.py -i algorithm.ts
-
-gen/transforms.html: gen_transform.py algorithm.ts
-	python3 gen_transform.py -i algorithm.ts -o gen/transforms.html
+$(JS_FOLDER)/generated.js: ${JS_DIR}/algorithm_pipeline.js ${JS_DIR}/generator_pipeline.js compile_javascript.py
+	python3 compile_javascript.py -i $(JS_DIR) -o $@
 
 clean:
 	rm -f $(JS_FILES)

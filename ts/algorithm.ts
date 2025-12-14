@@ -1,11 +1,8 @@
-function assert_eq(a: any, b: any, message: string): void;
-
 function assert_eq(a: any, b: any, message: string): void {
     if(a !== b) {
         throw new Error(`Assertion Failed: ${message}. Expected "${a}", but got "${b}"`);
     }
 }
-
 
 /**
  * @name SA
@@ -912,7 +909,3 @@ function construct_inverse_bbw_transform(bbw_transform : string): string {
     return conjugates.join('');
 }
 
-
-//TODO: if output is 'n' for index -> map to '-'
-
-//TODO: Each factorization needs to add a '1' at position 'n' to ensure that the last factor is counted!

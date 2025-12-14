@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es6", // Or a later version if desired
+    "module": "commonjs", // or "ES2015", "ESNext"
+    "target": "es6",  // Ensure target is also modern (ES6+) for compatibility
     "lib": ["es2015", "dom"], // Ensures 'fill' and DOM types are available
-    "module": "commonjs",
     "outDir": "js"
   },
     "include": ["algorithm.ts", "string_generator.ts", "utility.ts"]
