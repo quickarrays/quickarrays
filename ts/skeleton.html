@@ -25,7 +25,7 @@
             <label for="qa-generate-string-list">Enter your text below or generate it:</label>
             <select id="qa-generate-string-list" name="qa-generate-string-list">
                 <option value="custom">Custom</option>
-                {{gen/string_generators.html}}
+                {{html/generator.html}}
             </select>
             <span id="qa-generate-string-span" class="qa-hidden">
                 <label for="qa-generate-string-range">Order:</label>
@@ -40,7 +40,7 @@
             <label for="qa-transform-list">Text Transforms:</label>
             <select id="qa-transform-list" name="qa-transform-list">
                 <option value="none">None</option>
-                {{gen/transforms.html}}
+                {{html/transform.html}}
                 <option value="custom">Custom</option>
             </select>
             <span id='qa-transform-active-span' class='qa-hidden'> 
@@ -57,12 +57,12 @@
                 <input type="checkbox" id="qa-structures-enabled-visible" value="1" checked="checked"></input>
                 <div class="qa-itemlist-header">Enabled: </div>
                 <div class="qa-item qa-structure qa-structure-string" data-ds="text">T</div>
-                {{gen/ds_enable.html}}
+                {{html/algorithm_enable.html}}
             </div>
             <div id="qa-structures-disabled" class="qa-itemlist-disabled">
                 <input type="checkbox" id="qa-structures-disabled-visible" value="1" checked="checked"></input>
                 <div class="qa-itemlist-header">Disabled: </div>
-                {{gen/ds_disable.html}}
+                {{html/algorithm_disable.html}}
             </div>
         </div>
         <div class="qa-options">
@@ -142,7 +142,7 @@
     <div id="qa-counter-disabled" class="qa-itemlist-disabled">
         <input type="checkbox" id="qa-counter-disabled-visible" value="1" checked="checked"></input>
         <div class="qa-itemlist-header">Disabled: </div>
-        {{gen/counters.html}}
+        {{html/counters.html}}
     </div>
 </div>
          <div class="qa-description">
@@ -159,12 +159,7 @@
 <script src="js/jquery.query-object.js"></script>
 <script src="js/sortable.min.js"></script>
 
-<script src="js/gen/algorithm.js"></script>
-<script src="js/gen/pipeline.js"></script>
-<script src="js/gen/counters.js"></script>
-<script src="js/gen/string_generator.js"></script>
-<script src="js/gen/string_generators.js"></script>
-<script src="js/gen/utility.js"></script>
+<script src="js/generated.js"></script>
 
 <script src="js/ds_list.js"></script>
 <script src="js/counter_list.js"></script>

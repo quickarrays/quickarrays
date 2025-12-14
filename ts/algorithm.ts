@@ -5,6 +5,49 @@ function assert_eq(a: any, b: any, message: string): void {
 }
 
 /**
+ * @name p
+ * @description Period
+ * @tutorial The period of a string is the length of the smallest substring that can be repeated without overlaps to form the entire string.
+ * @see https://en.wikipedia.org/wiki/Periodicity_(string_matching)#Period
+ */
+function count_period(border_array: number[]) : number {
+    const last_border = border_array[border_array.length - 1];
+    return border_array.length - last_border;
+}
+
+/**
+ * @name e
+ * @description Exponent
+ * @tutorial The exponent of a string is the number of times its smallest period repeats to form the string.
+ * @see https://en.wikipedia.org/wiki/Periodicity_(string_matching)#Exponent
+ */
+function count_exponent(border_array: number[]) : number {
+    const period = count_period(border_array);
+    return border_array.length / period;
+}
+
+/**
+ * @name R
+ * @description Regularity
+ */
+function count_regularity(border_array: number[]) : string {
+    const n = border_array.length;
+    const last_border = border_array[n - 1];
+    const period = count_period(border_array);
+    const exponent = count_exponent(border_array);
+    if(exponent > 1 && n % period == 0) {
+        if(exponent == 2) {
+            return 'square';
+        }
+        return 'non-primitive';
+    }
+    if(last_border == 0) {
+        return 'unbordered';
+    }
+    return 'primitive';
+}
+
+/**
  * @name SA
  * @kind enable
  * @type index

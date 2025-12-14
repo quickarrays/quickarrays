@@ -1,4 +1,4 @@
-import * as str_tests from './string_generator'
+import * as str_tests from './generator'
 import * as algo_tests from './algorithm'
 import * as util_tests from './utility'
 
