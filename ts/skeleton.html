@@ -9,6 +9,7 @@
     <!-- <link rel="stylesheet" type="text/css" href="../font-awesome-4.6.3/css/font-awesome.min.css"> -->
     <!-- <link rel="stylesheet" type="text/css" href="../fonts/fonts.css"/> -->
     <link rel="stylesheet" type="text/css" href="css/qa.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
 
     <!-- <link rel="icon" type="image/svg+xml" href="../tudocomp-icon.svg"> -->
     <!-- <link rel="icon" type="image/png" href="../tudocomp-icon.png"> -->
@@ -32,6 +33,7 @@
                 <input type="range" id="qa-generate-string-range" name="qa-generate-string-range" min="0" max="10" value="3" step="1">
                 <span id="qa-generate-string-rank">3</span>
             </span>
+            <button id="qa-tutorial-open-button"></button>
         </div>
         <textarea class="qa-textarea" id="qa-text" placeholder="MISSISSIPPI"></textarea>
 
@@ -150,11 +152,23 @@
              By creating a bookmark, you can return to the current state at any time.
          </div>
          <div style="text-align:right">
-             Questions or problems? Feel free to use our <a href="https://github.com/tudocomp/tudocomp.github.io/issues">bug tracker</a>, or drop <a href="../fame.html">Jonas or Dominik a mail</a>.
+             Questions or problems? Feel free to use our <a href="https://github.com/quickarrays/quickarrays.github.io/issues">bug tracker</a>, or drop <a href="fame.html">Jonas or Dominik a mail</a>.
+
+             Like it? Cite us and give us <a href="https://github.com/quickarrays/quickarrays.github.io">a star at GitHub</a>!
          </div>
 </div>
 </body>
 
+<div id="qa-tutorial-overlay">
+    <div id="qa-tutorial-box">
+        <span id="qa-tutorial-close-button">&times;</span>
+        <h2 id="qa-tutorial-title">title</h2>
+        <p id="qa-tutorial-content">content</p>
+        <a id="qa-tutorial-oeis"></a>
+        <p id="qa-tutorial-reference"></p>
+        <a id="qa-tutorial-wikipedia"></a>
+    </div>
+</div>
 <script src="js/jquery-3.3.1.min.js"></script>
 <script src="js/jquery.query-object.js"></script>
 <script src="js/sortable.min.js"></script>

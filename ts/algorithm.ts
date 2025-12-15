@@ -850,7 +850,6 @@ function construct_circular_suffix_array(text: string, lyndon_factorization: rea
         factor_starting_position += factor_length;
     }
     conjugates.sort((a,b) => omegaOrder(a.str, b.str));
-    console.log(conjugates);
     return [...conjugates].map(conjugate => conjugate.pos);
 }
 

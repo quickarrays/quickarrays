@@ -221,3 +221,38 @@ body {
 .qa-hidden {
     display: none !important;
 }
+
+#qa-tutorial-overlay {
+  display: none; /* Hidden by default */
+  position: fixed;
+  z-index: 1000; /* Sit on top of everything */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  /* background-color: rgba(0,0,0,0.5); /* Semi-transparent black */ */
+}
+
+/* The actual pop-up box */
+#qa-tutorial-box {
+  background-color: #fff;
+  margin: 15% auto; /* 15% from top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 50%; /* Could be more or less */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  position: relative;
+}
+
+/* Close button style */
+#qa-tutorial-close-button {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+#qa-tutorial-open-button {
+    display: none;
+}

@@ -253,12 +253,12 @@ function generate_kolakoski_word(k : number) : string {
     if(k == 0) return "ab";
     const prev = generate_kolakoski_word(k - 1);
     let result = "";
-    for(let i = 0; 2*i < prev.length; i++) {
-        const chunk = prev.slice(2*i,2);
-        if(chunk == 'aa') { result += 'ab';}
-        else if(chunk == 'ab') { result += 'abb';}
-        else if(chunk == 'ba') { result += 'aab';}
-        else if(chunk == 'bb') { result += 'aabb';}
+    for(let i = 0; i < prev.length; ++i) {
+        if(i % 2 == 0) {
+            result += (prev[i] == 'a') ? 'a' : 'aa';
+        } else {
+            result += (prev[i] == 'a') ? 'b' : 'bb';
+        }
     }
     return result;
 }
