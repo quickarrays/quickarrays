@@ -4,7 +4,6 @@ function assert_eq(a: any, b: any, message: string) {
         throw new Error(`Assertion Failed: ${message}. Expected "${a}", but got "${b}"`);
     }
 }
-//}}
 
 /**
  * @name Fibonacci

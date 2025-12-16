@@ -13,6 +13,8 @@ JS_DIR = Path('js')
 COUNTERS_JS = JS_DIR / 'counters.js'
 ALGORITHM_PIPELINE_JS = JS_DIR / 'algorithm_pipeline.js'
 GENERATOR_PIPELINE_JS = JS_DIR / 'generator_pipeline.js'
+TUTORIAL_JS = JS_DIR / 'tutorial.js'
+CITATION_JS = JS_DIR / 'citation.js'
 
 HTML_DIR = Path('html')
 COUNTERS_HTML = HTML_DIR / 'counters.html'
@@ -54,8 +56,22 @@ def parse_annotation(block):
 			ann["description"] = line[len("@description "):].strip()
 		elif line.startswith("@oeis "):
 			ann["oeis"] = line[len("@oeis "):].strip()
-		elif line.startswith("@see "):
-			ann["see"] = line[len("@see "):].strip()
 		elif line.startswith("@tutorial "):
 			ann["tutorial"] = line[len("@tutorial "):].strip()
+		elif line.startswith("@cite "):
+			ann["cite"] = line[len("@cite "):].strip()
+		elif line.startswith("@wikipedia "):
+			ann["wikipedia"] = line[len("@wikipedia "):].strip()
 	return ann
+
+def short_prop(fname):
+	# count_xxx → xxx
+	if fname.startswith("generate_"):
+		return fname[len("generate_"):]
+	if fname.startswith("count_"):
+		return fname[len("count_"):]
+	# construct_xxx_transform → xxx_transform
+	if fname.startswith("construct_"):
+		return fname[len("construct_"):]
+	return fname
+

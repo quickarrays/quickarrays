@@ -8,7 +8,7 @@ function assert_eq(a: any, b: any, message: string): void {
  * @name p
  * @description Period
  * @tutorial The period of a string is the length of the smallest substring that can be repeated without overlaps to form the entire string.
- * @see https://en.wikipedia.org/wiki/Periodicity_(string_matching)#Period
+ * @wikipedia Periodicity_(string_matching)#Period
  */
 function count_period(border_array: number[]) : number {
     const last_border = border_array[border_array.length - 1];
@@ -19,7 +19,7 @@ function count_period(border_array: number[]) : number {
  * @name e
  * @description Exponent
  * @tutorial The exponent of a string is the number of times its smallest period repeats to form the string.
- * @see https://en.wikipedia.org/wiki/Periodicity_(string_matching)#Exponent
+ * @wikipedia Periodicity_(string_matching)#Exponent
  */
 function count_exponent(border_array: number[]) : number {
     const period = count_period(border_array);
@@ -52,6 +52,9 @@ function count_regularity(border_array: number[]) : string {
  * @kind enable
  * @type index
  * @description Suffix Array
+ * @tutorial The suffix array \(\mathsf{SA}\) of the text \(T[1..n]\) is an array of integers representing the starting indices of all the suffixes of a given string, sorted in lexicographical order. It obeys that \(T[\mathsf{SA}[i]..n] \prec T[\mathsf{SA}[i+1]..n]\) for all text positions \(i \in [1..n-1]\).
+ * @cite manber93sa
+ * @wikipedia Suffix_array
  */
 function construct_suffix_array(text: string): number[] {
     const n: number = text.length;
@@ -236,7 +239,7 @@ export function test_inverse_suffix_array() {
  * @kind disable
  * @type index
  * @description Phi Array
- * @see karkkainen09plcp
+ * @reference karkkainen09plcp
  */
 function construct_phi_array(suffix_array: number[], inverse_suffix_array: number[]): number[] {
     const n: number = suffix_array.length;
@@ -350,7 +353,7 @@ function count_lcp_array(lcp_array : number[]) : number {
  * @kind disable
  * @type length
  * @description Permuted Longest Common Prefix array
- * @see karkkainen09plcp
+ * @refernece see karkkainen09plcp
  */
 function construct_plcp_array(inverse_suffix_array: number[], lcp_array: number[]): number[] {
     if (inverse_suffix_array.length !== lcp_array.length) {
@@ -684,8 +687,9 @@ function construct_lzss_factorization(lpf_array: readonly number[]): boolean[] {
  * @name LexParse
  * @kind disable
  * @type factor
+ * @tutorial Text factorization using lexicographic parse
  * @description Lexicographic Parse Factorization
- * @see navarro21approximation
+ * @cite navarro21approximation
  */
 function construct_lexparse_factorization(plcp_array: readonly number[]): boolean[] {
     return greedy_factorize(plcp_array);
@@ -738,7 +742,7 @@ function construct_pss_array(text: string, inverse_suffix_array: readonly number
  * @kind disable
  * @type length
  * @description Lyndon Array
- * @see bannai17runs
+ * @cite bannai17runs
  */
 function construct_lyndon_array(text: string, nss_array: readonly number[]): number[] {
     const n: number = text.length;

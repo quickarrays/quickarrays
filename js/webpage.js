@@ -365,20 +365,20 @@ function initDragAndDrop(listEnabled, listDisabled) {
 	});
 }
 
-const tutorials = {};
-tutorials['bw_transform'] = {
-	'title' : 'Transformations',
-	'content' : 'You can apply transformations to the generated string. For example, you can convert all characters to uppercase by using the custom transformation with the code "text[i].toUpperCase()".',
-	'reference': 'Mozilla Developer Network (MDN), "String.prototype.toUpperCase()", https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/toUpperCase',
-	'wikipedia': 'String_(computer_science)#Changing_case'
-};
-tutorials['thue-morse'] = {
-	'title' : 'Thue-Morse Sequence',
-	'content' : 'The Thue-Morse sequence is a binary sequence that is constructed by starting with 0 and successively appending the binary complement of the sequence obtained so far. It is known for its applications in combinatorics and theoretical computer science. It uses the morphism \\(0 \\to 01, 1 \\to 10 \\).',
-	'oeis': 'A010060',
-	'reference': 'Allouche, J.-P.; Shallit, J. (1999), "The ubiquitous Prouhet-Thue-Morse sequence", in Graham, R. L.; Grötschel, M.; Lovász, L. (eds.), Handbook of Combinatorics, Elsevier and MIT Press, pp. 873–901.',
-	'wikipedia': 'Thue%E2%80%93Morse_sequence'
-};
+// const tutorials = {};
+// tutorials['bw_transform'] = {
+// 	'title' : 'Transformations',
+// 	'content' : 'You can apply transformations to the generated string. For example, you can convert all characters to uppercase by using the custom transformation with the code "text[i].toUpperCase()".',
+// 	'cite': 'Mozilla Developer Network (MDN), "String.prototype.toUpperCase()", https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/toUpperCase',
+// 	'wikipedia': 'String_(computer_science)#Changing_case'
+// };
+// tutorials['thue-morse'] = {
+// 	'title' : 'Thue-Morse Sequence',
+// 	'content' : 'The Thue-Morse sequence is a binary sequence that is constructed by starting with 0 and successively appending the binary complement of the sequence obtained so far. It is known for its applications in combinatorics and theoretical computer science. It uses the morphism \\(0 \\to 01, 1 \\to 10 \\).',
+// 	'oeis': 'A010060',
+// 	'cite': 'Allouche, J.-P.; Shallit, J. (1999), "The ubiquitous Prouhet-Thue-Morse sequence", in Graham, R. L.; Grötschel, M.; Lovász, L. (eds.), Handbook of Combinatorics, Elsevier and MIT Press, pp. 873–901.',
+// 	'wikipedia': 'Thue%E2%80%93Morse_sequence'
+// };
 
 var qa_tutorial_open_button;
 var qa_tutorial_close_button;
@@ -386,7 +386,7 @@ var qa_tutorial_overlay;
 var qa_tutorial_title;
 var qa_tutorial_content;
 var qa_tutorial_oeis
-var qa_tutorial_reference;
+var qa_tutorial_cite;
 var qa_tutorial_wikipedia;
 
 function update_tutorial(id, name) {
@@ -405,19 +405,24 @@ function update_tutorial(id, name) {
 			else {
 				qa_tutorial_oeis.style.display = "none";
 			}
-			if(tutorial.reference !== undefined) {
-				qa_tutorial_reference.style.display = "block";
-				qa_tutorial_reference.href = tutorial.reference;
+			if(tutorial.cite !== undefined) {
+				qa_tutorial_cite.style.display = "block";
+				qa_tutorial_cite.href = tutorial.cite;
+				if (typeof citations !== 'undefined' && citations[tutorial.cite] !== 'undefined') {
+					qa_tutorial_cite.innerHTML = citations[tutorial.cite];
+				}
 			}
 			else {
-				qa_tutorial_reference.style.display = "none";
+				qa_tutorial_cite.style.display = "none";
 			}
 			if(tutorial.wikipedia !== undefined) {
 				qa_tutorial_wikipedia.style.display = "block";
 				qa_tutorial_wikipedia.innerHTML = "Wikipedia Article about " + name;
 				qa_tutorial_wikipedia.href = "https://en.wikipedia.org/wiki/" + tutorial.wikipedia;
+			} else {
+				qa_tutorial_wikipedia.style.display = "none";
 			}
-			qa_tutorial_open_button.innerHTML = "Explain me more about <b>" + name + "</b>!";
+			qa_tutorial_open_button.innerHTML = "Tell me more about <b>" + name + "</b>!";
 			qa_tutorial_open_button.style.display = "inline-block";
 }
 
@@ -429,7 +434,7 @@ window.onload = function () {
 	qa_tutorial_title = document.getElementById('qa-tutorial-title');
 	qa_tutorial_content = document.getElementById('qa-tutorial-content');
 	qa_tutorial_oeis = document.getElementById('qa-tutorial-oeis');
-	qa_tutorial_reference = document.getElementById('qa-tutorial-reference');
+	qa_tutorial_cite = document.getElementById('qa-tutorial-cite');
 	qa_tutorial_wikipedia = document.getElementById('qa-tutorial-wikipedia');
 
 	//tutorial

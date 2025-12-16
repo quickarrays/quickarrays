@@ -17,16 +17,22 @@ $(BUILD_SENTINEL): $(TS_FILES) $(TS_CONFIG)
 	npx tsc -p .
 	@touch $@
 
+${JS_DIR}/tutorial.js: tutorial.py algorithm.ts generator.ts
+	./tutorial.py algorithm.ts generator.ts
+
+${JS_DIR}/citation.js: citation.py algorithm.ts generator.ts
+	./citation.py algorithm.ts generator.ts
+
 ${JS_DIR}/algorithm_pipeline.js: algorithm.py algorithm.ts
 	python3 algorithm.py
 
 ${JS_DIR}/generator_pipeline.js: generator.py generator.ts
 	python3 generator.py
 
-${HTML_DIR}/index.html: skeleton.html ${JS_DIR}/algorithm_pipeline.js ${JS_DIR}/generator_pipeline.js
+${HTML_DIR}/index.html: skeleton.html ${JS_DIR}/algorithm_pipeline.js ${JS_DIR}/generator_pipeline.js ${JS_DIR}/tutorial.js ${JS_DIR}/citation.js
 	python3 skeleton.py -i $< -o $@
 
-$(JS_FOLDER)/generated.js: ${JS_DIR}/algorithm_pipeline.js ${JS_DIR}/generator_pipeline.js compile_javascript.py
+$(JS_FOLDER)/generated.js: ${JS_DIR}/algorithm_pipeline.js ${JS_DIR}/generator_pipeline.js ${JS_DIR}/tutorial.js compile_javascript.py ${JS_DIR}/citation.js
 	python3 compile_javascript.py -i $(JS_DIR) -o $@
 
 clean:

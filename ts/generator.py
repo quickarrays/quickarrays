@@ -17,10 +17,7 @@ def main():
 		if "name" not in ann:
 			continue
 
-		# function generate_fibonacci_word → short name = fibonacci (example logic)
-		# You did not specify the shortening logic in detail.
-		# We take annotation @name, convert to lowercase identifier.
-		short = ann["name"].lower().replace(" ", "_")
+		short = C.short_prop(fname)
 
 		generators.append((short, fname, ann))
 

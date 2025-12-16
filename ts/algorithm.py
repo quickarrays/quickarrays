@@ -22,15 +22,6 @@ def parse_args(arglist):
 	return args
 
 
-def short_prop(fname):
-	# count_xxx → xxx
-	if fname.startswith("count_"):
-		return fname[len("count_"):]
-	# construct_xxx_transform → xxx_transform
-	if fname.startswith("construct_"):
-		return fname[len("construct_"):]
-	return fname
-
 def generate_counters(code : str):
 	count_funcs = []
 	factor_funcs = []
@@ -64,18 +55,18 @@ def generate_counters(code : str):
 
 	# ---- count_XXX → XXX : count_XXX(ds.argument)
 	for fname, args in count_funcs:
-		prop = short_prop(fname)
+		prop = C.short_prop(fname)
 		arg = args[0] if args else ""
 		js.append(f"\t\t{prop} : {fname}(ds.{arg}),")
 
 	# ---- *_factorization → XXX_factorization : number_of_factors(ds.XXX_factorization)
 	for fname, args in factor_funcs:
-		prop = short_prop(fname)
+		prop = C.short_prop(fname)
 		js.append(f"\t\t{prop} : number_of_factors(ds.{prop}),")
 
 	# ---- *_transform → XXX_transform : number_of_runs(ds.XXX_transform)
 	for fname, args in transform_funcs:
-		prop = short_prop(fname)
+		prop = C.short_prop(fname)
 		js.append(f"\t\t{prop} : number_of_runs(ds.{prop}),")
 
 	js.append("\t}")
@@ -91,7 +82,7 @@ def generate_counters(code : str):
 		if fname not in annotations:
 			return
 		ann = annotations[fname]
-		prop = short_prop(fname)
+		prop = C.short_prop(fname)
 
 		name = ann.get("name", prop)
 		desc = ann.get("description")
