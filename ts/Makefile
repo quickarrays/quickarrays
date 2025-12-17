@@ -14,7 +14,7 @@ all: $(BUILD_SENTINEL) ${HTML_DIR}/index.html $(JS_FOLDER)/generated.js
 
 $(BUILD_SENTINEL): $(TS_FILES) $(TS_CONFIG)
 	@mkdir -p $(JS_DIR)
-	npx tsc -p .
+	npx babel ts/ --out-dir js/ --extensions ".ts" 
 	@touch $@
 
 ${JS_DIR}/tutorial.js: tutorial.py algorithm.ts generator.ts
@@ -35,8 +35,16 @@ ${HTML_DIR}/index.html: skeleton.html ${JS_DIR}/algorithm_pipeline.js ${JS_DIR}/
 $(JS_FOLDER)/generated.js: ${JS_DIR}/algorithm_pipeline.js ${JS_DIR}/generator_pipeline.js ${JS_DIR}/tutorial.js compile_javascript.py ${JS_DIR}/citation.js
 	python3 compile_javascript.py -i $(JS_DIR) -o $@
 
+check:
+	npx tsc -p .
+	@touch $@
+
+test:
+	npx tsc -p .
+	npx jest
+
 clean:
 	rm -r $(JS_DIR) $(HTML_DIR) 
 	rm $(JS_FOLDER)/generated.js
 
-.PHONY: all clean
+.PHONY: all clean check test

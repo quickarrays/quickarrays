@@ -61,7 +61,7 @@ def main():
 	# ---- Remove test functions and assert_eq ----
 	def strip_function(code, fname):
 		pattern = re.compile(
-			rf"function\s+{fname}\s*\([^)]*\)\s*\{{[\s\S]*?\n\}}",
+			rf"(export )?function\s+{fname}\s*\([^)]*\)\s*\{{[\s\S]*?\n\}}",
 			re.MULTILINE
 		)
 		return pattern.sub("", code)

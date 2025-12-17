@@ -6,8 +6,8 @@ function assert_eq(a: any, b: any, message: string): void {
 
 /**
  * @name p
- * @description Period
- * @tutorial The period of a string is the length of the smallest substring that can be repeated without overlaps to form the entire string.
+ * @description Shortest Period
+ * @tutorial The shortest period of a string is the smallest positive integer such that the string is a prefix of an infinite repetition of the prefix of that length. Concretely, the shortest period \(p\) of the text \(T\) is the length of the shortest prefix \(P\) of \(T\) such that \(T\) is a prefix of \(P^{k}\) for some integer \(k \geq 1\).
  * @wikipedia Periodicity_(string_matching)#Period
  */
 function count_period(border_array: number[]) : number {
@@ -18,7 +18,7 @@ function count_period(border_array: number[]) : number {
 /**
  * @name e
  * @description Exponent
- * @tutorial The exponent of a string is the number of times its smallest period repeats to form the string.
+ * @tutorial The exponent of a string is the division of the string's length by its shortest period, representing how many times the shortest period needs to be repeated to form the string. Formally, the exponent of the text \(T\) is defined as the length of \(T\) divided by the length of its shortest period \(p\), i.e., \(\frac{|T|}{p}\).
  * @wikipedia Periodicity_(string_matching)#Exponent
  */
 function count_exponent(border_array: number[]) : number {
@@ -28,7 +28,8 @@ function count_exponent(border_array: number[]) : number {
 
 /**
  * @name R
- * @description Regularity
+ * @description Regularity Type
+ * @tutorial The regularity type of a string classifies it based on its periodic structure. A string can be categorized as unbordered, primitive, square, or non-primitive based on its borders and periods. Specifically, a string is unbordered if it has no proper border, primitive if it cannot be expressed as a repetition of a smaller substring, square if it is formed by repeating a substring exactly twice, and non-primitive if it can be expressed as a repetition of a smaller substring more than twice.
  */
 function count_regularity(border_array: number[]) : string {
     const n = border_array.length;
@@ -52,7 +53,7 @@ function count_regularity(border_array: number[]) : string {
  * @kind enable
  * @type index
  * @description Suffix Array
- * @tutorial The suffix array \(\mathsf{SA}\) of the text \(T[1..n]\) is an array of integers representing the starting indices of all the suffixes of a given string, sorted in lexicographical order. It obeys that \(T[\mathsf{SA}[i]..n] \prec T[\mathsf{SA}[i+1]..n]\) for all text positions \(i \in [1..n-1]\).
+ * @tutorial The suffix array sorts the entry indices of a string based on the lexicographical order of their corresponding suffixes. Formally, the suffix array \(\mathsf{SA}\) of the text \(T[1..n]\) is an array of integers representing the starting indices of all the suffixes of \(T\), sorted in lexicographical order. It obeys that \(T[\mathsf{SA}[i]..n] \prec T[\mathsf{SA}[i+1]..n]\) for all text positions \(i \in [1..n-1]\).
  * @cite manber93sa
  * @wikipedia Suffix_array
  */
@@ -88,6 +89,8 @@ export function test_suffix_array() {
  * @kind disable
  * @type length
  * @description Border Array
+ * @tutorial The border array of a string stores the lengths of the longest borders for each prefix of the string. A border of a string is defined as a substring that is both a proper prefix and a proper suffix. Formally, the border array \(\mathsf{B}\) for a text \(T[1..n]\) is an array where each entry \(\mathsf{B}[i]\) represents the length of the longest border of the prefix \(T[1..i]\), i.e., \(\mathsf{B}[i]\) is the largest integer \(k \le i-1\) such that \(T[1..k] = T[i-k+1..i]\).
+ * @wikipedia Border_(string_matching)
  */
 function construct_border_array(text: string): number[] {
   const n: number = text.length;
@@ -123,6 +126,9 @@ export function test_border_array() {
  * @kind disable
  * @type string 
  * @description Burrows-Wheeler Transform
+ * @tutorial The Burrows-Wheeler Transform (BWT) is a reversible transformation that rearranges the characters of a string based on the lexicographical order of its cyclic rotations. Formally, given a text \(T[1..n]\) and its rotation array \(\mathsf{Rot}\), the BWT \(\mathsf{BWT}[1..n]\) is defined such that \(\mathsf{BWT}[i] = T[(\mathsf{Rot}[i] + n - 1) \mod n]\) for each \(i \in [1..n]\).
+ * @wikipedia Burrows%E2%80%93Wheeler_transform
+ * @cite burrows94bwt
  */
 function construct_bw_transform(text: string, rotation_array: number[]): string {
     if (text.length === 0) {
@@ -155,6 +161,9 @@ export function test_bw_transform() {
  * @kind disable
  * @type string 
  * @description First Column Array
+ * @tutorial The First Column Array represents the first column of the sorted rotations of a string, which is obtained by sorting the characters of the string in lexicographical order. Formally, for a given text \(T[1..n]\), the First Column Array \(\mathsf{F}\) is defined as the sorted sequence of characters in \(T\).
+ * @wikipedia Burrows%E2%80%93Wheeler_transform
+ * @cite burrows94bwt
  */
 function construct_first_array(text: string): string {
     return [...text].sort().join('');
@@ -173,6 +182,7 @@ export function test_first_array() {
  * @kind enable
  * @type index
  * @description Index Array
+ * @tutorial The index array contains a sequence of integers from \(1\) to \(n\), where \(n\) is the length of the input text \(T[1..n]\). Formally, the index array \(\mathsf{i}\) is defined such that \(\mathsf{i}[j] = j\) for each \(j \in [1..n]\).
  */
 function construct_index_array(n: number): number[] {
     return Array.from(Array(n).keys());
@@ -189,6 +199,7 @@ export function test_index_array() {
  * @kind disable
  * @type index
  * @description Rotation Array
+ * @tutorial The rotation array sorts the entry indices of a string based on the lexicographical order of their corresponding cyclic rotations. Formally, the rotation array \(\mathsf{Rot}\) of the text \(T[1..n]\) is an array of integers representing the starting indices of all the cyclic rotations of \(T\), sorted in lexicographical order. It obeys that \(T[\mathsf{Rot}[i]..n]T[1..\mathsf{Rot}[i]-1] \prec T[\mathsf{Rot}[i+1]..n]T[1..\mathsf{Rot}[i+1]-1]\) for all text positions \(i \in [1..n-1]\).
  */
 function construct_rotation_array(text: string): number[] {
     const n: number = text.length;
@@ -217,6 +228,9 @@ export function test_rotation_array() {
  * @kind disable
  * @type index
  * @description Inverse Suffix Array
+ * @tutorial The inverse suffix array provides a mapping from each starting index of the suffixes of a string back to their respective positions in the suffix array. Formally, given the suffix array \(\mathsf{SA}\) of the text \(T[1..n]\), the inverse suffix array \(\mathsf{ISA}\) is defined such that \(\mathsf{ISA}[\mathsf{SA}[i]] = i\) for each \(i \in [1..n]\).
+ * @wikipedia Suffix_array
+ * @cite manber93sa
  */
 function construct_inverse_suffix_array(suffix_array: readonly number[]): number[] {
     const result: number[] = new Array<number>(suffix_array.length);
@@ -239,7 +253,8 @@ export function test_inverse_suffix_array() {
  * @kind disable
  * @type index
  * @description Phi Array
- * @reference karkkainen09plcp
+ * @tutorial The Phi array provides a mapping from each starting index of the suffixes of a string to the starting index of the lexicographically preceding suffix. Formally, given the suffix array \(\mathsf{SA}\) and the inverse suffix array \(\mathsf{ISA}\) of the text \(T[1..n]\), the Phi array \(\mathsf{\Phi}\) is defined such that \(\mathsf{\Phi}[i] = \mathsf{SA}[\mathsf{ISA}[i] - 1]\) if \(\mathsf{ISA}[i] > 0\), and \(\mathsf{\Phi}[i] = \bot\) if \(\mathsf{ISA}[i] = 0\), for each \(i \in [1..n]\).
+ * @cite karkkainen09plcp
  */
 function construct_phi_array(suffix_array: number[], inverse_suffix_array: number[]): number[] {
     const n: number = suffix_array.length;
@@ -268,6 +283,7 @@ export function test_phi_array() {
  * @kind disable
  * @type index
  * @description Inverse Phi Array
+ * @tutorial The inverse Phi array provides a mapping from each starting index of the suffixes of a string to the starting index of the lexicographically succeeding suffix. Formally, given the suffix array \(\mathsf{SA}\) and the inverse suffix array \(\mathsf{ISA}\) of the text \(T[1..n]\), the inverse Phi array \(\mathsf{\Phi}^{-1}\) is defined such that \(\mathsf{\Phi}^{-1}[i] = \mathsf{SA}[\mathsf{ISA}[i] + 1]\) if \(\mathsf{ISA}[i] \le n-1 \), and \(\mathsf{\Phi}^{-1}[i] = \bot\) if \(\mathsf{ISA}[i] = n \), for each \(i \in [1..n]\).
  */
 function construct_inverse_phi_array(suffix_array: number[], inverse_suffix_array: number[]): number[] {
     const n: number = suffix_array.length;
@@ -326,6 +342,8 @@ export function test_lcp_query() {
  * @kind disable
  * @type length
  * @description Longest Common Prefix array
+ * @tutorial The Longest Common Prefix (LCP) array stores the lengths of the longest common prefixes between consecutive suffixes in the suffix array of a string. Formally, for a given text \(T[1..n]\) and its suffix array \(\mathsf{SA}\), the LCP array \(\mathsf{LCP}[1..n]\) is defined such that \(\mathsf{LCP}[1] = 0\) and \(\mathsf{LCP}[i] = \text{lcp}(T[\mathsf{SA}[i]..n], T[\mathsf{SA}[i-1]..n])\) for each \(i \in [2..n]\), where \(\text{lcp}(S_1, S_2)\) denotes the length of the longest common prefix between the suffixes \(S_1\) and \(S_2\).
+ * @wikipedia Longest_common_prefix_array
  */
 function construct_lcp_array(text: string, suffix_array: number[]): number[] {
     if (suffix_array.length === 0) {
@@ -343,6 +361,8 @@ function construct_lcp_array(text: string, suffix_array: number[]): number[] {
 /**
  * @name &Sigma; LCP
  * @description Sum of LCP array values
+ * @tutorial The sum of the Longest Common Prefix (LCP) array values provides a measure of the total length of common prefixes between consecutive suffixes in the suffix array of a string. Formally, for a given LCP array \(\mathsf{LCP}[1..n]\), the sum \(\Sigma \mathsf{LCP}\) is defined as \(\sum_{i=1}^{n} \mathsf{LCP}[i]\).
+ * @wikipedia Longest_common_prefix_array
  */
 function count_lcp_array(lcp_array : number[]) : number {
     return lcp_array.reduce((a, b) => a + b, 0);
@@ -353,7 +373,9 @@ function count_lcp_array(lcp_array : number[]) : number {
  * @kind disable
  * @type length
  * @description Permuted Longest Common Prefix array
- * @refernece see karkkainen09plcp
+ * @tutorial The Permuted Longest Common Prefix (PLCP) array reorders the values of the Longest Common Prefix (LCP) array based on the respective positions in the string. Formally, for the inverse suffix array \(\mathsf{ISA}\) and LCP array \(\mathsf{LCP}\) of the text \(T[1..n]\), the PLCP array \(\mathsf{PLCP}[1..n]\) is defined such that \(\mathsf{PLCP}[i] = \mathsf{LCP}[\mathsf{ISA}[i]]\) for each \(i \in [1..n]\).
+ * @wikipedia Longest_common_prefix_array
+ * @cite karkkainen09plcp
  */
 function construct_plcp_array(inverse_suffix_array: number[], lcp_array: number[]): number[] {
     if (inverse_suffix_array.length !== lcp_array.length) {
@@ -368,6 +390,8 @@ function construct_plcp_array(inverse_suffix_array: number[], lcp_array: number[
  * @kind disable
  * @type index
  * @description Psi Array
+ * @tutorial The Psi array provides a mapping inside the suffix array that advances by one text position. Formally, given the suffix array \(\mathsf{SA}\) and the inverse suffix array \(\mathsf{ISA}\) of the text \(T[1..n]\), the Psi array \(\mathsf{\Psi}\) is defined such that \(\mathsf{\Psi}[i] = \mathsf{ISA}[\mathsf{SA}[i] + 1]\) if \(\mathsf{SA}[i] + 1 < n\), and \(\mathsf{\Psi}[i] = \bot\) if \(\mathsf{SA}[i] + 1 = n\), for each \(i \in [1..n]\).
+ * @cite grossi05csa
  */
 function construct_psi_array(suffix_array: number[], inverse_suffix_array: number[]): number[] {
     const n = suffix_array.length;
@@ -376,14 +400,13 @@ function construct_psi_array(suffix_array: number[], inverse_suffix_array: numbe
     );
 }
 
-
-
-
 /**
  * @name LynF
  * @kind disable
  * @type factor
  * @description Lyndon Factorization
+ * @tutorial The Lyndon factorization of a string decomposes it into a sequence of Lyndon words in lexicographically non-increasing order, where a Lyndon word is a non-empty string that is strictly smaller in lexicographical order than all of its non-trivial rotations.
+ * @cite chen58lyndon
  */
 function construct_lyndon_factorization(text: string, inverse_suffix_array: number[]): boolean[] {
     const n: number = text.length;
@@ -405,29 +428,14 @@ function construct_lyndon_factorization(text: string, inverse_suffix_array: numb
     return result;
 }
 
-/**
- * @name &delta;
- * @description Substring Complexity Measure
- */
-function count_delta(substring_complexity: number[]): [number, number] {
+function delta(substring_complexity: number[]): [number, number] {
     if (substring_complexity.length === 0) {
         throw new Error("Input array 'substring_complexity' cannot be empty.");
     }
-
     let bestlength: number = 1;
-    // The initial bestval is substring_complexity[0] / (0+1) which is simply substring_complexity[0].
-    // We explicitly type these variables for strictness.
     let bestval: number = substring_complexity[0];
-
-    // Loop starts from the second element (index 1) as the first element (index 0)
-    // is already considered for initialization.
     for (let i = 1; i < substring_complexity.length; ++i) {
-        // Calculate the current ratio for substring_complexity[i] corresponding to 1-based length (i+1).
-        // The `1.0 * substring_complexity[i]` from the original JS is redundant in TypeScript's `number` type
-        // as division already handles floating point results.
         const currentRatio: number = substring_complexity[i] / (i + 1);
-        
-        // If the current ratio is strictly greater than the best found so far, update.
         if (currentRatio > bestval) {
             bestlength = i + 1; // Update bestlength to the current 1-based index
             bestval = currentRatio; // Update bestval to the new maximum ratio
@@ -438,16 +446,39 @@ function count_delta(substring_complexity: number[]): [number, number] {
 
 
 /**
+ * @name &delta;
+ * @description Substring Complexity Measure
+ * @tutorial The substring complexity measure quantifies the maximum ratio of substring complexity to length. Given an array of substring complexities for lengths \(1\) to \(n\), it computes the maximum value of \(\frac{\mathsf{SC}[k]}{k}\) for \(k \in [1..n]\), where \(\mathsf{SC}[k]\) is the substring complexity for length \(k\).
+ * @wikipedia Substring_complexity
+ * @cite raskhodnikova13sublinear
+ */
+function count_delta(substring_complexity: number[]): number {
+    return delta(substring_complexity)[1];
+}
+
+/**
+ * @name max &delta;
+ * @description Substring Complexity Measure Length
+ * @tutorial The substring complexity measure length identifies the substring length that maximizes the ratio of substring complexity to length. Given an array of substring complexities for lengths \(1\) to \(n\), it computes the length \(k\) that maximizes \(\frac{\mathsf{SC}[k]}{k}\), where \(\mathsf{SC}[k]\) is the substring complexity for length \(k\).
+ * @wikipedia Substring_complexity
+ * @cite raskhodnikova13sublinear
+ */
+function count_delta_argmax(substring_complexity: number[]): number {
+    return delta(substring_complexity)[0];
+}
+
+
+/**
  * @name SC
  * @kind disable
  * @type length
  * @description Substring Complexity Array
+ * @tutorial The substring complexity array quantifies the number of distinct substrings of various lengths within a string. Given the Longest Common Prefix (LCP) array of a string, the substring complexity array \(\mathsf{SC}[1..n]\) is defined such that for each length \(k \in [1..n]\), \(\mathsf{SC}[k]\) represents the count of distinct substrings of length \(k\). The computation leverages the LCP values to efficiently determine the number of new substrings introduced at each length.
+ * @wikipedia Substring_complexity
+ * @cite raskhodnikova13sublinear
  */
 function construct_substring_complexity(lcp_array: number[]): number[] {
   const n: number = lcp_array.length;
-  // Initialize 'ret' as an array of `n` elements.
-  // All elements will be assigned a number in the subsequent loop,
-  // so no initial values are strictly necessary here beyond creating the slots.
   const ret: number[] = new Array<number>(n);
 
   const c = new Map<number, number>();
@@ -457,7 +488,6 @@ function construct_substring_complexity(lcp_array: number[]): number[] {
 
   let count: number = 0; // Accumulator for the current complexity value.
 
-  // Iterate backwards from `n` down to `1`.
   // `i` represents a potential substring length.
   for (let i: number = n; i >= 1; --i) {
     count += 1; // Each length `i` contributes to the base complexity.
@@ -563,6 +593,9 @@ export function test_rank_query() {
  * @kind disable
  * @type index
  * @description Last-to-First Mapping Array
+ * @tutorial The Last-to-First (LF) mapping array identifies characters from the last column with those from the first column of the Burrows-Wheeler Transform (BWT) that orginated from the same text position. Given the first column \(\mathsf{F}\) and \(\textsf{BWT}\), the LF mapping array \(\mathsf{LF}[1..n]\) is defined such that \(\mathsf{LF}[i] = \text{select}(\textsf{F}, \textsf{BWT}[i], \text{rank}(\textsf{BWT}, \textsf{BWT}[i], i))\) for each \(i \in [1..n]\), where \(\text{rank}(\textsf{BWT}, c, i)\) counts the occurrences of character \(c\) in the prefix \(\textsf{BWT}[1..i]\), and \(\text{select}(\textsf{F}, c, r)\) finds the position of the \(r\)-th occurrence of character \(c\) in \(\textsf{F}\).
+ * @wikipedia Burrows%E2%80%93Wheeler_transform
+ * @cite burrows94bwt
  */
 function construct_lf_array(first_array : string, bw_transform : string) : number[] {
     if (first_array.length !== bw_transform.length) {
@@ -580,14 +613,14 @@ function construct_lf_array(first_array : string, bw_transform : string) : numbe
     return result;
 }
 
-
-
-
 /**
  * @name S/L
  * @kind disable
  * @type length
  * @description S/L SAIS type string
+ * @tutorial The S/L type string classifies each character in a string as either S-type or L-type based on the lexicographic order of the suffixes starting at those characters. A character at position \(i\) is classified as S-type if the suffix starting at \(i\) is lexicographically smaller than the suffix starting at \(i+1\), and L-type if it is larger. If the suffixes are equal, the type is determined by the type of the suffix starting at \(i+1\). Additionally, an S-type character that is the first character or immediately preceded by an L-type character is marked as S*-type.
+ * @wikipedia Suffix_array_induced_sorting
+ * @cite nong11sais
  */
 function construct_sl_string(text : string) : string[] {
     var n = text.length;
@@ -612,6 +645,8 @@ function construct_sl_string(text : string) : string[] {
  * @kind disable
  * @type length
  * @description Longest Previous Factor array
+ * @tutorial The Longest Previous Factor (LPF) array stores the length of the longest prefix of each suffix of a string that matches a substring starting at a prior position within the same string. Formally, for a given text \(T[1..n]\), the LPF array \(\mathsf{LPF}[1..n]\) is defined such that \(\mathsf{LPF}[i] = \max_{j \in [1..i-1]} \text{lcp}(T[i..n], T[j..n])\) for each \(i \in [1..n]\), where \(\text{lcp}(S_1, S_2)\) denotes the length of the longest common prefix between the suffixes \(S_1\) and \(S_2\).
+ * @reference franek03lpf
  */
 function construct_lpf_array(text: string): number[] {
     const n: number = text.length;
@@ -636,6 +671,8 @@ function construct_lpf_array(text: string): number[] {
  * @kind disable
  * @type length
  * @description Longest Next Factor array
+ * @tutorial The Longest Next Factor (LNF) array stores the length of the longest prefix of each suffix of a string that matches a substring starting at a subsequent position within the same string. Formally, for a given text \(T[1..n]\), the LNF array \(\mathsf{LNF}[1..n]\) is defined such that \(\mathsf{LNF}[i] = \max_{j \in [i+1..n]} \text{lcp}(T[i..n], T[j..n])\) for each \(i \in [1..n]\), where \(\text{lcp}(S_1, S_2)\) denotes the length of the longest common prefix between the suffixes \(S_1\) and \(S_2\).
+ * @reference franek03lpf
  */
 function construct_lnf_array(text: string): number[] {
     const revtext: string = text.split('').reverse().join('');
@@ -662,25 +699,30 @@ function greedy_factorize(factor_array : readonly number[]) : boolean[] {
 }
 
 
-/**
- * @name rLZSS
- * @kind disable
- * @type factor
- * @description Reverse LZSS Factorization
- */
-function construct_reverse_lzss_factorization(lnf_array: readonly number[]): boolean[] {
-    const copied_lnf_array = lnf_array.slice().reverse();
-    return greedy_factorize(copied_lnf_array);
-}
 
 /**
  * @name LZSS
  * @kind disable
  * @type factor
  * @description LZSS Factorization
+ * @tutorial The Lempel-Ziv-Storer-Szymanski (LZSS) factorization decomposes a string into a sequence of factors, where each factor is either a new character or a reference to a substring with an earlier starting position. The factorization is constructed greedily by selecting the longest previous factor at each position in the string. Formally, given a text \(T[1..n]\) the length of the factor starting at position \(i\) is \(\max \{1\} \cup \{\text{lcp}(T[i..n], T[j..n]) \mid j \in [1..i-1] \}\).
+ * @cite storer82lzss
  */
 function construct_lzss_factorization(lpf_array: readonly number[]): boolean[] {
     return greedy_factorize(lpf_array);
+}
+
+/**
+ * @name rLZSS
+ * @kind disable
+ * @type factor
+ * @description Reverse LZSS Factorization
+ * @tutorial The Reverse Lempel-Ziv-Storer-Szymanski (rLZSS) factorization of a string is the LZSS factorization of the reversed string obtained by reading the string in reversed order.
+ * @cite storer82lzss
+ */
+function construct_reverse_lzss_factorization(lnf_array: readonly number[]): boolean[] {
+    const copied_lnf_array = lnf_array.slice().reverse();
+    return greedy_factorize(copied_lnf_array);
 }
 
 /**
@@ -689,6 +731,7 @@ function construct_lzss_factorization(lpf_array: readonly number[]): boolean[] {
  * @type factor
  * @tutorial Text factorization using lexicographic parse
  * @description Lexicographic Parse Factorization
+ * @tutorial The lexicographic parse (lexparse) decomposes a string into a sequence of factors based on the permuted longest common prefix (PLCP) array. Each factor is determined by the longest prefix of the suffix starting at the current position that matches a substring starting at a lexicographically smaller suffix position. Formally, for a given text \(T[1..n]\) and its PLCP array \(\mathsf{PLCP}[1..n]\), the length of the factor starting at position \(i\) is \(\mathsf{PLCP}[i]\) or 1 if \(\mathsf{PLCP}[i] = 0\).
  * @cite navarro21approximation
  */
 function construct_lexparse_factorization(plcp_array: readonly number[]): boolean[] {
@@ -700,13 +743,11 @@ function construct_lexparse_factorization(plcp_array: readonly number[]): boolea
  * @kind disable
  * @type index
  * @description Next Smaller Suffix Array
+ * @tutorial The Next Smaller Suffix (NSS) array identifies the subsequent suffix in text order that is lexicographically smaller than the current suffix. Given the inverse suffix array \(\mathsf{ISA}\) of a text \(T[1..n]\), the NSS array \(\mathsf{NSS}[1..n]\) is defined such that \(\mathsf{NSS}[i] = \min \{ j > i \mid \mathsf{ISA}[j] < \mathsf{ISA}[i] \}\) if such a \(j\) exists, and \(\mathsf{NSS}[i] = \bot \) otherwise, for each \(i \in [1..n]\).
  */
 function construct_nss_array(text: string, inverse_suffix_array: readonly number[]): number[] {
     const n: number = text.length;
-    /* In JavaScript, 'result' would become a global variable if not declared with var/let/const.
-       In TypeScript, this would be a compile-time error without explicit declaration. */
     const result: number[] = new Array<number>(n);
-
     for (let i = 0; i < n; ++i) {
         let nss: number = i + 1;
         while (nss < n && inverse_suffix_array[nss] > inverse_suffix_array[i]) {
@@ -722,6 +763,7 @@ function construct_nss_array(text: string, inverse_suffix_array: readonly number
  * @kind disable
  * @type index
  * @description Previous Smaller Suffix Array
+ * @tutorial The Previous Smaller Suffix (PSS) array identifies the preceding suffix in text order that is lexicographically smaller than the current suffix. Given the inverse suffix array \(\mathsf{ISA}\) of a text \(T[1..n]\), the PSS array \(\mathsf{PSS}[1..n]\) is defined such that \(\mathsf{PSS}[i] = \max \{ j < i \mid \mathsf{ISA}[j] < \mathsf{ISA}[i] \}\) if such a \(j\) exists, and \(\mathsf{PSS}[i] = \bot \) otherwise, for each \(i \in [1..n]\).
  */
 function construct_pss_array(text: string, inverse_suffix_array: readonly number[]): number[] {
     const n: number = text.length;
@@ -742,7 +784,8 @@ function construct_pss_array(text: string, inverse_suffix_array: readonly number
  * @kind disable
  * @type length
  * @description Lyndon Array
- * @cite bannai17runs
+ * @tutorial The Lyndon array stores the lengths of the longest Lyndon words starting at each position in a string. A Lyndon word is a non-empty string that is strictly smaller in lexicographical order than all of its non-trivial rotations. Given the Next Smaller Suffix (NSS) array \(\mathsf{NSS}[1..n]\) of a text \(T[1..n]\), the Lyndon array \(\mathsf{Lyndon}[1..n]\) is defined such that \(\mathsf{Lyndon}[i] = \mathsf{NSS}[i] - i\) if \(\mathsf{NSS}[i] \neq \bot\), and \(\mathsf{Lyndon}[i] = n - i + 1\) otherwise, for each \(i \in [1..n]\).
+ * @cite franek16algorithms
  */
 function construct_lyndon_array(text: string, nss_array: readonly number[]): number[] {
     const n: number = text.length;
@@ -750,7 +793,6 @@ function construct_lyndon_array(text: string, nss_array: readonly number[]): num
         throw new Error("The length of nss_array must match the length of text.");
     }
     let result: number[] = new Array<number>(n);
-
     for (let i = 0; i < n; ++i) {
         result[i] = (nss_array[i] === n) ? (n - i) : (nss_array[i] - i);
     }
@@ -763,6 +805,7 @@ function construct_lyndon_array(text: string, nss_array: readonly number[]): num
  * @kind hidden
  * @type string 
  * @description Lexicographically smallest conjugate of a given string.
+ * @tutorial The necklace conjugate of a string is the lexicographically smallest string that can be obtained by rotating the original string. This involves generating all possible rotations (conjugates) of the string and selecting the smallest one in lexicographic order.
  */
 function construct_necklace_conjugate_transform(text: string): string {
     const n: number = text.length;
@@ -785,6 +828,7 @@ function construct_necklace_conjugate_transform(text: string): string {
  * @kind hidden
  * @type string 
  * @description Inverts a string by mapping each character to its complementary character
+ * @tutorial The invert transform of a string maps each character to its complementary character based on the minimum and maximum characters in the string. Specifically, given a text \(T[1..n]\), the invert transform \(\mathsf{Invert}(T)\) maps each character \(T[i]\) to \(\text{max_j} T[j] - (c - \text{min_j T[j]})\).
  */
 function construct_invert_transform(text : string) {
     const sorted_chars = [...text].sort();
@@ -801,6 +845,7 @@ function construct_invert_transform(text : string) {
  * @kind hidden
  * @type string
  * @description Reverts a string by reading it backwards
+ * @tutorial The revert transform of a string is obtained by reversing the order of its characters. Given a text \(T[1..n]\), the revert transform \(\mathsf{Revert}(T)\) produces the string \(T[n] T[n-1] \ldots T[1]\), where the characters are arranged in the opposite order, effectively reading the string backwards.
  */
 function construct_revert_transform(text: string) {
     return text.split('').reverse().join('');
@@ -821,7 +866,7 @@ function phrases_from_factorizations(text: string, factorization: readonly boole
     return phrases;
 }
 
-function omegaOrder(strA: string, strB: string): number {
+function omega_order(strA: string, strB: string): number {
     if (strA === strB) { return 0; }
     const maxLength = Math.max(strA.length, strB.length)*3;
 
@@ -831,12 +876,25 @@ function omegaOrder(strA: string, strB: string): number {
     }
     return strA.length < strB.length ? -1 : +1;
 }
+function test_omega_order() {
+    assert_eq(omega_order("abc", "bca"), -1, "'abc' < 'bca'");
+    assert_eq(omega_order("bca", "abc"), 1, "'bca' > 'abc'");
+    assert_eq(omega_order("abab", "abab"), 0, "'abab' == 'abab'");
+    assert_eq(omega_order("a", "aa"), -1, "'a' < 'aa'");
+    assert_eq(omega_order("", "a"), -1, "'' < 'a'");
+    assert_eq(omega_order("a", ""), 1, "'a' > ''");
+    assert_eq(omega_order("aa", "a"), 1, "'aa' > 'a'");
+    assert_eq(omega_order("abcd", "abce"), -1, "'abcd' < 'abce'");
+    assert_eq(omega_order("abce", "abcd"), 1, "'abce' > 'abcd'");
+}
 
 /**
  * @name CSA
  * @kind disable
  * @type index
  * @description Circular Suffix Array
+ * @tutorial The Circular Suffix Array (CSA) of a string is a permutation of text positions that assigns a rank to each cyclic rotation (conjugate) of the Lyndon factors of the string based on the omega order. Given a text \(T[1..n]\) and its Lyndon factorization, the CSA \(\mathsf{CSA}[1..n]\) is defined such that \(\mathsf{CSA}[i]\) gives the starting position in \(T\) of the \(i\)-th smallest conjugate in \(\omega\)-order among all conjugates of the Lyndon factors of \(T\).
+ * @cite hon13spaceefficient
  */
 function construct_circular_suffix_array(text: string, lyndon_factorization: readonly boolean[]): number[] {
     interface Conjugate {
@@ -853,7 +911,7 @@ function construct_circular_suffix_array(text: string, lyndon_factorization: rea
         }
         factor_starting_position += factor_length;
     }
-    conjugates.sort((a,b) => omegaOrder(a.str, b.str));
+    conjugates.sort((a,b) => omega_order(a.str, b.str));
     return [...conjugates].map(conjugate => conjugate.pos);
 }
 
@@ -862,6 +920,8 @@ function construct_circular_suffix_array(text: string, lyndon_factorization: rea
  * @kind disable
  * @type index
  * @description Inverse Circular Suffix Array
+ * @tutorial The inverse circular suffix array (ICSA) is the reverse permutation of the circular suffix array (CSA). 
+ * @cite hon13spaceefficient
  */
 function construct_inverse_circular_suffix_array(circular_suffix_array: readonly number[]): number[] {
     return construct_inverse_suffix_array(circular_suffix_array);
@@ -880,6 +940,8 @@ export function test_inverse_circular_suffix_array() {
  * @kind disable
  * @type index
  * @description Text-Indices of the Bijective Burrows-Wheeler Transform
+ * @tutorial The Bijective Burrows-Wheeler Transform Indices (BBWTi) array stores the text positions of the circular sufix array (CSA) decremented by one, but mapping positions at the beginning of Lyndon factors to the end of the respective Lyndon factor.
+ * @cite bannai25survey
  */
 function construct_bbw_indices(lyndon_factorization: readonly boolean[], circular_suffix_array: readonly number[]): number[] {
   const n: number = circular_suffix_array.length;
@@ -907,6 +969,8 @@ export function test_bbw_indices() {
  * @kind disable
  * @type string
  * @description Bijective Burrows-Wheeler Transform
+ * @tutorial The Bijective Burrows-Wheeler Transform (BBWT) of a string rearranges the characters of the original string based on the Bijective Burrows-Wheeler Transform Indices (BBWTi). Given a text \(T[1..n]\) and its BBWTi array \(\mathsf{BBWTi}[1..n]\), the BBWT \(\mathsf{BBWT}[1..n]\) is defined such that \(\mathsf{BBWT}[i] = T[\mathsf{BBWTi}[i]]\) for each \(i \in [1..n]\).
+ * @cite bannai25survey
  */
 function construct_bbw_transform(text: string, bbw_indices: readonly number[]): string {
     return [...bbw_indices].map(pos => text[pos]).join('');
@@ -926,6 +990,8 @@ export function test_bbw_transform() {
  * @kind disable
  * @type string
  * @description Inverse Bijective Burrows-Wheeler Transform
+ * @tutorial The inverse Bijective Burrows-Wheeler Transform (inverse BBWT), also called the Gessel-Reutenauer transformation, applies the LF-mapping on the cycles in the BBWT to extract all Lyndon words, which sorted in lexicographically descreing order recovers the original text.
+ * @cite bannai25survey
  */
 function construct_inverse_bbw_transform(bbw_transform : string): string {
     let n = bbw_transform.length;

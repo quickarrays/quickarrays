@@ -399,7 +399,7 @@ function update_tutorial(id, name) {
 			}
 			if(tutorial.oeis !== undefined) {
 				qa_tutorial_oeis.style.display = "block";
-				qa_tutorial_oeis.innerHTML = "OEIS: " + tutorial.oeis;
+				qa_tutorial_oeis.innerHTML = "Converges to OEIS sequence " + tutorial.oeis;
 				qa_tutorial_oeis.href = "https://oeis.org/" + tutorial.oeis;
 			}
 			else {
