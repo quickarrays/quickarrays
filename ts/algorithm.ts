@@ -32,7 +32,7 @@ class AlgorithmError extends Error {
  * @wikipedia Periodicity_(string_matching)#Period
  */
 function count_period(border_array: number[]) : number {
-    if (border_array.length === 0) { return 0; }
+    if(!border_array || border_array.length === 0) { return 0; }
     const last_border = border_array[border_array.length - 1];
     return border_array.length - last_border;
 }
@@ -53,7 +53,7 @@ export function test_period() {
  * @wikipedia Periodicity_(string_matching)#Exponent
  */
 function count_exponent(border_array: number[]) : number {
-    if (border_array.length === 0) { return 0; }
+    if (!border_array || border_array.length === 0) { return 0; }
     const period = count_period(border_array);
     return border_array.length / period;
 }
@@ -74,6 +74,7 @@ export function test_exponent() {
  * @tutorial The regularity type of a string classifies it based on its periodic structure. A string can be categorized as unbordered, primitive, square, or non-primitive based on its borders and periods. Specifically, a string is unbordered if it has no proper border, primitive if it cannot be expressed as a repetition of a smaller substring, square if it is formed by repeating a substring exactly twice, and non-primitive if it can be expressed as a repetition of a smaller substring more than twice.
  */
 function count_regularity(border_array: number[]) : string {
+    if(!border_array || border_array.length === 0) { return 'empty'; }
     const n = border_array.length;
     if (n == 0) {
         return 'empty';
@@ -112,6 +113,8 @@ export function test_regularity() {
  * @wikipedia Suffix_array
  */
 function construct_suffix_array(text: string): number[] {
+    if (!text) { return []; }
+
     const n: number = text.length;
 
     type RotationEntry = [number, string];
@@ -147,6 +150,7 @@ export function test_suffix_array() {
  * @wikipedia Border_(string_matching)
  */
 function construct_border_array(text: string): number[] {
+    if (!text) { return []; }
   const n: number = text.length;
   if (n === 0) {
       return [];
@@ -185,12 +189,7 @@ export function test_border_array() {
  * @cite burrows94bwt
  */
 function construct_bw_transform(text: string, rotation_array: number[]): string {
-    if (text.length === 0) {
-        return "";
-    }
-    if (!text || !Array.isArray(rotation_array)) {
-        throw new AlgorithmError('Invalid input: text must be a string and rotation_array must be an array', 'BWT', { text, rotation_array });
-    }
+    if (!text) { return ""; }
     if (text.length !== rotation_array.length) {
         throw new AlgorithmError('Invalid input: text must be a string and rotation_array must be an array', 'BWT', { text, rotation_array });
     }
@@ -224,6 +223,7 @@ export function test_bw_transform() {
  * @cite burrows94bwt
  */
 function construct_first_array(text: string): string {
+    if (!text) { return ""; }
     return [...text].sort().join('');
 }
 
@@ -244,6 +244,7 @@ export function test_first_array() {
  * @tutorial The index array contains a sequence of integers from \(1\) to \(n\), where \(n\) is the length of the input text \(T[1..n]\). Formally, the index array \(\mathsf{i}\) is defined such that \(\mathsf{i}[j] = j\) for each \(j \in [1..n]\).
  */
 function construct_index_array(n: number): number[] {
+    if (!n || n <= 0) { return []; }
     return Array.from(Array(n).keys());
 }
 
@@ -262,6 +263,7 @@ export function test_index_array() {
  * @tutorial The rotation array sorts the entry indices of a string based on the lexicographical order of their corresponding cyclic rotations. Formally, the rotation array \(\mathsf{Rot}\) of the text \(T[1..n]\) is an array of integers representing the starting indices of all the cyclic rotations of \(T\), sorted in lexicographical order. It obeys that \(T[\mathsf{Rot}[i]..n]T[1..\mathsf{Rot}[i]-1] \prec T[\mathsf{Rot}[i+1]..n]T[1..\mathsf{Rot}[i+1]-1]\) for all text positions \(i \in [1..n-1]\), where $\prec$ is a total order by assigning lower ranks to lexicographically smaller strings and uses the text position \(i\) for tie-breaking.
  */
 function construct_rotation_array(text: string): number[] {
+    if (!text) { return []; }
     const n: number = text.length;
     type RotationEntry = [number, string];
     const rotations: RotationEntry[] = [...Array(n).keys()].map((num: number) => {
@@ -300,6 +302,7 @@ export function test_rotation_array() {
  * @cite manber93sa
  */
 function construct_inverse_suffix_array(suffix_array: readonly number[]): number[] {
+    if (!suffix_array) { return []; }
     const result: number[] = new Array<number>(suffix_array.length);
     for (let i = 0; i < suffix_array.length; i++) {
         result[suffix_array[i]] = i;
@@ -362,6 +365,7 @@ export function test_phi_array() {
  * @tutorial The inverse Phi array provides a mapping from each starting index of the suffixes of a string to the starting index of the lexicographically succeeding suffix. Formally, given the suffix array \(\mathsf{SA}\) and the inverse suffix array \(\mathsf{ISA}\) of the text \(T[1..n]\), the inverse Phi array \(\mathsf{\Phi}^{-1}\) is defined such that \(\mathsf{\Phi}^{-1}[i] = \mathsf{SA}[\mathsf{ISA}[i] + 1]\) if \(\mathsf{ISA}[i] \le n-1 \), and \(\mathsf{\Phi}^{-1}[i] = \bot\) if \(\mathsf{ISA}[i] = n \), for each \(i \in [1..n]\).
  */
 function construct_inverse_phi_array(suffix_array: number[], inverse_suffix_array: number[]): number[] {
+    if (!suffix_array || !inverse_suffix_array) { return []; }
     const n: number = suffix_array.length;
     const result: number[] = new Array<number>(n);
     for (let i: number = 0; i < n; ++i) {
@@ -402,6 +406,7 @@ export function test_inverse_phi_array() {
  * @returns The length of the LCP. Returns 0 if no common prefix exists or if either position is out of bounds initially.
  */
 function lcp_query(text: string, index1: number, index2: number): number {
+    if (!text || index1 < 0 || index2 < 0 || index1 >= text.length || index2 >= text.length) { return 0; }
   let lcp = 0;
   const maxLength = Math.min(text.length - index1, text.length - index2);
   for (let k = 0; k < maxLength; ++k) {
@@ -433,9 +438,7 @@ export function test_lcp_query() {
  * @wikipedia Longest_common_prefix_array
  */
 function construct_lcp_array(text: string, suffix_array: number[]): number[] {
-    if (suffix_array.length === 0) {
-        return [];
-    }
+    if(!text || !suffix_array) { return []; }
     const result: number[] = [0];
 
     for (let i = 1; i < suffix_array.length; i++) {
@@ -461,8 +464,19 @@ export function test_lcp_array() {
  * @wikipedia Longest_common_prefix_array
  */
 function count_lcp_array(lcp_array : number[]) : number {
+    if(!lcp_array) { return 0; }
     return lcp_array.reduce((a, b) => a + b, 0);
 }
+
+export function test_sum_lcp_array() {
+    assert_eq(count_lcp_array([0, 1, 3, 0, 0, 2]), 6, "Sum of LCP array of 'banana'");
+    assert_eq(count_lcp_array([0,1,4,1,1,0,3,0,0,0,2]), 12, "Sum of LCP array of 'abracadabra'");
+    assert_eq(count_lcp_array([]), 0, "Sum of LCP array of empty string");
+    assert_eq(count_lcp_array([0]), 0, "Sum of LCP array of 'a'");
+    assert_eq(count_lcp_array([0, 1, 2, 3, 4]), 10, "Sum of LCP array of 'aaaaa'");
+    assert_eq(count_lcp_array([0, 0, 0, 0, 0]), 0, "Sum of LCP array of 'abcde'");
+}
+
 
 /**
  * @name PLCP
@@ -474,6 +488,7 @@ function count_lcp_array(lcp_array : number[]) : number {
  * @cite karkkainen09plcp
  */
 function construct_plcp_array(inverse_suffix_array: number[], lcp_array: number[]): number[] {
+    if(!inverse_suffix_array || !lcp_array) { return []; }
     if (inverse_suffix_array.length !== lcp_array.length) {
         throw new AlgorithmError("Inverse suffix array and LCP array must have the same length.", "PLCP", { inverse_suffix_array, lcp_array });
     }
@@ -506,6 +521,7 @@ export function test_plcp_array() {
  * @cite grossi05csa
  */
 function construct_psi_array(suffix_array: number[], inverse_suffix_array: number[]): number[] {
+    if(!suffix_array || !inverse_suffix_array) { return []; }
     const n = suffix_array.length;
     return [...new Array(n).keys()].map(i => 
         (suffix_array[i] + 1 < n) ? inverse_suffix_array[suffix_array[i] + 1] : n
@@ -536,6 +552,7 @@ export function test_psi_array() {
  * @cite chen58lyndon
  */
 function construct_lyndon_factorization(text: string, inverse_suffix_array: number[]): boolean[] {
+    if(!text || !inverse_suffix_array) { return []; }
     const n: number = text.length;
     if (n === 0) { return []; }
     const result: boolean[] = new Array<boolean>(n).fill(false);
@@ -592,6 +609,7 @@ function delta(substring_complexity: number[]): [number, number] {
  * @cite raskhodnikova13sublinear
  */
 function count_delta(substring_complexity: number[]): number {
+    if (!substring_complexity) { return 0; }
     return delta(substring_complexity)[1];
 }
 
@@ -611,6 +629,7 @@ export function test_delta() {
  * @cite raskhodnikova13sublinear
  */
 function count_delta_argmax(substring_complexity: number[]): number {
+    if (!substring_complexity) { return 0; }
     return delta(substring_complexity)[0];
 }
 
@@ -632,6 +651,7 @@ export function test_delta_argmax() {
  * @cite raskhodnikova13sublinear
  */
 function construct_substring_complexity(lcp_array: number[]): number[] {
+    if(!lcp_array) { return []; }
   const n: number = lcp_array.length;
   const ret: number[] = new Array<number>(n);
 
@@ -679,6 +699,14 @@ export function test_substring_complexity() {
  * @returns The conjugated string.
  */
 function conjugate_string(text: string, shift: number): string {
+    if (!text) { return ""; }
+
+    if(shift < 0 || shift > text.length) {
+        throw new AlgorithmError("Shift value must be between 0 and the length of the string.", "conjugate_string", { text, shift });
+    }
+    if(text.length === 0 || shift === 0) {
+        return text;
+    }
     return text.substring(shift) + text.substring(0, shift);
 }
 
@@ -701,22 +729,30 @@ export function test_conjugate_string() {
  * @param nth The 1-based index of the occurrence to find. Must be a positive integer.
  * @returns The starting index of the nth occurrence, or -1 if not found.
  */
-function select_query(text: any, pattern: string|boolean, nth: number): number {
+function select_query(text: string, pattern: string, nth: number): number;
+function select_query(text: readonly boolean[], pattern: boolean, nth: number): number;
+function select_query(text: string | readonly boolean[], pattern: string | boolean, nth: number): number {
+    if (!text) { return -1; }
     if (nth <= 0) {
         throw new AlgorithmError("The 'nth' parameter must be a positive integer for 1-based indexing.", "select_query", { text, pattern, nth });
     }
 
     let pos: number = -1; // Initialize position to -1, so the first `text.indexOf` starts from index 0.
-    for (let k = 0; k < nth; k++) { // Loop 'nth' times to find the 'nth' occurrence
-        pos = text.indexOf(pattern, pos + 1);
+    for (let k = 0; k < nth; ++k) { // Loop 'nth' times to find the 'nth' occurrence
+        if (typeof text === 'string') {
+            pos = text.indexOf(pattern as string, pos + 1);
+        } else {
+            pos = text.indexOf(pattern as boolean, pos + 1);
+        }
         if (pos === -1) {
-            break;
+            return -1;
         }
     }
     return pos;
 }
 
 export function test_select_query() {
+    assert_eq(select_query("", "a", 1), -1, "1st occurrence of 'a' in empty string (not found)");
     assert_eq(select_query("banana", "a", 1), 1, "1st occurrence of 'a' in 'banana'");
     assert_eq(select_query("banana", "a", 2), 3, "2nd occurrence of 'a' in 'banana'");
     assert_eq(select_query("banana", "a", 3), 5, "3rd occurrence of 'a' in 'banana'");
@@ -740,6 +776,7 @@ export function test_select_query() {
  * @returns The number of times the substring appears in the specified prefix.
  */
 function rank_query(text: string | readonly boolean[], pattern: string | boolean, index: number): number {
+    if (!text) { return 0; }
     const prefix = text.slice(0, index);
     return [...prefix].filter(c => c === pattern).length;
 }
@@ -766,6 +803,7 @@ export function test_rank_query() {
  * @cite burrows94bwt
  */
 function construct_lf_array(first_array : string, bw_transform : string) : number[] {
+    if (!first_array || !bw_transform) { return []; }
     if (first_array.length !== bw_transform.length) {
         throw new AlgorithmError("First array and BWT must have the same length.", "LF", { first_array, bw_transform });
     }
@@ -807,6 +845,7 @@ export function test_lf_array() {
  * @cite nong11sais
  */
 function construct_sl_string(text : string) : string[] {
+    if(!text) { return []; }
     const n = text.length;
     const result = new Array(n);
     let type = 'S';
@@ -844,6 +883,7 @@ export function test_sl_string() {
  * @reference franek03lpf
  */
 function construct_lpf_array(text: string): number[] {
+    if(!text) { return []; }
     const n: number = text.length;
     const result: number[] = new Array<number>(n);
 
@@ -879,6 +919,7 @@ export function test_lpf_array() {
  * @reference franek03lpf
  */
 function construct_lnf_array(text: string): number[] {
+    if(!text) { return []; }
     const revtext: string = text.split('').reverse().join('');
     const lpfarray: number[] = construct_lpf_array(revtext);
 
@@ -897,10 +938,9 @@ export function test_lnf_array() {
 
 
 function greedy_factorize(factor_array : readonly number[]) : boolean[] {
+    if(!factor_array) { return []; }
     const n: number = factor_array.length;
-    if(n === 0) {
-        return [];
-    }
+    if(n === 0) { return []; }
     const result: boolean[] = new Array<boolean>(n).fill(false);
     for (let i: number = 0; i < n; ) {
         const currentFactor: number = factor_array[i];
@@ -949,6 +989,7 @@ export function test_lzss_factorization() {
  * @cite storer82lzss
  */
 function construct_reverse_lzss_factorization(lnf_array: readonly number[]): boolean[] {
+    if(!lnf_array) { return []; }
     const copied_lnf_array = lnf_array.slice().reverse();
     return greedy_factorize(copied_lnf_array);
 }
@@ -1005,7 +1046,7 @@ export function test_lexparse_factorization() {
  * @tutorial The Next Smaller Suffix (NSS) array identifies the subsequent suffix in text order that is lexicographically smaller than the current suffix. Given the inverse suffix array \(\mathsf{ISA}\) of a text \(T[1..n]\), the NSS array \(\mathsf{NSS}[1..n]\) is defined such that \(\mathsf{NSS}[i] = \min \{ j > i \mid \mathsf{ISA}[j] < \mathsf{ISA}[i] \}\) if such a \(j\) exists, and \(\mathsf{NSS}[i] = \bot \) otherwise, for each \(i \in [1..n]\).
  */
 function construct_nss_array(inverse_suffix_array: readonly number[]): number[] {
-    if (inverse_suffix_array.length === 0) { return []; }
+    if (!inverse_suffix_array) { return []; }
     const n: number = inverse_suffix_array.length;
     const result: number[] = new Array<number>(n);
     for (let i = 0; i < n; ++i) {
@@ -1038,7 +1079,7 @@ export function test_nss_array() {
  * @tutorial The Previous Smaller Suffix (PSS) array identifies the preceding suffix in text order that is lexicographically smaller than the current suffix. Given the inverse suffix array \(\mathsf{ISA}\) of a text \(T[1..n]\), the PSS array \(\mathsf{PSS}[1..n]\) is defined such that \(\mathsf{PSS}[i] = \max \{ j < i \mid \mathsf{ISA}[j] < \mathsf{ISA}[i] \}\) if such a \(j\) exists, and \(\mathsf{PSS}[i] = \bot \) otherwise, for each \(i \in [1..n]\).
  */
 function construct_pss_array(inverse_suffix_array: readonly number[]): number[] {
-    if (inverse_suffix_array.length === 0) { return []; }
+    if (!inverse_suffix_array) { return []; }
     const n: number = inverse_suffix_array.length;
     const result: number[] = new Array<number>(n);
 
@@ -1072,7 +1113,7 @@ export function test_pss_array() {
  * @cite franek16algorithms
  */
 function construct_lyndon_array(nss_array: readonly number[]): number[] {
-    if (nss_array.length === 0) { return []; }
+    if (!nss_array) { return []; }
     const n: number = nss_array.length;
     let result: number[] = new Array<number>(n);
     for (let i = 0; i < n; ++i) {
@@ -1101,8 +1142,8 @@ export function test_lyndon_array() {
  * @tutorial The necklace conjugate of a string is the lexicographically smallest string that can be obtained by rotating the original string. This involves generating all possible rotations (conjugates) of the string and selecting the smallest one in lexicographic order.
  */
 function construct_necklace_conjugate_transform(text: string): string {
+    if (!text) { return ""; }
     const n: number = text.length;
-    if (n === 0) { return ""; }
     let best_conj: string = text;
 
     for (let i: number = 0; i < n; ++i) {
@@ -1133,7 +1174,7 @@ export function test_necklace_conjugate_transform() {
  * @tutorial The invert transform of a string maps each character to its complementary character based on the minimum and maximum characters in the string. Specifically, given a text \(T[1..n]\), the invert transform \(\mathsf{Invert}(T)\) maps each character \(T[i]\) to \(\text{max_j} T[j] - (c - \text{min_j T[j]})\).
  */
 function construct_invert_transform(text : string) {
-    if (text.length === 0) { return ""; }
+    if (!text) { return ""; }
     const sorted_chars = [...text].sort();
     const minchar = sorted_chars[0];
     const maxchar = sorted_chars.reverse()[0];
@@ -1160,6 +1201,7 @@ export function test_invert_transform() {
  * @tutorial The revert transform of a string is obtained by reversing the order of its characters. Given a text \(T[1..n]\), the revert transform \(\mathsf{Revert}(T)\) produces the string \(T[n] T[n-1] \ldots T[1]\), where the characters are arranged in the opposite order, effectively reading the string backwards.
  */
 function construct_revert_transform(text: string) {
+    if (!text) { return ""; }
     return text.split('').reverse().join('');
 }
 
@@ -1173,6 +1215,7 @@ export function test_revert_transform() {
 }
 
 function phrases_from_factorizations(text: string, factorization: readonly boolean[]): string[] {
+    if(!text || !factorization) { return []; }
     const n: number = text.length;
     const phrases: string[] = [];
 
@@ -1188,6 +1231,7 @@ function phrases_from_factorizations(text: string, factorization: readonly boole
 }
 
 function omega_order(strA: string, strB: string): number {
+    if (strA === undefined || strB === undefined) { throw new AlgorithmError("Undefined string input(s) for omega order comparison.", "OmegaOrder", { strA, strB }); }
     if (strA === strB) { return 0; }
     const maxLength = Math.max(strA.length, strB.length)*3;
 
@@ -1219,6 +1263,7 @@ export function test_omega_order() {
  * @cite hon13spaceefficient
  */
 function construct_circular_suffix_array(text: string, lyndon_factorization: readonly boolean[]): number[] {
+    if (!text || !lyndon_factorization) { return []; }
     interface Conjugate {
         pos: number;
         str: string;
@@ -1262,6 +1307,7 @@ export function test_circular_suffix_array() {
  * @cite hon13spaceefficient
  */
 function construct_inverse_circular_suffix_array(circular_suffix_array: readonly number[]): number[] {
+    if (!circular_suffix_array) { return []; }
     return construct_inverse_suffix_array(circular_suffix_array);
 }
 
@@ -1283,6 +1329,7 @@ export function test_inverse_circular_suffix_array() {
  * @cite bannai25survey
  */
 function construct_bbw_indices(lyndon_factorization: readonly boolean[], circular_suffix_array: readonly number[]): number[] {
+    if (!lyndon_factorization || !circular_suffix_array) { return []; }
   const n: number = circular_suffix_array.length;
   return [...circular_suffix_array].map(pos => {
     var position : number;
@@ -1321,6 +1368,7 @@ export function test_bbw_indices() {
  * @cite bannai25survey
  */
 function construct_bbw_transform(text: string, bbw_indices: readonly number[]): string {
+    if (!text || !bbw_indices) { return ""; }
     return [...bbw_indices].map(pos => text[pos]).join('');
 }
 
@@ -1350,6 +1398,7 @@ export function test_bbw_transform() {
  * @cite bannai25survey
  */
 function construct_inverse_bbw_transform(bbw_transform : string): string {
+    if(!bbw_transform) { return ""; }
     let n = bbw_transform.length;
     var farray = construct_first_array(bbw_transform); 
     var marking : boolean[] = new Array(n).fill(0);
@@ -1365,8 +1414,12 @@ function construct_inverse_bbw_transform(bbw_transform : string): string {
             conjugate.push(bbw_transform[pos]);
             let cur_char = farray[pos];
             let character_number = rank_query(farray, cur_char, pos+1); 
-            console.assert(character_number > 0, 'character_number is zero');
-            console.assert(bbw_transform.split(cur_char).length + 1 > character_number, 'bbw_transform mismatch');
+            if(character_number == 0) {
+                throw new AlgorithmError('character_number is zero in inverse BBWT', 'construct_inverse_bbw_transform', bbw_transform);
+            }
+            if(bbw_transform.split(cur_char).length + 1 <= character_number) {
+                throw new AlgorithmError('character_number exceeds occurrences in inverse BBWT', 'construct_inverse_bbw_transform', bbw_transform);
+            }
             pos = select_query(bbw_transform, cur_char, character_number);
         }
         const finalConjugate = construct_necklace_conjugate_transform(conjugate.join(''))
@@ -1418,7 +1471,7 @@ export function test_phi_array_identity() {
         const inverse_phi_array = construct_inverse_phi_array(suffix_array, inverse_suffix_array);
 
         for (let i = 0; i < text.length; i++) {
-            if(inverse_phi_array[i] === text.length || phi_array[i] === text.length) {
+            if(phi_array[i] === text.length || inverse_phi_array[i] === text.length) {
                 continue
             }
             const phi_of_inverse_phi = inverse_phi_array[phi_array[i]];
@@ -1439,3 +1492,4 @@ export function test_phi_array_identity() {
         test_helper(randomString);
     }
 }
+

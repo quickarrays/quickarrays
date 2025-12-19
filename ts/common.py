@@ -5,18 +5,19 @@
 import re
 from pathlib import Path
 
-ALGORITHM_TS = Path('algorithm.ts')
-GENERATOR_TS = Path('generator.ts')
-UTILITY_TS = Path('utility.ts')
+SCRIPT_DIR = Path(__file__).parent
+ALGORITHM_TS = SCRIPT_DIR / 'algorithm.ts'
+GENERATOR_TS = SCRIPT_DIR / 'generator.ts'
+UTILITY_TS = SCRIPT_DIR / 'utility.ts'
 
-JS_DIR = Path('js')
+JS_DIR = SCRIPT_DIR / 'js'
 COUNTERS_JS = JS_DIR / 'counters.js'
 ALGORITHM_PIPELINE_JS = JS_DIR / 'algorithm_pipeline.js'
 GENERATOR_PIPELINE_JS = JS_DIR / 'generator_pipeline.js'
 TUTORIAL_JS = JS_DIR / 'tutorial.js'
 CITATION_JS = JS_DIR / 'citation.js'
 
-HTML_DIR = Path('html')
+HTML_DIR = SCRIPT_DIR / 'html'
 COUNTERS_HTML = HTML_DIR / 'counters.html'
 ALGORITHM_ENABLE_HTML = HTML_DIR / 'algorithm_enable.html'
 ALGORITHM_DISABLE_HTML = HTML_DIR / 'algorithm_disable.html'

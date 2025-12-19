@@ -107,7 +107,8 @@ export function test_number_of_factors(): void {
  */
 function pad_right(text: string, pad_char: string, length: number): string {
     if(text.length >= length || pad_char.length === 0) { return text; }
-    return text + pad_char.repeat((length - text.length)/ pad_char.length);
+    const times = Math.ceil((length - text.length) / pad_char.length);
+    return text + pad_char.repeat(times);
 }
 
 /**
@@ -123,7 +124,8 @@ function pad_right(text: string, pad_char: string, length: number): string {
  */
 function pad_left(text: string, pad_char: string, length: number): string {
     if(text.length >= length || pad_char.length === 0) { return text; }
-    return pad_char.repeat((length - text.length)/pad_char.length ) + text;
+    const times = Math.ceil((length - text.length) / pad_char.length);
+    return pad_char.repeat(times) + text;
 }
 
 /**
