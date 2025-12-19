@@ -50,7 +50,7 @@ def generate_counters(code : str):
 	# ---------------- C.COUNTERS_JS ----------------
 
 	js = []
-	js.append("function construct_counters(ds) {")
+	js.append("function build_counters(ds) {")
 	js.append("\treturn {")
 
 	# ---- count_XXX → XXX : count_XXX(ds.argument)
@@ -211,7 +211,7 @@ def generate_algorithm_pipeline(code):
 	with open(C.ALGORITHM_PIPELINE_JS, "w", encoding="utf-8") as out_f:
 		# Emit runnable TypeScript
 		print("// Auto-generated wiring", file=out_f)
-		print("function construct_ds(ds_text) {", file=out_f)
+		print("function build_ds(ds_text) {", file=out_f)
 		print(" const ds_n = ds_text.length;", file=out_f)
 		for f in order:
 			fargs = map(lambda x: "ds_" + x, funcs[f])

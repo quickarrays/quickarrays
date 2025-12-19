@@ -17,6 +17,57 @@ REMOVE_LINE_RE = re.compile(
 	re.MULTILINE
 )
 
+FUNC_START_RE = re.compile(
+	r"(export\s+)?function\s+([A-Za-z0-9_]+)\s*\(",
+	re.MULTILINE
+)
+
+def strip_functions(code, names_to_strip):
+	out = []
+	pos = 0
+
+	while True:
+		m = FUNC_START_RE.search(code, pos)
+		if not m:
+			out.append(code[pos:])
+			break
+
+		fname = m.group(2)
+
+		# keep function if not to be stripped
+		if fname not in names_to_strip:
+			out.append(code[pos:m.end()])
+			pos = m.end()
+			continue
+
+		# drop everything from function start to matching closing brace
+		out.append(code[pos:m.start()])
+
+		i = m.end()
+		# find first '{'
+		while i < len(code) and code[i] != "{":
+			i += 1
+
+		if i == len(code):
+			pos = i
+			continue
+
+		depth = 1
+		i += 1
+
+		while i < len(code) and depth > 0:
+			if code[i] == "{":
+				depth += 1
+			elif code[i] == "}":
+				depth -= 1
+			i += 1
+
+		pos = i
+
+	return "".join(out)
+
+
+
 def main():
 	parser = argparse.ArgumentParser(description="Concatenate JS files and strip tests")
 	parser.add_argument("--indir", "-i", required=True, help="Input directory with JS files")
@@ -49,7 +100,7 @@ def main():
 
 	# ---- Check test coverage ----
 	for fname in sorted(all_functions):
-		if fname.startswith("construct_") or fname.startswith("generate_"):
+		if fname.startswith("construct_") or fname.startswith("generate_") or fname.startswith("count_"):
 			suffix = fname.split("_", 1)[1]
 			test_name = f"test_{suffix}"
 			if test_name not in test_functions:
@@ -58,18 +109,9 @@ def main():
 					file=sys.stderr
 				)
 
-	# ---- Remove test functions and assert_eq ----
-	def strip_function(code, fname):
-		pattern = re.compile(
-			rf"(export )?function\s+{fname}\s*\([^)]*\)\s*\{{[\s\S]*?\n\}}",
-			re.MULTILINE
-		)
-		return pattern.sub("", code)
-
-	for t in test_functions:
-		full_code = strip_function(full_code, t)
-
-	full_code = strip_function(full_code, "assert_eq")
+	names_to_strip = set(test_functions)
+	names_to_strip.add("assert_eq")
+	full_code = strip_functions(full_code, names_to_strip)
 
 	# ---- Final cleanup ----
 	full_code = "\n".join(

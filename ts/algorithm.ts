@@ -32,8 +32,18 @@ class AlgorithmError extends Error {
  * @wikipedia Periodicity_(string_matching)#Period
  */
 function count_period(border_array: number[]) : number {
+    if (border_array.length === 0) { return 0; }
     const last_border = border_array[border_array.length - 1];
     return border_array.length - last_border;
+}
+
+export function test_period() {
+    assert_eq(count_period([0, 0, 1, 2]), 2, "Period of 'abab'");
+    assert_eq(count_period([0, 0, 0, 0, 0]), 5, "Period of 'abcde'");
+    assert_eq(count_period([0, 1, 2, 3, 4]), 1, "Period of 'aaaaa'");
+    assert_eq(count_period([0, 0, 1, 2, 3]), 2, "Period of 'ababa'");
+    assert_eq(count_period([0]), 1, "Period of 'a'");
+    assert_eq(count_period([]), 0, "Period of empty string");
 }
 
 /**
@@ -43,9 +53,20 @@ function count_period(border_array: number[]) : number {
  * @wikipedia Periodicity_(string_matching)#Exponent
  */
 function count_exponent(border_array: number[]) : number {
+    if (border_array.length === 0) { return 0; }
     const period = count_period(border_array);
     return border_array.length / period;
 }
+
+export function test_exponent() {
+    assert_eq(count_exponent([0, 0, 1, 2]), 2, "Exponent of 'abab'");
+    assert_eq(count_exponent([0, 0, 0, 0, 0]), 1, "Exponent of 'abcde'");
+    assert_eq(count_exponent([0, 1, 2, 3, 4]), 5, "Exponent of 'aaaaa'");
+    assert_eq(count_exponent([0, 0, 1, 2, 3]), 2.5, "Exponent of 'ababa'");
+    assert_eq(count_exponent([0]), 1, "Exponent of 'a'");
+    assert_eq(count_exponent([]), 0, "Exponent of empty string");
+}
+
 
 /**
  * @name R
@@ -54,6 +75,9 @@ function count_exponent(border_array: number[]) : number {
  */
 function count_regularity(border_array: number[]) : string {
     const n = border_array.length;
+    if (n == 0) {
+        return 'empty';
+    }
     const last_border = border_array[n - 1];
     const period = count_period(border_array);
     const exponent = count_exponent(border_array);
@@ -67,6 +91,15 @@ function count_regularity(border_array: number[]) : string {
         return 'unbordered';
     }
     return 'primitive';
+}
+
+export function test_regularity() {
+    assert_eq(count_regularity([0, 0, 0, 0, 0]), 'unbordered', "Regularity of 'abcde'");
+    assert_eq(count_regularity([0, 1, 2, 3, 4]), 'non-primitive', "Regularity of 'aaaaa'");
+    assert_eq(count_regularity([0, 0, 1, 2, 3]), 'primitive', "Regularity of 'ababa'");
+    assert_eq(count_regularity([0, 0, 1, 2]), 'square', "Regularity of 'abab'");
+    assert_eq(count_regularity([0]), 'unbordered', "Regularity of 'a'");
+    assert_eq(count_regularity([]), 'empty', "Regularity of empty string");
 }
 
 /**
@@ -96,13 +129,13 @@ function construct_suffix_array(text: string): number[] {
 }
 
 export function test_suffix_array() {
-    assert_eq(construct_suffix_array("banana").toString(), [5, 3, 1, 0, 4, 2].toString(), "Suffix array of 'banana'");
-    assert_eq(construct_suffix_array("abracadabra").toString(), [10, 7, 0, 3, 5, 8, 1, 4, 6, 9, 2].toString(), "Suffix array of 'abracadabra'");
-    assert_eq(construct_suffix_array("").toString(), [].toString(), "Suffix array of empty string");
-    assert_eq(construct_suffix_array("a").toString(), [0].toString(), "Suffix array of 'a'");
-    assert_eq(construct_suffix_array("aaaaa").toString(), [4, 3, 2, 1, 0].toString(), "Suffix array of 'aaaaa'");
-    assert_eq(construct_suffix_array("abcde").toString(), [0, 1, 2, 3, 4].toString(), "Suffix array of 'abcde'");
-    assert_eq(construct_suffix_array("mississippi").toString(), [10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2].toString(), "Suffix array of 'mississippi'");
+    assert_eq(construct_suffix_array("banana"), [5, 3, 1, 0, 4, 2], "Suffix array of 'banana'");
+    assert_eq(construct_suffix_array("abracadabra"), [10, 7, 0, 3, 5, 8, 1, 4, 6, 9, 2], "Suffix array of 'abracadabra'");
+    assert_eq(construct_suffix_array(""), [], "Suffix array of empty string");
+    assert_eq(construct_suffix_array("a"), [0], "Suffix array of 'a'");
+    assert_eq(construct_suffix_array("aaaaa"), [4, 3, 2, 1, 0], "Suffix array of 'aaaaa'");
+    assert_eq(construct_suffix_array("abcde"), [0, 1, 2, 3, 4], "Suffix array of 'abcde'");
+    assert_eq(construct_suffix_array("mississippi"), [10, 7, 4, 1, 0, 9, 8, 6, 3, 5, 2], "Suffix array of 'mississippi'");
 }
 
 /**
@@ -134,12 +167,12 @@ function construct_border_array(text: string): number[] {
 }
 
 export function test_border_array() {
-    assert_eq(construct_border_array("ababa").toString(), [0, 0, 1, 2, 3].toString(), "Border array of 'ababa'");
-    assert_eq(construct_border_array("aaaa").toString(), [0, 1, 2, 3].toString(), "Border array of 'aaaa'");
-    assert_eq(construct_border_array("abcd").toString(), [0, 0, 0, 0].toString(), "Border array of 'abcd'");
-    assert_eq(construct_border_array("").toString(), [].toString(), "Border array of empty string");
-    assert_eq(construct_border_array("a").toString(), [0].toString(), "Border array of 'a'");
-    assert_eq(construct_border_array("abcababc").toString(), [0,0,0,1,2,1,2,3].toString(), "Border array of 'abcababc'");
+    assert_eq(construct_border_array("ababa"), [0, 0, 1, 2, 3], "Border array of 'ababa'");
+    assert_eq(construct_border_array("aaaa"), [0, 1, 2, 3], "Border array of 'aaaa'");
+    assert_eq(construct_border_array("abcd"), [0, 0, 0, 0], "Border array of 'abcd'");
+    assert_eq(construct_border_array(""), [], "Border array of empty string");
+    assert_eq(construct_border_array("a"), [0], "Border array of 'a'");
+    assert_eq(construct_border_array("abcababc"), [0,0,0,1,2,1,2,3], "Border array of 'abcababc'");
 }
 
 /**
@@ -171,6 +204,7 @@ function construct_bw_transform(text: string, rotation_array: number[]): string 
     }
     return result;
 }
+
 export function test_bw_transform() {
     assert_eq(construct_bw_transform("banana", [5, 3, 1, 0, 4, 2]), "nnbaaa", "BWT of 'banana'");
     assert_eq(construct_bw_transform("abracadabra", [10, 7, 0, 3, 5, 8, 1, 4, 6, 9, 2]), "rdarcaaaabb", "BWT of 'abracadabra'");
@@ -192,6 +226,7 @@ export function test_bw_transform() {
 function construct_first_array(text: string): string {
     return [...text].sort().join('');
 }
+
 export function test_first_array() {
     assert_eq(construct_first_array("annb$aa"), "$aaabnn", "First array of 'annb$aa'");
     assert_eq(construct_first_array("ard$rcaaaabb"), "$aaaaabbcdrr", "First array of 'ard$rcaaaabb'");
@@ -211,11 +246,12 @@ export function test_first_array() {
 function construct_index_array(n: number): number[] {
     return Array.from(Array(n).keys());
 }
+
 export function test_index_array() {
-    assert_eq(construct_index_array(5).toString(), [0, 1, 2, 3, 4].toString(), "Index array of length 5");
-    assert_eq(construct_index_array(0).toString(), [].toString(), "Index array of length 0");
-    assert_eq(construct_index_array(1).toString(), [0].toString(), "Index array of length 1");
-    assert_eq(construct_index_array(10).toString(), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].toString(), "Index array of length 10");
+    assert_eq(construct_index_array(5), [0, 1, 2, 3, 4], "Index array of length 5");
+    assert_eq(construct_index_array(0), [], "Index array of length 0");
+    assert_eq(construct_index_array(1), [0], "Index array of length 1");
+    assert_eq(construct_index_array(10), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], "Index array of length 10");
 }
 
 /**
@@ -242,14 +278,15 @@ function construct_rotation_array(text: string): number[] {
     // Map the sorted rotations back to an array containing only their original indices.
     return rotations.map((rotation: RotationEntry) => rotation[0]);
 }
+
 export function test_rotation_array() {
-    assert_eq(construct_rotation_array("banana").toString(), [5, 3, 1, 0, 4, 2].toString(), "Rotation array of 'banana'");
-    assert_eq(construct_rotation_array("abracadabra").toString(), [10, 7, 0, 3, 5, 8, 1, 4, 6, 9, 2].toString(), "Rotation array of 'abracadabra'");
-    assert_eq(construct_rotation_array("").toString(), [].toString(), "Rotation array of empty string");
-    assert_eq(construct_rotation_array("a").toString(), [0].toString(), "Rotation array of 'a'");
-    assert_eq(construct_rotation_array("aaaaa").toString(), [0, 1, 2, 3, 4].toString(), "Rotation array of 'aaaaa'");
-    assert_eq(construct_rotation_array("edcba").toString(), [4, 3, 2, 1, 0].toString(), "Rotation array of 'edcba'");
-    assert_eq(construct_rotation_array("abcde").toString(), [0, 1, 2, 3, 4].toString(), "Rotation array of 'abcde'");
+    assert_eq(construct_rotation_array("banana"), [5, 3, 1, 0, 4, 2], "Rotation array of 'banana'");
+    assert_eq(construct_rotation_array("abracadabra"), [10, 7, 0, 3, 5, 8, 1, 4, 6, 9, 2], "Rotation array of 'abracadabra'");
+    assert_eq(construct_rotation_array(""), [], "Rotation array of empty string");
+    assert_eq(construct_rotation_array("a"), [0], "Rotation array of 'a'");
+    assert_eq(construct_rotation_array("aaaaa"), [0, 1, 2, 3, 4], "Rotation array of 'aaaaa'");
+    assert_eq(construct_rotation_array("edcba"), [4, 3, 2, 1, 0], "Rotation array of 'edcba'");
+    assert_eq(construct_rotation_array("abcde"), [0, 1, 2, 3, 4], "Rotation array of 'abcde'");
 }
 
 
@@ -269,13 +306,14 @@ function construct_inverse_suffix_array(suffix_array: readonly number[]): number
     }
     return result;
 }
+
 export function test_inverse_suffix_array() {
-    assert_eq(construct_inverse_suffix_array([5, 3, 1, 0, 4, 2]).toString(), [3, 2, 5, 1, 4, 0].toString(), "Inverse suffix array of 'banana'");
-    assert_eq(construct_inverse_suffix_array([10, 7, 0, 3, 5, 8, 1, 4, 6, 9, 2]).toString(), [2, 6, 10, 3, 7, 4, 8, 1, 5, 9, 0].toString(), "Inverse suffix array of 'abracadabra'");
-    assert_eq(construct_inverse_suffix_array([]).toString(), [].toString(), "Inverse suffix array of empty array");
-    assert_eq(construct_inverse_suffix_array([0]).toString(), [0].toString(), "Inverse suffix array of [0]");
-    assert_eq(construct_inverse_suffix_array([4, 3, 2, 1, 0]).toString(), [4, 3, 2, 1, 0].toString(), "Inverse suffix array of [4,3,2,1,0]");
-    assert_eq(construct_inverse_suffix_array([0, 1, 2, 3, 4]).toString(), [0, 1, 2, 3, 4].toString(), "Inverse suffix array of [0,1,2,3,4]");
+    assert_eq(construct_inverse_suffix_array([5, 3, 1, 0, 4, 2]), [3, 2, 5, 1, 4, 0], "Inverse suffix array of 'banana'");
+    assert_eq(construct_inverse_suffix_array([10, 7, 0, 3, 5, 8, 1, 4, 6, 9, 2]), [2, 6, 10, 3, 7, 4, 8, 1, 5, 9, 0], "Inverse suffix array of 'abracadabra'");
+    assert_eq(construct_inverse_suffix_array([]), [], "Inverse suffix array of empty array");
+    assert_eq(construct_inverse_suffix_array([0]), [0], "Inverse suffix array of [0]");
+    assert_eq(construct_inverse_suffix_array([4, 3, 2, 1, 0]), [4, 3, 2, 1, 0], "Inverse suffix array of [4,3,2,1,0]");
+    assert_eq(construct_inverse_suffix_array([0, 1, 2, 3, 4]), [0, 1, 2, 3, 4], "Inverse suffix array of [0,1,2,3,4]");
 }
 
 /**
@@ -299,12 +337,21 @@ function construct_phi_array(suffix_array: number[], inverse_suffix_array: numbe
     }
     return result;
 }
+
 export function test_phi_array() {
-    assert_eq(construct_phi_array([10, 7, 0, 3, 5, 8, 1, 4, 6, 9, 2], [2, 6, 10, 3, 7, 4, 8, 1, 5, 9, 0]).toString(), [7, 1, 11, 0, 6, 2, 4, 10, 5, 9, 3].toString(), "Phi array of 'abracadabra'");
-    assert_eq(construct_phi_array([], []).toString(), [].toString(), "Phi array of empty array");
-    assert_eq(construct_phi_array([0], [0]).toString(), [1].toString(), "Phi array of [0]");
-    assert_eq(construct_phi_array([4, 3, 2, 1, 0], [4, 3, 2, 1, 0]).toString(), [5, 0, 1, 2, 3].toString(), "Phi array of [4,3,2,1,0]");
-    assert_eq(construct_phi_array([0, 1, 2, 3, 4], [0, 1, 2, 3, 4]).toString(), [5, 0, 1, 2, 3].toString(), "Phi array of [0,1,2,3,4]");
+    function test_helper(text: string) : number[] {
+        const suffix_array = construct_suffix_array(text);
+        const inverse_suffix_array = construct_inverse_suffix_array(suffix_array);
+        const phi_array = construct_phi_array(suffix_array, inverse_suffix_array);
+        return phi_array;
+    }
+    assert_eq(test_helper("banana"), [1,3,4,5,0,6], "Phi array of 'banana'");
+    assert_eq(test_helper("abracadabra"), [7, 8, 9, 0, 1, 3, 4,10, 5, 6, 11], "Phi array of 'abracadabra'");
+    assert_eq(test_helper(""), [], "Phi array of empty string");
+    assert_eq(test_helper("a"), [1], "Phi array of 'a'");
+    assert_eq(test_helper("aaaaa"), [1,2,3,4,5], "Phi array of 'aaaaa'");
+    assert_eq(test_helper("abcde"), [5,0,1,2,3], "Phi array of 'abcde'");
+    assert_eq(test_helper("edcba"), [1,2,3,4,5], "Phi array of 'edcba'");
 }
 
 /**
@@ -326,13 +373,24 @@ function construct_inverse_phi_array(suffix_array: number[], inverse_suffix_arra
     }
     return result;
 }
+
 export function test_inverse_phi_array() {
-    assert_eq(construct_inverse_phi_array([10, 7, 0, 3, 5, 8, 1, 4, 6, 9, 2], [2, 6, 10, 3, 7, 4, 8, 1, 5, 9, 0]).toString(), [3, 5, 9, 2, 8, 10, 4, 11, 6, 7, 1].toString(), "Inverse Phi array of 'abracadabra'");
-    assert_eq(construct_inverse_phi_array([], []).toString(), [].toString(), "Inverse Phi array of empty array");
-    assert_eq(construct_inverse_phi_array([0], [0]).toString(), [1].toString(), "Inverse Phi array of [0]");
-    assert_eq(construct_inverse_phi_array([4, 3, 2, 1, 0], [4, 3, 2, 1, 0]).toString(), [0, 1, 2, 3, 5].toString(), "Inverse Phi array of [4,3,2,1,0]");
-    assert_eq(construct_inverse_phi_array([0, 1, 2, 3, 4], [0, 1, 2, 3, 4]).toString(), [1, 2, 3, 4, 5].toString(), "Inverse Phi array of [0,1,2,3,4]");
+    function test_helper(text: string) : number[] {
+        const suffix_array = construct_suffix_array(text);
+        const inverse_suffix_array = construct_inverse_suffix_array(suffix_array);
+        const inverse_phi_array = construct_inverse_phi_array(suffix_array, inverse_suffix_array);
+        return inverse_phi_array;
+    }
+    assert_eq(test_helper("banana"), [4,0,6,1,2,3], "Inverse Phi array of 'banana'");
+    assert_eq(test_helper("abracadabra"), [3, 4, 11, 5, 6, 8, 9, 0, 1, 2, 7], "Inverse Phi array of 'abracadabra'");
+    assert_eq(test_helper("a"), [1], "Inverse Phi array of 'a'");
+    assert_eq(test_helper("aaaaa"), [5,0,1,2,3], "Inverse Phi array of 'aaaaa'");
+    assert_eq(test_helper("abcde"), [1,2,3,4,5], "Inverse Phi array of 'abcde'");
+    assert_eq(test_helper("edcba"), [5,0,1,2,3], "Inverse Phi array of 'edcba'");
+    assert_eq(test_helper(""), [], "Inverse Phi array of empty string");
 }
+
+
 
 /**
  * Computes the length of the Longest Common Prefix (LCP) between two suffixes of a given text.
@@ -355,6 +413,7 @@ function lcp_query(text: string, index1: number, index2: number): number {
   }
   return lcp;
 }
+
 export function test_lcp_query() {
     assert_eq(lcp_query("banana", 1, 3), 3, "LCP of suffixes starting at 1 and 3 in 'banana'");
     assert_eq(lcp_query("abracadabra", 0, 3), 1, "LCP of suffixes starting at 0 and 3 in 'abracadabra'");
@@ -386,6 +445,15 @@ function construct_lcp_array(text: string, suffix_array: number[]): number[] {
     return result;
 }
 
+export function test_lcp_array() {
+    assert_eq(construct_lcp_array("banana", [5, 3, 1, 0, 4, 2]), [0, 1, 3, 0, 0, 2], "LCP array of 'banana'");
+    assert_eq(construct_lcp_array("abracadabra", [10, 7, 0, 3, 5, 8, 1, 4, 6, 9, 2]), [0,1,4,1,1,0,3,0,0,0,2], "LCP array of 'abracadabra'");
+    assert_eq(construct_lcp_array("", []), [], "LCP array of empty string");
+    assert_eq(construct_lcp_array("a", [0]), [0], "LCP array of 'a'");
+    assert_eq(construct_lcp_array("aaaaa", [4, 3, 2, 1, 0]), [0, 1, 2, 3, 4], "LCP array of 'aaaaa'");
+    assert_eq(construct_lcp_array("abcde", [0, 1, 2, 3, 4]), [0, 0, 0, 0, 0], "LCP array of 'abcde'");
+}
+
 /**
  * @name &Sigma; LCP
  * @description Sum of LCP array values
@@ -407,11 +475,27 @@ function count_lcp_array(lcp_array : number[]) : number {
  */
 function construct_plcp_array(inverse_suffix_array: number[], lcp_array: number[]): number[] {
     if (inverse_suffix_array.length !== lcp_array.length) {
-        throw new Error("Inverse suffix array and LCP array must have the same length.");
+        throw new AlgorithmError("Inverse suffix array and LCP array must have the same length.", "PLCP", { inverse_suffix_array, lcp_array });
     }
     const n = inverse_suffix_array.length;
     return [...new Array(n).keys()].map(i => lcp_array[inverse_suffix_array[i]]);
 }
+
+export function test_plcp_array() {
+    function test_helper(text: string) : number[] {
+        const suffix_array = construct_suffix_array(text);
+        const inverse_suffix_array = construct_inverse_suffix_array(suffix_array);
+        const lcp_array = construct_lcp_array(text, suffix_array);
+        return construct_plcp_array(inverse_suffix_array, lcp_array);
+    }
+    assert_eq(test_helper("banana"), [0,3,2,1,0,0], "PLCP array of 'banana'");
+    assert_eq(test_helper("abracadabra"), [4,3,2,1,0,1,0,1,0,0,0], "PLCP array of 'abracadabra'");
+    assert_eq(test_helper(""), [], "PLCP array of empty string");
+    assert_eq(test_helper("a"), [0], "PLCP array of 'a'");
+    assert_eq(test_helper("aaaaa"), [4, 3, 2, 1, 0], "PLCP array of 'aaaaa'");
+    assert_eq(test_helper("abcde"), [0, 0, 0, 0, 0], "PLCP array of 'abcde'");
+}
+
 
 /**
  * @name &Psi;
@@ -428,6 +512,21 @@ function construct_psi_array(suffix_array: number[], inverse_suffix_array: numbe
     );
 }
 
+export function test_psi_array() {
+    function test_helper(text: string) : number[] {
+        const suffix_array = construct_suffix_array(text);
+        const inverse_suffix_array = construct_inverse_suffix_array(suffix_array);
+        return construct_psi_array(suffix_array, inverse_suffix_array);
+    }
+    assert_eq(test_helper("banana"), [6,4,5,2,0,1], "Psi array of 'banana'");
+    assert_eq(test_helper("abracadabra"), [11, 5, 6, 7, 8, 9,10, 4, 1, 0, 3], "Psi array of 'abracadabra'");
+    assert_eq(test_helper(""), [], "Psi array of empty string");
+    assert_eq(test_helper("a"), [1], "Psi array of 'a'");
+    assert_eq(test_helper("aaaaa"), [5,0,1,2,3], "Psi array of 'aaaaa'");
+    assert_eq(test_helper("abcde"), [1,2,3,4,5], "Psi array of 'abcde'");
+    assert_eq(test_helper("edcba"), [5,0,1,2,3], "Psi array of 'edcba'");
+}
+
 /**
  * @name LynF
  * @kind disable
@@ -442,7 +541,7 @@ function construct_lyndon_factorization(text: string, inverse_suffix_array: numb
     const result: boolean[] = new Array<boolean>(n).fill(false);
 
     if (inverse_suffix_array.length < n) {
-        throw new Error(`Inverse suffix array (inverse_suffix_array) must have a length of at least text.length (${n}), but got ${inverse_suffix_array.length}.`);
+        throw new AlgorithmError(`Inverse suffix array (inverse_suffix_array) must have a length of at least text.length (${n}), but got ${inverse_suffix_array.length}.`, "LynF", { text, inverse_suffix_array });
     }
 
     let inverse_suffix_arrayval: number = inverse_suffix_array[0];
@@ -456,9 +555,21 @@ function construct_lyndon_factorization(text: string, inverse_suffix_array: numb
     return result;
 }
 
+export function test_lyndon_factorization() {
+    function test_helper(text: string) : boolean[] {
+        const suffix_array = construct_suffix_array(text);
+        const inverse_suffix_array = construct_inverse_suffix_array(suffix_array);
+        return construct_lyndon_factorization(text, inverse_suffix_array);
+    }
+    assert_eq(test_helper("banana"), [true, false, true, false, true, true], "Lyndon factorization of 'banana'");
+    assert_eq(test_helper("abracadabra"), [false,false,false,false,false,false,true,false,false,true,true], "Lyndon factorization of 'abracadabra'");
+    assert_eq(test_helper("aaaaa"), [true, true, true, true, true], "Lyndon factorization of 'aaaaa'");
+    assert_eq(test_helper("abcde"), [false, false, false, false, true], "Lyndon factorization of 'abcde'");
+}
+
 function delta(substring_complexity: number[]): [number, number] {
     if (substring_complexity.length === 0) {
-        throw new Error("Input array 'substring_complexity' cannot be empty.");
+        throw new AlgorithmError("Input array 'substring_complexity' cannot be empty.", "delta", { substring_complexity });
     }
     let bestlength: number = 1;
     let bestval: number = substring_complexity[0];
@@ -484,6 +595,14 @@ function count_delta(substring_complexity: number[]): number {
     return delta(substring_complexity)[1];
 }
 
+export function test_delta() {
+    assert_eq(count_delta([3, 3, 3, 3, 2, 1]), 3, "Delta of substring complexity [3, 3, 3, 3, 2, 1]");
+    assert_eq(count_delta([5, 8, 9, 10, 12]), 5, "Delta of substring complexity [5, 8, 9, 10, 12]");
+    assert_eq(count_delta([1, 1, 1, 1]), 1, "Delta of substring complexity [1, 1, 1, 1]");
+    assert_eq(count_delta([2, 4, 6, 8]), 2, "Delta of substring complexity [2, 4, 6, 8]");
+    assert_eq(count_delta([1]), 1, "Delta of substring complexity [1]");
+}
+
 /**
  * @name max &delta;
  * @description Substring Complexity Measure Length
@@ -495,6 +614,13 @@ function count_delta_argmax(substring_complexity: number[]): number {
     return delta(substring_complexity)[0];
 }
 
+export function test_delta_argmax() {
+    assert_eq(count_delta_argmax([3, 3, 3, 3, 2, 1]), 1, "Delta argmax of substring complexity [3, 3, 3, 3, 2, 1]");
+    assert_eq(count_delta_argmax([1, 1, 1, 1]), 1, "Delta argmax of substring complexity [1, 1, 1, 1]");
+    assert_eq(count_delta_argmax([2, 10, 6, 8]), 2, "Delta argmax of substring complexity [2, 10, 6, 8]");
+    assert_eq(count_delta_argmax([2, 3, 20, 8]), 3, "Delta argmax of substring complexity [2, 3, 20, 8]");
+    assert_eq(count_delta_argmax([1]), 1, "Delta argmax of substring complexity [1]");
+}
 
 /**
  * @name SC
@@ -534,6 +660,16 @@ function construct_substring_complexity(lcp_array: number[]): number[] {
   return ret;
 }
 
+export function test_substring_complexity() {
+    function test_helper(text: string) : number[] {
+        const suffix_array = construct_rotation_array(text);
+        const lcp_array = construct_lcp_array(text, suffix_array);
+        const substring_complexity = construct_substring_complexity(lcp_array);
+        return substring_complexity;
+    }
+    assert_eq(test_helper("banana"), [3, 3, 3, 3, 2, 1], "Substring complexity of 'banana'");
+}
+
 
 /**
  * Conjugates a string by splitting it at a given shift point and rejoining the parts.
@@ -543,9 +679,9 @@ function construct_substring_complexity(lcp_array: number[]): number[] {
  * @returns The conjugated string.
  */
 function conjugate_string(text: string, shift: number): string {
-    /* Suggestion: Use .substring() instead of .substr() as .substr() is deprecated. */
     return text.substring(shift) + text.substring(0, shift);
 }
+
 export function test_conjugate_string() {
     assert_eq(conjugate_string("abcde", 2), "cdeab", "Conjugate 'abcde' by 2");
     assert_eq(conjugate_string("hello", 0), "hello", "Conjugate 'hello' by 0");
@@ -567,7 +703,7 @@ export function test_conjugate_string() {
  */
 function select_query(text: any, pattern: string|boolean, nth: number): number {
     if (nth <= 0) {
-        throw new Error("The 'nth' parameter must be a positive integer for 1-based indexing.");
+        throw new AlgorithmError("The 'nth' parameter must be a positive integer for 1-based indexing.", "select_query", { text, pattern, nth });
     }
 
     let pos: number = -1; // Initialize position to -1, so the first `text.indexOf` starts from index 0.
@@ -579,6 +715,7 @@ function select_query(text: any, pattern: string|boolean, nth: number): number {
     }
     return pos;
 }
+
 export function test_select_query() {
     assert_eq(select_query("banana", "a", 1), 1, "1st occurrence of 'a' in 'banana'");
     assert_eq(select_query("banana", "a", 2), 3, "2nd occurrence of 'a' in 'banana'");
@@ -606,13 +743,15 @@ function rank_query(text: string | readonly boolean[], pattern: string | boolean
     const prefix = text.slice(0, index);
     return [...prefix].filter(c => c === pattern).length;
 }
+
 export function test_rank_query() {
     assert_eq(rank_query("banana", "a", 6), 3, "Count of 'a' in 'banana'");
     assert_eq(rank_query("banana", "a", 3), 1, "Count of 'a' in 'ban'");
     assert_eq(rank_query("100101", "1", 6), 3, "Count of '1' in '100101'");
     assert_eq(rank_query("100101", "0", 4), 2, "Count of '0' in '1001'");
-    assert_eq(rank_query("aaaaa", "a", 5), 4, "Count of 'aa' in 'aaaaa'");
-    assert_eq(rank_query("aaaaa", "a", 3), 2, "Count of 'aa' in 'aaa'");
+    assert_eq(rank_query("aaaaa", "a", 5), 5, "Count of 'a' in 'aaaaa'");
+    assert_eq(rank_query("aaaaa", "a", 3), 3, "Count of 'a' in 'aaa'");
+    assert_eq(rank_query("aaaaa", "a", 0), 0, "Count of 'a' in ''");
     assert_eq(rank_query("", "a", 0), 0, "Count of 'a' in empty string");
     assert_eq(rank_query("hello", "z", 5), 0, "Count of 'z' in 'hello'");
 }
@@ -628,7 +767,7 @@ export function test_rank_query() {
  */
 function construct_lf_array(first_array : string, bw_transform : string) : number[] {
     if (first_array.length !== bw_transform.length) {
-        throw new Error("First array and BWT must have the same length.");
+        throw new AlgorithmError("First array and BWT must have the same length.", "LF", { first_array, bw_transform });
     }
 
     const n: number = first_array.length;
@@ -642,6 +781,22 @@ function construct_lf_array(first_array : string, bw_transform : string) : numbe
     return result;
 }
 
+export function test_lf_array() {
+    function test_helper(text: string) : number[] {
+        const rotation_array = construct_rotation_array(text);
+        const bw_transform = construct_bw_transform(text, rotation_array);
+        const first_array = construct_first_array(bw_transform);
+        return construct_lf_array(first_array, bw_transform);
+    }
+    assert_eq(test_helper("banana"),[4,5,3,0,1,2], "LF array of 'banana'");
+    assert_eq(test_helper("abracadabra"), [9, 8, 0,10, 7, 1, 2, 3, 4, 5, 6], "LF array of 'abracadabra'");
+    assert_eq(test_helper("a"), [0], "LF array of 'a'");
+    assert_eq(test_helper("aaaaa"), [0, 1, 2, 3, 4], "LF array of 'aaaaa'");
+    assert_eq(test_helper("abcde"), [4,0,1,2,3], "LF array of 'abcde'");
+    assert_eq(test_helper("edcba"), [1,2,3,4,0], "LF array of 'edcba'");
+    assert_eq(test_helper(""), [], "LF array of empty string");
+}
+
 /**
  * @name S/L
  * @kind disable
@@ -652,11 +807,11 @@ function construct_lf_array(first_array : string, bw_transform : string) : numbe
  * @cite nong11sais
  */
 function construct_sl_string(text : string) : string[] {
-    var n = text.length;
-    var result = new Array(n);
-    var type = 'S';
+    const n = text.length;
+    const result = new Array(n);
+    let type = 'S';
     result[n-1] = type;
-    for(var i = n-2; i >= 0; --i) {
+    for(let i = n-2; i >= 0; --i) {
         if(text[i+1] > text[i]) {
             type = 'S';
         }
@@ -666,7 +821,18 @@ function construct_sl_string(text : string) : string[] {
         }
         result[i] = type;
     }
+    if (result[0] == 'S') { result[0] = 'S*'; }
     return result;
+}
+
+export function test_sl_string() {
+    assert_eq(construct_sl_string("banana"), ['L','S*','L','S*','L','S*'], "SL string of 'banana'");
+    assert_eq(construct_sl_string("abracadabra"), ['S*','S','L','S*','L','S*','L','S*','S','L','S*'], "SL string of 'abracadabra'");
+    assert_eq(construct_sl_string("aaaaa"), ['S*','S','S','S','S'], "SL string of 'aaaaa'");
+    assert_eq(construct_sl_string("abcde"), ['S*','S','S','S','S'], "SL string of 'abcde'");
+    assert_eq(construct_sl_string("edcba"), ['L','L','L','L','S*'], "SL string of 'edcba'");
+    assert_eq(construct_sl_string("a"), ['S*'], "SL string of 'a'");
+    assert_eq(construct_sl_string(""), [], "SL string of empty string");
 }
 
 /**
@@ -695,12 +861,21 @@ function construct_lpf_array(text: string): number[] {
     return result;
 }
 
+export function test_lpf_array() {
+    assert_eq(construct_lpf_array("banana"), [0, 0, 0, 3, 2, 1], "LPF array of 'banana'");
+    assert_eq(construct_lpf_array("abracadabra"), [0,0,0,1,0,1,0,4,3,2,1], "LPF array of 'abracadabra'");
+    assert_eq(construct_lpf_array("aaaaa"), [0, 4, 3, 2, 1], "LPF array of 'aaaaa'");
+    assert_eq(construct_lpf_array(""), [], "LPF array of empty string");
+    assert_eq(construct_lpf_array("a"), [0], "LPF array of 'a'");
+    assert_eq(construct_lpf_array("abcde"), [0, 0, 0, 0, 0], "LPF array of 'abcde'");
+}
+
 /**
  * @name LNF
  * @kind disable
  * @type length
  * @description Longest Next Factor array
- * @tutorial The Longest Next Factor (LNF) array stores the length of the longest prefix of each suffix of a string that matches a substring starting at a subsequent position within the same string. Formally, for a given text \(T[1..n]\), the LNF array \(\mathsf{LNF}[1..n]\) is defined such that \(\mathsf{LNF}[i] = \max_{j \in [i+1..n]} \text{lcp}(T[i..n], T[j..n])\) for each \(i \in [1..n]\), where \(\text{lcp}(S_1, S_2)\) denotes the length of the longest common prefix between the suffixes \(S_1\) and \(S_2\).
+ * @tutorial The Longest Next Factor (LNF) array is the LPF array of the reversed text.
  * @reference franek03lpf
  */
 function construct_lnf_array(text: string): number[] {
@@ -709,6 +884,15 @@ function construct_lnf_array(text: string): number[] {
 
     const n: number = lpfarray.length;
     return [...new Array(n).keys()].map((i) => lpfarray[n-1-i]); 
+}
+
+export function test_lnf_array() {
+    assert_eq(construct_lnf_array("banana"), [0,1,2,3,0,0], "LNF array of 'banana'");
+    assert_eq(construct_lnf_array("abracadabra"), [1,2,3,4,0,1,0,1,0,0,0], "LNF array of 'abracadabra'");
+    assert_eq(construct_lnf_array("aaaaa"), [1,2,3,4,0], "LNF array of 'aaaaa'");
+    assert_eq(construct_lnf_array(""), [], "LNF array of empty string");
+    assert_eq(construct_lnf_array("a"), [0], "LNF array of 'a'");
+    assert_eq(construct_lnf_array("abcde"), [0,0,0,0,0], "LNF array of 'abcde'");
 }
 
 
@@ -741,6 +925,21 @@ function construct_lzss_factorization(lpf_array: readonly number[]): boolean[] {
     return greedy_factorize(lpf_array);
 }
 
+export function test_lzss_factorization() {
+    function test_helper(text: string, expected : boolean[]) {
+        const lpf_array = construct_lpf_array(text);
+        const lzss_factorization = construct_lzss_factorization(lpf_array);
+        assert_eq(lzss_factorization, expected, `LZSS factorization test for '${text}'`);
+    }
+    test_helper("banana", [true, true, true, false, false, true]);
+    test_helper("abracadabra", [true, true, true, true, true, true, true, false, false, false, true]);
+    test_helper("aaaaa", [true, false, false, false, true]);
+    test_helper("abcde", [true, true, true, true, true]);
+    test_helper("", []);
+    test_helper("a", [true]);
+}
+
+
 /**
  * @name rLZSS
  * @kind disable
@@ -752,6 +951,20 @@ function construct_lzss_factorization(lpf_array: readonly number[]): boolean[] {
 function construct_reverse_lzss_factorization(lnf_array: readonly number[]): boolean[] {
     const copied_lnf_array = lnf_array.slice().reverse();
     return greedy_factorize(copied_lnf_array);
+}
+
+export function test_reverse_lzss_factorization() {
+    function test_helper(text: string, expected : boolean[]) {
+        const lpf_array = construct_lnf_array(text);
+        const lzss_factorization = construct_reverse_lzss_factorization(lpf_array);
+        assert_eq(lzss_factorization, expected, `LZSS factorization test for '${text}'`);
+    }
+    test_helper("ananab", [true, true, true, false, false, true]);
+    test_helper("arbadacarba", [true, true, true, true, true, true, true, false, false, false, true]);
+    test_helper("aaaaa", [true, false, false, false, true]);
+    test_helper("abcde", [true, true, true, true, true]);
+    test_helper("", []);
+    test_helper("a", [true]);
 }
 
 /**
@@ -767,6 +980,23 @@ function construct_lexparse_factorization(plcp_array: readonly number[]): boolea
     return greedy_factorize(plcp_array);
 }
 
+export function test_lexparse_factorization() {
+    function test_helper(text: string, expected : boolean[]) {
+        const suffix_array = construct_suffix_array(text);
+        const inverse_suffix_array = construct_inverse_suffix_array(suffix_array);
+        const lcp_array = construct_lcp_array(text, suffix_array);
+        const plcp_array = construct_plcp_array(inverse_suffix_array, lcp_array);
+        const lexparse_factorization = construct_lexparse_factorization(plcp_array);
+        assert_eq(lexparse_factorization, expected, `LexParse factorization test for '${text}'`);
+    }
+    test_helper("banana", [true, false, false, true, true, true]);
+    test_helper("abracadabra", [false,false,false,true,true,true,true,true,true,true,true]);
+    test_helper("aaaaa", [false, false, false, true, true]);
+    test_helper("abcde", [true, true, true, true, true]);
+    test_helper("", []);
+    test_helper("a", [true]);
+}
+
 /**
  * @name NSS
  * @kind disable
@@ -774,8 +1004,9 @@ function construct_lexparse_factorization(plcp_array: readonly number[]): boolea
  * @description Next Smaller Suffix Array
  * @tutorial The Next Smaller Suffix (NSS) array identifies the subsequent suffix in text order that is lexicographically smaller than the current suffix. Given the inverse suffix array \(\mathsf{ISA}\) of a text \(T[1..n]\), the NSS array \(\mathsf{NSS}[1..n]\) is defined such that \(\mathsf{NSS}[i] = \min \{ j > i \mid \mathsf{ISA}[j] < \mathsf{ISA}[i] \}\) if such a \(j\) exists, and \(\mathsf{NSS}[i] = \bot \) otherwise, for each \(i \in [1..n]\).
  */
-function construct_nss_array(text: string, inverse_suffix_array: readonly number[]): number[] {
-    const n: number = text.length;
+function construct_nss_array(inverse_suffix_array: readonly number[]): number[] {
+    if (inverse_suffix_array.length === 0) { return []; }
+    const n: number = inverse_suffix_array.length;
     const result: number[] = new Array<number>(n);
     for (let i = 0; i < n; ++i) {
         let nss: number = i + 1;
@@ -787,6 +1018,18 @@ function construct_nss_array(text: string, inverse_suffix_array: readonly number
     return result;
 }
 
+export function test_nss_array() {
+    assert_eq(construct_nss_array([5, 3, 1, 0, 4, 2]), [1,2,3,6,5,6], "NSS array of inverse suffix array [5, 3, 1, 0, 4, 2]");
+    assert_eq(construct_nss_array([10, 7, 0, 3, 5, 8, 1, 4, 6, 9, 2]), [1,2,11,6,6,6,11,10,10,10,11], "NSS array of inverse suffix array [10, 7, 0, 3, 5, 8, 1, 4, 6, 9, 2]");
+    assert_eq(construct_nss_array([]), [], "NSS array of empty inverse suffix array");
+    assert_eq(construct_nss_array([0]), [1], "NSS array of inverse suffix array [0]");
+    assert_eq(construct_nss_array([1, 0]), [1, 2], "NSS array of inverse suffix array [1, 0]");
+    assert_eq(construct_nss_array([0, 1]), [2, 2], "NSS array of inverse suffix array [0, 1]");
+    assert_eq(construct_nss_array([0, 1, 2, 3, 4]), [5, 5, 5, 5, 5], "NSS array of inverse suffix array [0, 1, 2, 3, 4]");
+    assert_eq(construct_nss_array([4, 3, 2, 1, 0]), [1,2,3,4,5], "NSS array of inverse suffix array [4, 3, 2, 1, 0]");
+}
+
+
 /**
  * @name PSS
  * @kind disable
@@ -794,8 +1037,9 @@ function construct_nss_array(text: string, inverse_suffix_array: readonly number
  * @description Previous Smaller Suffix Array
  * @tutorial The Previous Smaller Suffix (PSS) array identifies the preceding suffix in text order that is lexicographically smaller than the current suffix. Given the inverse suffix array \(\mathsf{ISA}\) of a text \(T[1..n]\), the PSS array \(\mathsf{PSS}[1..n]\) is defined such that \(\mathsf{PSS}[i] = \max \{ j < i \mid \mathsf{ISA}[j] < \mathsf{ISA}[i] \}\) if such a \(j\) exists, and \(\mathsf{PSS}[i] = \bot \) otherwise, for each \(i \in [1..n]\).
  */
-function construct_pss_array(text: string, inverse_suffix_array: readonly number[]): number[] {
-    const n: number = text.length;
+function construct_pss_array(inverse_suffix_array: readonly number[]): number[] {
+    if (inverse_suffix_array.length === 0) { return []; }
+    const n: number = inverse_suffix_array.length;
     const result: number[] = new Array<number>(n);
 
     for (let i = 0; i < n; ++i) {
@@ -808,6 +1052,17 @@ function construct_pss_array(text: string, inverse_suffix_array: readonly number
     return result;
 }
 
+export function test_pss_array() {
+    assert_eq(construct_pss_array([5, 3, 1, 0, 4, 2]), [6,6,6,6,3,3], "PSS array of inverse suffix array [5, 3, 1, 0, 4, 2]");
+    assert_eq(construct_pss_array([10, 7, 0, 3, 5, 8, 1, 4, 6, 9, 2]), [11,11,11,2,3,4,2,6,7,8,6], "PSS array of inverse suffix array [10, 7, 0, 3, 5, 8, 1, 4, 6, 9, 2]");
+    assert_eq(construct_pss_array([]), [], "PSS array of empty inverse suffix array");
+    assert_eq(construct_pss_array([0]), [1], "PSS array of inverse suffix array [0]");
+    assert_eq(construct_pss_array([1, 0]), [2,2], "PSS array of inverse suffix array [1, 0]");
+    assert_eq(construct_pss_array([0, 1]), [2,0], "PSS array of inverse suffix array [0, 1]");
+    assert_eq(construct_pss_array([0, 1, 2, 3, 4]), [5,0,1,2,3], "PSS array of inverse suffix array [0, 1, 2, 3, 4]");
+    assert_eq(construct_pss_array([4, 3, 2, 1, 0]), [5,5,5,5,5], "PSS array of inverse suffix array [4, 3, 2, 1, 0]");
+}
+
 /**
  * @name Lyndon
  * @kind disable
@@ -816,16 +1071,25 @@ function construct_pss_array(text: string, inverse_suffix_array: readonly number
  * @tutorial The Lyndon array stores the lengths of the longest Lyndon words starting at each position in a string. A Lyndon word is a non-empty string that is strictly smaller in lexicographical order than all of its non-trivial rotations. Given the Next Smaller Suffix (NSS) array \(\mathsf{NSS}[1..n]\) of a text \(T[1..n]\), the Lyndon array \(\mathsf{Lyndon}[1..n]\) is defined such that \(\mathsf{Lyndon}[i] = \mathsf{NSS}[i] - i\) if \(\mathsf{NSS}[i] \neq \bot\), and \(\mathsf{Lyndon}[i] = n - i + 1\) otherwise, for each \(i \in [1..n]\).
  * @cite franek16algorithms
  */
-function construct_lyndon_array(text: string, nss_array: readonly number[]): number[] {
-    const n: number = text.length;
-    if (nss_array.length !== n) {
-        throw new Error("The length of nss_array must match the length of text.");
-    }
+function construct_lyndon_array(nss_array: readonly number[]): number[] {
+    if (nss_array.length === 0) { return []; }
+    const n: number = nss_array.length;
     let result: number[] = new Array<number>(n);
     for (let i = 0; i < n; ++i) {
         result[i] = (nss_array[i] === n) ? (n - i) : (nss_array[i] - i);
     }
     return result;
+}
+
+export function test_lyndon_array() {
+    assert_eq(construct_lyndon_array([1,2,3,6,5,6]), [1,1,1,3,1,1], "Lyndon array from NSS [1,2,3,6,5,6]");
+    assert_eq(construct_lyndon_array([1,2,11,6,6,6,11,10,10,10,11]), [1,1,9,3,2,1,5,3,2,1,1], "Lyndon array from NSS [1,2,11,6,6,6,11,10,10,10,11]");
+    assert_eq(construct_lyndon_array([]), [], "Lyndon array from empty NSS");
+    assert_eq(construct_lyndon_array([1]), [1], "Lyndon array from NSS [1]");
+    assert_eq(construct_lyndon_array([1,2]), [1,1], "Lyndon array from NSS [1,2]");
+    assert_eq(construct_lyndon_array([2,2]), [2,1], "Lyndon array from NSS [2,2]");
+    assert_eq(construct_lyndon_array([5,5,5,5,5]), [5,4,3,2,1], "Lyndon array from NSS [5,5,5,5,5]");
+    assert_eq(construct_lyndon_array([1,2,3,4,5]), [1,1,1,1,1], "Lyndon array from NSS [1,2,3,4,5]");
 }
 
 
@@ -838,9 +1102,7 @@ function construct_lyndon_array(text: string, nss_array: readonly number[]): num
  */
 function construct_necklace_conjugate_transform(text: string): string {
     const n: number = text.length;
-    if (n === 0) {
-        return "";
-    }
+    if (n === 0) { return ""; }
     let best_conj: string = text;
 
     for (let i: number = 0; i < n; ++i) {
@@ -852,6 +1114,17 @@ function construct_necklace_conjugate_transform(text: string): string {
     return best_conj;
 }
 
+export function test_necklace_conjugate_transform() {
+    assert_eq(construct_necklace_conjugate_transform("bca"), "abc", "Necklace conjugate of 'bca'");
+    assert_eq(construct_necklace_conjugate_transform("cab"), "abc", "Necklace conjugate of 'cab'");
+    assert_eq(construct_necklace_conjugate_transform("abc"), "abc", "Necklace conjugate of 'abc'");
+    assert_eq(construct_necklace_conjugate_transform("aaaa"), "aaaa", "Necklace conjugate of 'aaaa'");
+    assert_eq(construct_necklace_conjugate_transform("abab"), "abab", "Necklace conjugate of 'abab'");
+    assert_eq(construct_necklace_conjugate_transform("baba"), "abab", "Necklace conjugate of 'baba'");
+    assert_eq(construct_necklace_conjugate_transform(""), "", "Necklace conjugate of empty string");
+    assert_eq(construct_necklace_conjugate_transform("a"), "a", "Necklace conjugate of 'a'");
+}
+
 /**
  * @name Invert
  * @kind hidden
@@ -860,6 +1133,7 @@ function construct_necklace_conjugate_transform(text: string): string {
  * @tutorial The invert transform of a string maps each character to its complementary character based on the minimum and maximum characters in the string. Specifically, given a text \(T[1..n]\), the invert transform \(\mathsf{Invert}(T)\) maps each character \(T[i]\) to \(\text{max_j} T[j] - (c - \text{min_j T[j]})\).
  */
 function construct_invert_transform(text : string) {
+    if (text.length === 0) { return ""; }
     const sorted_chars = [...text].sort();
     const minchar = sorted_chars[0];
     const maxchar = sorted_chars.reverse()[0];
@@ -867,6 +1141,15 @@ function construct_invert_transform(text : string) {
         return String.fromCharCode(maxchar.charCodeAt(0) - (c.charCodeAt(0) - minchar.charCodeAt(0)));
     }
     return [...text].map(invert).join('');
+}
+
+export function test_invert_transform() {
+    assert_eq(construct_invert_transform("abc"), "cba", "Invert transform of 'abc'");
+    assert_eq(construct_invert_transform("hello"), "lohhe", "Invert transform of 'hello'");
+    assert_eq(construct_invert_transform("abcdxyz"), "zyxwcba", "Invert transform of 'abcdxyz'");
+    assert_eq(construct_invert_transform("aaaa"), "aaaa", "Invert transform of 'aaaa'");
+    assert_eq(construct_invert_transform(""), "", "Invert transform of empty string");
+    assert_eq(construct_invert_transform("a"), "a", "Invert transform of 'a'");
 }
 
 /**
@@ -878,6 +1161,15 @@ function construct_invert_transform(text : string) {
  */
 function construct_revert_transform(text: string) {
     return text.split('').reverse().join('');
+}
+
+export function test_revert_transform() {
+    assert_eq(construct_revert_transform("abc"), "cba", "Revert transform of 'abc'");
+    assert_eq(construct_revert_transform("hello"), "olleh", "Revert transform of 'hello'");
+    assert_eq(construct_revert_transform("abcdxyz"), "zyxdcba", "Revert transform of 'abcdxyz'");
+    assert_eq(construct_revert_transform("aaaa"), "aaaa", "Revert transform of 'aaaa'");
+    assert_eq(construct_revert_transform(""), "", "Revert transform of empty string");
+    assert_eq(construct_revert_transform("a"), "a", "Revert transform of 'a'");
 }
 
 function phrases_from_factorizations(text: string, factorization: readonly boolean[]): string[] {
@@ -905,7 +1197,8 @@ function omega_order(strA: string, strB: string): number {
     }
     return strA.length < strB.length ? -1 : +1;
 }
-function test_omega_order() {
+
+export function test_omega_order() {
     assert_eq(omega_order("abc", "bca"), -1, "'abc' < 'bca'");
     assert_eq(omega_order("bca", "abc"), 1, "'bca' > 'abc'");
     assert_eq(omega_order("abab", "abab"), 0, "'abab' == 'abab'");
@@ -944,6 +1237,22 @@ function construct_circular_suffix_array(text: string, lyndon_factorization: rea
     return [...conjugates].map(conjugate => conjugate.pos);
 }
 
+export function test_circular_suffix_array() {
+    function test_helper(input: string, expected: number[], description: string) {
+        const isa = construct_inverse_suffix_array(construct_suffix_array(input));
+        const lyndonFactorization = construct_lyndon_factorization(input, isa);
+        const csa = construct_circular_suffix_array(input, lyndonFactorization);
+        assert_eq(csa, expected, description);
+    }
+    test_helper("banana", [5, 1, 3, 0, 2, 4], "Circular suffix array of 'banana'");
+    test_helper("abracadabra", [10, 7, 0, 3, 5, 8, 1, 4, 6, 9, 2], "Circular suffix array of 'abracadabra'");
+    test_helper("", [], "Circular suffix array of empty string");
+    test_helper("a", [0], "Circular suffix array of 'a'");
+    test_helper("aaaaa", [0, 1, 2, 3, 4], "Circular suffix array of 'aaaaa'");
+    test_helper("edcba", [4, 3, 2, 1, 0], "Circular suffix array of 'edcba'");
+    test_helper("abcde", [0, 1, 2, 3, 4], "Circular suffix array of 'abcde'");
+}
+
 /**
  * @name CISA
  * @kind disable
@@ -955,13 +1264,14 @@ function construct_circular_suffix_array(text: string, lyndon_factorization: rea
 function construct_inverse_circular_suffix_array(circular_suffix_array: readonly number[]): number[] {
     return construct_inverse_suffix_array(circular_suffix_array);
 }
+
 export function test_inverse_circular_suffix_array() {
-    assert_eq(construct_inverse_circular_suffix_array([5, 3, 1, 0, 4, 2]).toString(), [3, 2, 5, 1, 4, 0].toString(), "Inverse circular suffix array of 'banana'");
-    assert_eq(construct_inverse_circular_suffix_array([10, 7, 0, 3, 5, 8, 1, 4, 6, 9, 2]).toString(), [2, 6, 10, 3, 7, 4, 8, 1, 5, 9, 0].toString(), "Inverse circular suffix array of 'abracadabra'");
-    assert_eq(construct_inverse_circular_suffix_array([]).toString(), [].toString(), "Inverse circular suffix array of empty array");
-    assert_eq(construct_inverse_circular_suffix_array([0]).toString(), [0].toString(), "Inverse circular suffix array of [0]");
-    assert_eq(construct_inverse_circular_suffix_array([4, 3, 2, 1, 0]).toString(), [4, 3, 2, 1, 0].toString(), "Inverse circular suffix array of [4,3,2,1,0]");
-    assert_eq(construct_inverse_circular_suffix_array([0, 1, 2, 3, 4]).toString(), [0, 1, 2, 3, 4].toString(), "Inverse circular suffix array of [0,1,2,3,4]");
+    assert_eq(construct_inverse_circular_suffix_array([5, 3, 1, 0, 4, 2]), [3, 2, 5, 1, 4, 0], "Inverse circular suffix array of 'banana'");
+    assert_eq(construct_inverse_circular_suffix_array([10, 7, 0, 3, 5, 8, 1, 4, 6, 9, 2]), [2, 6, 10, 3, 7, 4, 8, 1, 5, 9, 0], "Inverse circular suffix array of 'abracadabra'");
+    assert_eq(construct_inverse_circular_suffix_array([]), [], "Inverse circular suffix array of empty array");
+    assert_eq(construct_inverse_circular_suffix_array([0]), [0], "Inverse circular suffix array of [0]");
+    assert_eq(construct_inverse_circular_suffix_array([4, 3, 2, 1, 0]), [4, 3, 2, 1, 0], "Inverse circular suffix array of [4,3,2,1,0]");
+    assert_eq(construct_inverse_circular_suffix_array([0, 1, 2, 3, 4]), [0, 1, 2, 3, 4], "Inverse circular suffix array of [0,1,2,3,4]");
 }
 
 /**
@@ -984,12 +1294,22 @@ function construct_bbw_indices(lyndon_factorization: readonly boolean[], circula
     return position;
   });
 }
+
 export function test_bbw_indices() {
-    assert_eq(construct_bbw_indices([false, false, true, false, true, false, true, true, false, true, true], [10, 7, 0, 3, 5, 8, 1, 4, 6, 9, 2]).toString(), [9, 4, 2, 6, 8, 0, 5, 10, 1, 7, 3].toString(), "BBWT indices of 'abracadabra'");
-    assert_eq(construct_bbw_indices([], []).toString(), [].toString(), "BBWT indices of empty array");
-    assert_eq(construct_bbw_indices([true], [0]).toString(), [0].toString(), "BBWT indices of [0]");
-    assert_eq(construct_bbw_indices([true, true, true, true, true], [4, 3, 2, 1, 0]).toString(), [4, 3, 2, 1, 0].toString(), "BBWT indices of [4,3,2,1,0]");
-    assert_eq(construct_bbw_indices([true, true, true, true, true], [0, 1, 2, 3, 4]).toString(), [0, 1, 2, 3, 4].toString(), "BBWT indices of [0,1,2,3,4]");
+    function test_helper(input: string, expected: number[], description: string) {
+        const isa = construct_inverse_suffix_array(construct_suffix_array(input));
+        const lyndonFactorization = construct_lyndon_factorization(input, isa);
+        const csa = construct_circular_suffix_array(input, lyndonFactorization);
+        const bbwt_indices = construct_bbw_indices(lyndonFactorization, csa);
+        assert_eq(bbwt_indices, expected, description);
+    }
+    test_helper("banana", [5,2,4,0,1,3], "BBWTi of 'banana'");
+    test_helper("abracadabra", [10,9,6,2,4,7,0,3,5,8,1], "BBWTi of 'abracadabra'");
+    test_helper("", [], "BBWTi of empty string");
+    test_helper("a", [0], "BBWTi of 'a'");
+    test_helper("edcba", [4,3,2,1,0], "BBWTi of 'edcba'");
+    test_helper("abcde", [4,0,1,2,3], "BBWTi of 'abcde'");
+    test_helper("aaaaa", [0,1,2,3,4], "BBWTi of 'aaaaa'");
 }
 
 /**
@@ -1005,12 +1325,20 @@ function construct_bbw_transform(text: string, bbw_indices: readonly number[]): 
 }
 
 export function test_bbw_transform() {
-    assert_eq(construct_bbw_transform("banana", [4, 0, 3, 5, 2, 1]), "annbaa", "BBWT of 'banana'");
-    assert_eq(construct_bbw_transform("abracadabra", [9, 4, 2, 6, 8, 0, 5, 10, 1, 7, 3]), "ardrcaaaabb", "BBWT of 'abracadabra'");
-    assert_eq(construct_bbw_transform("", []), "", "BBWT of empty string");
-    assert_eq(construct_bbw_transform("a", [0]), "a", "BBWT of 'a'");
-    assert_eq(construct_bbw_transform("edcba", [4, 3, 2, 1, 0]), "abcde", "BBWT of 'edcba'");
-    assert_eq(construct_bbw_transform("abcde", [0, 1, 2, 3, 4]), "eabcd", "BBWT of 'abcde'");
+    function test_helper(input: string, expected: string, description: string) {
+        const isa = construct_inverse_suffix_array(construct_suffix_array(input));
+        const lyndonFactorization = construct_lyndon_factorization(input, isa);
+        const csa = construct_circular_suffix_array(input, lyndonFactorization);
+        const bbwt_indices = construct_bbw_indices(lyndonFactorization, csa);
+        const bbwTransform = construct_bbw_transform(input, bbwt_indices);
+        assert_eq(bbwTransform, expected, description);
+    }
+    test_helper("banana", "annbaa", "BBWT of 'banana'");
+    test_helper("abracadabra", "ardrcaaaabb", "BBWT of 'abracadabra'");
+    test_helper("", "", "BBWT of empty string");
+    test_helper("a", "a", "BBWT of 'a'");
+    test_helper("edcba", "abcde", "BBWT of 'edcba'");
+    test_helper("abcde", "eabcd", "BBWT of 'abcde'");
 }
 
 /**
@@ -1049,11 +1377,65 @@ function construct_inverse_bbw_transform(bbw_transform : string): string {
     return conjugates.join('');
 }
 
-function test_inverse_bbw_transform() {
+export function test_inverse_bbw_transform() {
     assert_eq(construct_inverse_bbw_transform("annbaa"), "banana", "Inverse BBWT of 'annbaa'");
     assert_eq(construct_inverse_bbw_transform("ardrcaaaabb"), "abracadabra", "Inverse BBWT of 'ardrcaaaabb'");
     assert_eq(construct_inverse_bbw_transform(""), "", "Inverse BBWT of empty string");
     assert_eq(construct_inverse_bbw_transform("a"), "a", "Inverse BBWT of 'a'");
     assert_eq(construct_inverse_bbw_transform("abcde"), "edcba", "Inverse BBWT of 'abcde'");
     assert_eq(construct_inverse_bbw_transform("eabcd"), "abcde", "Inverse BBWT of 'eabcd'");
+}
+
+
+function random_ternary_string(length : number) : string {
+  const ternaryChars = 'abc'; // The possible characters for the string
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * ternaryChars.length);
+    result += ternaryChars.charAt(randomIndex);
+  }
+  return result;
+}
+
+export function test_bbwt_random() {
+    for(let i = 0; i < 20; ++i) {
+        const randomString = random_ternary_string(2+i);
+        const isa = construct_inverse_suffix_array(construct_suffix_array(randomString));
+        const lyndonFactorization = construct_lyndon_factorization(randomString, isa);
+        const csa = construct_circular_suffix_array(randomString, lyndonFactorization);
+        const bbwt_indices = construct_bbw_indices(lyndonFactorization, csa);
+        const bbwTransform = construct_bbw_transform(randomString, bbwt_indices);
+        const invertedString = construct_inverse_bbw_transform(bbwTransform);
+        assert_eq(invertedString, randomString, `Inverse BBWT of random string '${randomString}'`);
+    }
+}
+
+export function test_phi_array_identity() {
+    function test_helper(text: string) {
+        const suffix_array = construct_suffix_array(text);
+        const inverse_suffix_array = construct_inverse_suffix_array(suffix_array);
+        const phi_array = construct_phi_array(suffix_array, inverse_suffix_array);
+        const inverse_phi_array = construct_inverse_phi_array(suffix_array, inverse_suffix_array);
+
+        for (let i = 0; i < text.length; i++) {
+            if(inverse_phi_array[i] === text.length || phi_array[i] === text.length) {
+                continue
+            }
+            const phi_of_inverse_phi = inverse_phi_array[phi_array[i]];
+            assert_eq(phi_of_inverse_phi, i, `Phi and Inverse Phi identity failed for index ${i} in text '${text}'`);
+            const inverse_phi_of_phi = phi_array[inverse_phi_array[i]];
+            assert_eq(inverse_phi_of_phi, i, `Phi and Inverse Phi identity failed for index ${i} in text '${text}'`);
+        }
+    }
+    test_helper("banana");
+    test_helper("abracadabra");
+    test_helper("a");
+    test_helper("aaaaa");
+    test_helper("abcde");
+    test_helper("edcba");
+    test_helper("");
+    for(let i = 0; i < 20; ++i) {
+        const randomString = random_ternary_string(2+i);
+        test_helper(randomString);
+    }
 }

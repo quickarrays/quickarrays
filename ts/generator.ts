@@ -54,6 +54,18 @@ function generate_tribonacci_word(k : number) : string {
         return 'a';
     }).join('');
 }
+export function test_tribonacci_word() {
+    assert_eq(generate_tribonacci_word(0), "a", "Tribonacci Word 0");
+    assert_eq(generate_tribonacci_word(1), "ab", "Tribonacci Word 1");
+    assert_eq(generate_tribonacci_word(2), "abac", "Tribonacci Word 2");
+    assert_eq(generate_tribonacci_word(3), "abacaba", "Tribonacci Word 3");
+    assert_eq(generate_tribonacci_word(4), "abacabaabacab", "Tribonacci Word 4");
+    assert_eq(generate_tribonacci_word(5), "abacabaabacababacabaabac", "Tribonacci Word 5");
+    assert_eq(generate_tribonacci_word(6), "abacabaabacababacabaabacabacabaabacababacaba", "Tribonacci Word 6");
+
+
+
+}
 
 /**
  * @name Thue-Morse
@@ -93,8 +105,9 @@ function generate_mephisto_waltz_word(k : number) : string {
 export function test_mephisto_waltz_word() {
     assert_eq(generate_mephisto_waltz_word(0), "a", "Mephisto-Waltz Word 0");
     assert_eq(generate_mephisto_waltz_word(1), "aab", "Mephisto-Waltz Word 1");
-    assert_eq(generate_mephisto_waltz_word(2), "aabaabbbba", "Mephisto-Waltz Word 2");
-    assert_eq(generate_mephisto_waltz_word(3), "aabaabbbbaaabaabbbbaaaabbbba", "Mephisto-Waltz Word 3");
+    assert_eq(generate_mephisto_waltz_word(2), "aabaabbba", "Mephisto-Waltz Word 2");
+    assert_eq(generate_mephisto_waltz_word(3), "aabaabbbaaabaabbbabbabbaaab", "Mephisto-Waltz Word 3");
+    assert_eq(generate_mephisto_waltz_word(4), "aabaabbbaaabaabbbabbabbaaabaabaabbbaaabaabbbabbabbaaabbbabbaaabbbabbaaabaabaabbba", "Mephisto-Waltz Word 4");
 }
 
 
@@ -118,7 +131,9 @@ export function test_vtm_word() {
     assert_eq(generate_vtm_word(0), "a", "vtm Word 0");
     assert_eq(generate_vtm_word(1), "abc", "vtm Word 1");
     assert_eq(generate_vtm_word(2), "abcacb", "vtm Word 2");
-    assert_eq(generate_vtm_word(3), "abcacbabcbabc", "vtm Word 3");
+    assert_eq(generate_vtm_word(3), "abcacbabcbac", "vtm Word 2");
+    assert_eq(generate_vtm_word(4), "abcacbabcbacabcacbacabcb", "vtm Word 3");
+    assert_eq(generate_vtm_word(5), "abcacbabcbacabcacbacabcbabcacbabcbacabcbabcacbac", "vtm Word 4");
 }
 
 /**
@@ -136,8 +151,9 @@ function generate_sierpinski_word(k : number) : string {
 export function test_sierpinski_word() {
     assert_eq(generate_sierpinski_word(0), "a", "Sierpinski Word 0");
     assert_eq(generate_sierpinski_word(1), "aba", "Sierpinski Word 1");
-    assert_eq(generate_sierpinski_word(2), "ababbbaaba", "Sierpinski Word 2");
-    assert_eq(generate_sierpinski_word(3), "ababbbaababbbbabbbababbbaaba", "Sierpinski Word 3");
+    assert_eq(generate_sierpinski_word(2), "ababbbaba", "Sierpinski Word 2");
+    assert_eq(generate_sierpinski_word(3), "ababbbababbbbbbbbbababbbaba", "Sierpinski Word 3");
+    assert_eq(generate_sierpinski_word(4), "ababbbababbbbbbbbbababbbababbbbbbbbbbbbbbbbbbbbbbbbbbbababbbababbbbbbbbbababbbaba", "Sierpinski Word 4");
 }
 
 /**
@@ -154,8 +170,9 @@ function generate_pell_word(k : number) : string {
 export function test_pell_word() {
     assert_eq(generate_pell_word(0), "a", "Pell Word 0");
     assert_eq(generate_pell_word(1), "aab", "Pell Word 1");
-    assert_eq(generate_pell_word(2), "aabaabaa", "Pell Word 2");
-    assert_eq(generate_pell_word(3), "aabaabaaaabaabaaab", "Pell Word 3");
+    assert_eq(generate_pell_word(2), "aabaaba", "Pell Word 2");
+    assert_eq(generate_pell_word(3), "aabaabaaabaabaaab", "Pell Word 3");
+    assert_eq(generate_pell_word(4), "aabaabaaabaabaaabaabaabaaabaabaaabaabaaba", "Pell Word 4");
 }
 
 /**
@@ -172,8 +189,8 @@ function generate_chacon_word(k : number) : string {
 export function test_chacon_word() {
     assert_eq(generate_chacon_word(0), "a", "Chacon Word 0");
     assert_eq(generate_chacon_word(1), "aaba", "Chacon Word 1");
-    assert_eq(generate_chacon_word(2), "aabaaabaabaa", "Chacon Word 2");
-    assert_eq(generate_chacon_word(3), "aabaaabaabaaaabaaabaabaaaabaa", "Chacon Word 3");
+    assert_eq(generate_chacon_word(2), "aabaaababaaba", "Chacon Word 2");
+    assert_eq(generate_chacon_word(3), "aabaaababaabaaabaaababaababaabaaababaaba", "Chacon Word 3");
 }
 
 /**
@@ -190,8 +207,10 @@ function generate_von_neumann_word(k : number) : string {
 export function test_von_neumann_word() {
     assert_eq(generate_von_neumann_word(0), "a", "von Neumann Word 0");
     assert_eq(generate_von_neumann_word(1), "aab", "von Neumann Word 1");
-    assert_eq(generate_von_neumann_word(2), "aabaabaa", "von Neumann Word 2");
-    assert_eq(generate_von_neumann_word(3), "aabaabaaaabaabaaab", "von Neumann Word 3");
+    assert_eq(generate_von_neumann_word(2), "aabaabb", "von Neumann Word 2");
+    assert_eq(generate_von_neumann_word(3), "aabaabbaabaabbb", "von Neumann Word 3");
+    assert_eq(generate_von_neumann_word(4), "aabaabbaabaabbbaabaabbaabaabbbb", "von Neumann Word 4");
+    assert_eq(generate_von_neumann_word(5), "aabaabbaabaabbbaabaabbaabaabbbbaabaabbaabaabbbaabaabbaabaabbbbb", "von Neumann Word 5");
 }
 
 function rudin_shapiro_preword(k : number) : string {
@@ -217,6 +236,26 @@ function generate_rudin_shapiro_word(k : number) : string {
     return [...prev].map(c => (c == 'a' || c == 'b') ? 'a' : 'b').join('');
 }
 
+export function test_rudin_shapiro_word() {
+    assert_eq(generate_rudin_shapiro_word(0), "a", "Rudin-Shapiro Word 0");
+    assert_eq(generate_rudin_shapiro_word(1), "aa", "Rudin-Shapiro Word 1");
+    assert_eq(generate_rudin_shapiro_word(2), "aaab", "Rudin-Shapiro Word 2");
+    assert_eq(generate_rudin_shapiro_word(3), "aaabaaba", "Rudin-Shapiro Word 3");
+    assert_eq(generate_rudin_shapiro_word(4), "aaabaabaaaabbbab", "Rudin-Shapiro Word 4");
+    assert_eq(generate_rudin_shapiro_word(5), "aaabaabaaaabbbabaaabaababbbaaaba", "Rudin-Shapiro Word 5");
+}
+
+function baum_sweet_preword(k : number) : string {
+    if(k <= 0) return "a";
+    const prev = baum_sweet_preword(k - 1);
+    return [...prev].map(c => {
+        if(c == 'a') return 'ab';
+        if(c == 'b') return 'cb';
+        if(c == 'c') return 'bd';
+        return 'dd';
+    }).join('');
+}
+
 /**
  * @name Baum-Sweet
  * @description k-th Baum-Sweet Word
@@ -224,35 +263,17 @@ function generate_rudin_shapiro_word(k : number) : string {
  * @oeis A086747
  */
 function generate_baum_sweet_word(k : number) : string {
-    const length = Math.pow(2, k);
-    let result = "";
-    for(let n = 0; n < length; n++) {
-        const binary = n.toString(2);
-        let has_odd_zero_block = false;
-        let zero_count = 0;
-        for(let char of binary) {
-            if(char == '0') {
-                zero_count++;
-            } else {
-                if(zero_count % 2 == 1) {
-                    has_odd_zero_block = true;
-                    break;
-                }
-                zero_count = 0;
-            }
-        }
-        if(zero_count % 2 == 1) {
-            has_odd_zero_block = true;
-        }
-        result += has_odd_zero_block ? 'a' : 'b';
-    }
-    return result;
+    if(k <= 0) return "a";
+    // Alternatively, we can generate it using morphism and coding:
+    const prev = baum_sweet_preword(k);
+    return [...prev].map(c => (c == 'c' || c == 'd') ? 'a' : c).join('');
 }
 export function test_baum_sweet_word() {
-    assert_eq(generate_baum_sweet_word(0), "b", "Baum-Sweet Word 0");
-    assert_eq(generate_baum_sweet_word(1), "ba", "Baum-Sweet Word 1");
-    assert_eq(generate_baum_sweet_word(2), "babb", "Baum-Sweet Word 2");
-    assert_eq(generate_baum_sweet_word(3), "babbaaaa", "Baum-Sweet Word 3");
+    assert_eq(generate_baum_sweet_word(0), "a", "Baum-Sweet Word 0");
+    assert_eq(generate_baum_sweet_word(1), "ab", "Baum-Sweet Word 1");
+    assert_eq(generate_baum_sweet_word(2), "abab", "Baum-Sweet Word 2");
+    assert_eq(generate_baum_sweet_word(3), "ababbaab", "Baum-Sweet Word 3");
+    assert_eq(generate_baum_sweet_word(4), "ababbaababaabaab", "Baum-Sweet Word 4");
 }
 
 /**
@@ -277,6 +298,7 @@ function generate_kolakoski_word(k : number) : string {
 export function test_kolakoski_word() {
     assert_eq(generate_kolakoski_word(0), "ab", "Kolakoski Word 0");
     assert_eq(generate_kolakoski_word(1), "abb", "Kolakoski Word 1");
-    assert_eq(generate_kolakoski_word(2), "abbaab", "Kolakoski Word 2");
-    assert_eq(generate_kolakoski_word(3), "abbaababbaabb", "Kolakoski Word 3");
+    assert_eq(generate_kolakoski_word(2), "abbaa", "Kolakoski Word 2");
+    assert_eq(generate_kolakoski_word(3), "abbaaba", "Kolakoski Word 3");
+    assert_eq(generate_kolakoski_word(4), "abbaababba", "Kolakoski Word 4");
 }

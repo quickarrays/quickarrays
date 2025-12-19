@@ -20,8 +20,8 @@ $(BUILD_SENTINEL): $(TS_FILES) $(TS_CONFIG)
 ${JS_DIR}/tutorial.js: tutorial.py algorithm.ts generator.ts
 	./tutorial.py algorithm.ts generator.ts
 
-${JS_DIR}/citation.js: citation.py algorithm.ts generator.ts
-	./citation.py algorithm.ts generator.ts
+# ${JS_DIR}/citation.js: citation.py algorithm.ts generator.ts
+# 	./citation.py algorithm.ts generator.ts
 
 ${JS_DIR}/algorithm_pipeline.js: algorithm.py algorithm.ts
 	python3 algorithm.py

@@ -227,7 +227,7 @@ function transform_text(text) {
 		if(qa_transform_active.checked == false) { return text; }
 		return custom_transform_text(text, qa_transform_input.value);
 	}
-	const DS = construct_ds(text);
+	const DS = build_ds(text);
 	return DS[selection];
 }
 
@@ -275,10 +275,10 @@ function updateArrays() {
 	updateWhitespaces();
 
 	const ds_text = construct_text();
-	const DS = construct_ds(ds_text);
+	const DS = build_ds(ds_text);
 	DS['text'] = ds_text;
 
-	const Counters = construct_counters(DS);
+	const Counters = build_counters(DS);
 	Counters['text'] = number_of_runs(ds_text);
 	// const Counters = {
 	// 	'delta' : count_delta(DS.substring_complexity),
@@ -323,7 +323,7 @@ function updateArrays() {
 				varDs = prettify_array(varDs, sep, varBase); 
 			}
 			const ds_htmlname = ds_name2html[dsName] ? ds_name2html[dsName] : dsName;
-			result.push(padRight(ds_htmlname + ":", ' ', pad + 2) + varDs);
+			result.push(pad_right(ds_htmlname + ":", ' ', pad + 2) + varDs);
 		});
 		qa_ds_output.value = result.join('\n');
 	}
