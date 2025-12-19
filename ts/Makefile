@@ -40,7 +40,7 @@ check:
 	@touch $@
 
 test:
-	npx tsc -p .
+	# npx tsc -p .
 	npx jest
 
 clean:

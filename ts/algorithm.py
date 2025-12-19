@@ -154,16 +154,6 @@ def generate_algorithm(code):
 	Path(C.ALGORITHM_ENABLE_HTML).write_text("\n".join(enable_functions), encoding='utf-8')
 	Path(C.ALGORITHM_DISABLE_HTML).write_text("\n".join(disable_functions), encoding='utf-8')
 
-
-def parse_args(arglist):
-	args = []
-	for a in arglist.split(","):
-		a = a.strip()
-		if not a:
-			continue
-		args.append(a.split(":")[0].strip())
-	return args
-
 def provider_for(arg):
 	if arg in ("text", "n"):
 		return None

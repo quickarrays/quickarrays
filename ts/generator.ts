@@ -1,8 +1,18 @@
 // if(typeof assert_eq !== 'function') {
 function assert_eq(a: any, b: any, message: string) {
-    if(a !== b) {
-        throw new Error(`Assertion Failed: ${message}. Expected "${a}", but got "${b}"`);
+    let equal = false;
+    if (Array.isArray(a) && Array.isArray(b)) {
+        equal = a.length === b.length && a.every((v, i) => v === b[i]);
+    } else {
+        equal = a === b;
     }
+    
+    if (!equal) {
+        const aStr = Array.isArray(a) ? `[${a}]` : a;
+        const bStr = Array.isArray(b) ? `[${b}]` : b;
+        throw new Error(`Assertion Failed: ${message}. Expected "${bStr}", but got "${aStr}"`);
+    }
+
 }
 
 /**
@@ -13,9 +23,9 @@ function assert_eq(a: any, b: any, message: string) {
  * @oeis A003849
  */
 function generate_fibonacci_word(k : number) : string {
-	if(k == 0) return "b";
-        const prev = generate_fibonacci_word(k - 1);
-        return [...prev].map(c => (c == 'a') ? 'ab' : 'a').join('');
+    if(k <= 0) return "b";
+    const prev = generate_fibonacci_word(k - 1);
+    return [...prev].map(c => (c == 'a') ? 'ab' : 'a').join('');
 }
 
 export function test_fibonacci_word() {
@@ -36,7 +46,7 @@ export function test_fibonacci_word() {
  * @wikipedia Tribonacci_word
  */
 function generate_tribonacci_word(k : number) : string {
-    if(k == 0) return "a";
+    if(k <= 0) return "a";
     const prev = generate_tribonacci_word(k - 1);
     return [...prev].map(c => {
         if(c == 'a') return 'ab';
@@ -54,7 +64,7 @@ function generate_tribonacci_word(k : number) : string {
  * @wikipedia Thue-Morse_sequence
  */
 function generate_thue_morse_word(k : number) : string {
-    if(k == 0) return "a";
+    if(k <= 0) return "a";
     const prev = generate_thue_morse_word(k - 1);
     return prev + [...prev].map(c => (c == 'a') ? 'b' : 'a').join('');
 }
@@ -75,7 +85,7 @@ export function test_thue_morse_word() {
  * @cite allouche03automatic
  */
 function generate_mephisto_waltz_word(k : number) : string {
-    if(k == 0) return "a";
+    if(k <= 0) return "a";
     const prev = generate_mephisto_waltz_word(k - 1);
     return [...prev].map(char => (char == 'a') ? 'aab' : 'bba').join('');
 }
@@ -96,7 +106,7 @@ export function test_mephisto_waltz_word() {
  *
  */
 function generate_vtm_word(k : number) : string {
-    if(k == 0) return "a";
+    if(k <= 0) return "a";
     const prev = generate_vtm_word(k - 1);
     return [...prev].map((c) => {
         if(c == 'a') return 'abc';
@@ -118,7 +128,7 @@ export function test_vtm_word() {
  * @oeis A316829
  */
 function generate_sierpinski_word(k : number) : string {
-    if(k == 0) return "a";
+    if(k <= 0) return "a";
     const prev = generate_sierpinski_word(k - 1);
     return [...prev].map(c => (c == 'a') ? 'aba' : 'bbb').join('');
 }
@@ -137,7 +147,7 @@ export function test_sierpinski_word() {
  * @oeis A171588
  */
 function generate_pell_word(k : number) : string {
-    if(k == 0) return "a";
+    if(k <= 0) return "a";
     const prev = generate_pell_word(k - 1);
     return [...prev].map(c => (c == 'a') ? 'aab' : 'a').join('');
 }
@@ -155,7 +165,7 @@ export function test_pell_word() {
  * @oeis A049320
  */
 function generate_chacon_word(k : number) : string {
-    if(k == 0) return "a";
+    if(k <= 0) return "a";
     const prev = generate_chacon_word(k - 1);
     return [...prev].map(c => (c == 'a') ? 'aaba' : 'b').join('');
 }
@@ -173,7 +183,7 @@ export function test_chacon_word() {
  * @oeis A308187
  */
 function generate_von_neumann_word(k : number) : string {
-    if(k == 0) return "a";
+    if(k <= 0) return "a";
     const prev = generate_von_neumann_word(k - 1);
     return [...prev].map(c => (c == 'a') ? 'aab' : 'b').join('');
 }
@@ -185,7 +195,7 @@ export function test_von_neumann_word() {
 }
 
 function rudin_shapiro_preword(k : number) : string {
-    if(k == 0) return "a";
+    if(k <= 0) return "a";
     const prev = rudin_shapiro_preword(k - 1);
     return [...prev].map(c => {
         if(c == 'a') return 'ab';
@@ -202,7 +212,7 @@ function rudin_shapiro_preword(k : number) : string {
  * @oeis A020987
  */
 function generate_rudin_shapiro_word(k : number) : string {
-    if(k == 0) return "a";
+    if(k <= 0) return "a";
     const prev = rudin_shapiro_preword(k);
     return [...prev].map(c => (c == 'a' || c == 'b') ? 'a' : 'b').join('');
 }
@@ -252,7 +262,7 @@ export function test_baum_sweet_word() {
  * @oeis A000002
  */
 function generate_kolakoski_word(k : number) : string {
-    if(k == 0) return "ab";
+    if(k <= 0) return "ab";
     const prev = generate_kolakoski_word(k - 1);
     let result = "";
     for(let i = 0; i < prev.length; ++i) {

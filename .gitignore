@@ -1,1 +1,8 @@
 js/generated.js
+node_modules/
+ts/node_modules/
+ts/js/
+ts/html/
+ts/check
+ts/package-lock.json
+*.log

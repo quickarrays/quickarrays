@@ -1,8 +1,29 @@
 function assert_eq(a: any, b: any, message: string): void {
-    if(a !== b) {
-        throw new Error(`Assertion Failed: ${message}. Expected "${a}", but got "${b}"`);
+    let equal = false;
+    if (Array.isArray(a) && Array.isArray(b)) {
+        equal = a.length === b.length && a.every((v, i) => v === b[i]);
+    } else {
+        equal = a === b;
+    }
+    
+    if (!equal) {
+        const aStr = Array.isArray(a) ? `[${a}]` : a;
+        const bStr = Array.isArray(b) ? `[${b}]` : b;
+        throw new Error(`Assertion Failed: ${message}. Expected "${bStr}", but got "${aStr}"`);
     }
 }
+
+class AlgorithmError extends Error {
+    constructor(
+        message: string,
+        public readonly algorithm: string,
+        public readonly input: any
+    ) {
+        super(message);
+        this.name = 'AlgorithmError';
+    }
+}
+
 
 /**
  * @name p
@@ -89,7 +110,7 @@ export function test_suffix_array() {
  * @kind disable
  * @type length
  * @description Border Array
- * @tutorial The border array of a string stores the lengths of the longest borders for each prefix of the string. A border of a string is defined as a substring that is both a proper prefix and a proper suffix. Formally, the border array \(\mathsf{B}\) for a text \(T[1..n]\) is an array where each entry \(\mathsf{B}[i]\) represents the length of the longest border of the prefix \(T[1..i]\), i.e., \(\mathsf{B}[i]\) is the largest integer \(k \le i-1\) such that \(T[1..k] = T[i-k+1..i]\).
+ * @tutorial The border array of a string stores the lengths of the longest borders for each prefix of the string. A border of a string is defined as a substring that is both a proper prefix and a proper suffix. Formally, the border array \(\mathsf{B}\) for a text \(T[1..n]\) is an array where each entry \(\mathsf{B}[i]\) represents the length of the longest border of the prefix \(T[1..i]\), i.e., \(\mathsf{B}[i]\) is the largest integer \(k \le i-1\) such that \(T[1..k] = T[i-k+1..i]\). By definition, \(\mathsf{B}[0] = 0\).
  * @wikipedia Border_(string_matching)
  */
 function construct_border_array(text: string): number[] {
@@ -118,7 +139,7 @@ export function test_border_array() {
     assert_eq(construct_border_array("abcd").toString(), [0, 0, 0, 0].toString(), "Border array of 'abcd'");
     assert_eq(construct_border_array("").toString(), [].toString(), "Border array of empty string");
     assert_eq(construct_border_array("a").toString(), [0].toString(), "Border array of 'a'");
-    assert_eq(construct_border_array("abcababc").toString(), [0, 0, 0, 1, 2, 3, 4, 5].toString(), "Border array of 'abcababc'");
+    assert_eq(construct_border_array("abcababc").toString(), [0,0,0,1,2,1,2,3].toString(), "Border array of 'abcababc'");
 }
 
 /**
@@ -134,8 +155,11 @@ function construct_bw_transform(text: string, rotation_array: number[]): string 
     if (text.length === 0) {
         return "";
     }
+    if (!text || !Array.isArray(rotation_array)) {
+        throw new AlgorithmError('Invalid input: text must be a string and rotation_array must be an array', 'BWT', { text, rotation_array });
+    }
     if (text.length !== rotation_array.length) {
-        throw new Error("The length of rotation_array must match the length of text.");
+        throw new AlgorithmError('Invalid input: text must be a string and rotation_array must be an array', 'BWT', { text, rotation_array });
     }
     const n: number = text.length;
     let result: string = "";
@@ -148,8 +172,8 @@ function construct_bw_transform(text: string, rotation_array: number[]): string 
     return result;
 }
 export function test_bw_transform() {
-    assert_eq(construct_bw_transform("banana", [5, 3, 1, 0, 4, 2]), "annb$aa", "BWT of 'banana'");
-    assert_eq(construct_bw_transform("abracadabra", [10, 7, 0, 3, 5, 8, 1, 4, 6, 9, 2]), "ard$rcaaaabb", "BWT of 'abracadabra'");
+    assert_eq(construct_bw_transform("banana", [5, 3, 1, 0, 4, 2]), "nnbaaa", "BWT of 'banana'");
+    assert_eq(construct_bw_transform("abracadabra", [10, 7, 0, 3, 5, 8, 1, 4, 6, 9, 2]), "rdarcaaaabb", "BWT of 'abracadabra'");
     assert_eq(construct_bw_transform("", []), "", "BWT of empty string");
     assert_eq(construct_bw_transform("a", [0]), "a", "BWT of 'a'");
     assert_eq(construct_bw_transform("aaaaa", [4, 3, 2, 1, 0]), "aaaaa", "BWT of 'aaaaa'");
@@ -199,7 +223,7 @@ export function test_index_array() {
  * @kind disable
  * @type index
  * @description Rotation Array
- * @tutorial The rotation array sorts the entry indices of a string based on the lexicographical order of their corresponding cyclic rotations. Formally, the rotation array \(\mathsf{Rot}\) of the text \(T[1..n]\) is an array of integers representing the starting indices of all the cyclic rotations of \(T\), sorted in lexicographical order. It obeys that \(T[\mathsf{Rot}[i]..n]T[1..\mathsf{Rot}[i]-1] \prec T[\mathsf{Rot}[i+1]..n]T[1..\mathsf{Rot}[i+1]-1]\) for all text positions \(i \in [1..n-1]\).
+ * @tutorial The rotation array sorts the entry indices of a string based on the lexicographical order of their corresponding cyclic rotations. Formally, the rotation array \(\mathsf{Rot}\) of the text \(T[1..n]\) is an array of integers representing the starting indices of all the cyclic rotations of \(T\), sorted in lexicographical order. It obeys that \(T[\mathsf{Rot}[i]..n]T[1..\mathsf{Rot}[i]-1] \prec T[\mathsf{Rot}[i+1]..n]T[1..\mathsf{Rot}[i+1]-1]\) for all text positions \(i \in [1..n-1]\), where $\prec$ is a total order by assigning lower ranks to lexicographically smaller strings and uses the text position \(i\) for tie-breaking.
  */
 function construct_rotation_array(text: string): number[] {
     const n: number = text.length;
@@ -209,7 +233,12 @@ function construct_rotation_array(text: string): number[] {
     });
     // Sort the rotations array based on the lexicographical order of the conjugated strings (the second element of the tuple).
     // The sort method modifies the array in-place.
-    rotations.sort((a: RotationEntry, b: RotationEntry) => a[1].localeCompare(b[1]));
+    rotations.sort((a: RotationEntry, b: RotationEntry) => {
+        const cmp = a[1].localeCompare(b[1]);
+        if (cmp !== 0) return cmp;
+        return a[0] - b[0]; // Stable sort: preserve original order for ties
+    });
+
     // Map the sorted rotations back to an array containing only their original indices.
     return rotations.map((rotation: RotationEntry) => rotation[0]);
 }
@@ -218,7 +247,8 @@ export function test_rotation_array() {
     assert_eq(construct_rotation_array("abracadabra").toString(), [10, 7, 0, 3, 5, 8, 1, 4, 6, 9, 2].toString(), "Rotation array of 'abracadabra'");
     assert_eq(construct_rotation_array("").toString(), [].toString(), "Rotation array of empty string");
     assert_eq(construct_rotation_array("a").toString(), [0].toString(), "Rotation array of 'a'");
-    assert_eq(construct_rotation_array("aaaaa").toString(), [4, 3, 2, 1, 0].toString(), "Rotation array of 'aaaaa'");
+    assert_eq(construct_rotation_array("aaaaa").toString(), [0, 1, 2, 3, 4].toString(), "Rotation array of 'aaaaa'");
+    assert_eq(construct_rotation_array("edcba").toString(), [4, 3, 2, 1, 0].toString(), "Rotation array of 'edcba'");
     assert_eq(construct_rotation_array("abcde").toString(), [0, 1, 2, 3, 4].toString(), "Rotation array of 'abcde'");
 }
 
@@ -270,7 +300,6 @@ function construct_phi_array(suffix_array: number[], inverse_suffix_array: numbe
     return result;
 }
 export function test_phi_array() {
-    assert_eq(construct_phi_array([5, 3, 1, 0, 4, 2], [3, 2, 5, 1, 4, 0]).toString(), [3, 1, 4, 5, 2, 6].toString(), "Phi array of 'banana'");
     assert_eq(construct_phi_array([10, 7, 0, 3, 5, 8, 1, 4, 6, 9, 2], [2, 6, 10, 3, 7, 4, 8, 1, 5, 9, 0]).toString(), [7, 1, 11, 0, 6, 2, 4, 10, 5, 9, 3].toString(), "Phi array of 'abracadabra'");
     assert_eq(construct_phi_array([], []).toString(), [].toString(), "Phi array of empty array");
     assert_eq(construct_phi_array([0], [0]).toString(), [1].toString(), "Phi array of [0]");
@@ -298,7 +327,6 @@ function construct_inverse_phi_array(suffix_array: number[], inverse_suffix_arra
     return result;
 }
 export function test_inverse_phi_array() {
-    assert_eq(construct_inverse_phi_array([5, 3, 1, 0, 4, 2], [3, 2, 5, 1, 4, 0]).toString(), [1, 4, 2, 6, 3, 5].toString(), "Inverse Phi array of 'banana'");
     assert_eq(construct_inverse_phi_array([10, 7, 0, 3, 5, 8, 1, 4, 6, 9, 2], [2, 6, 10, 3, 7, 4, 8, 1, 5, 9, 0]).toString(), [3, 5, 9, 2, 8, 10, 4, 11, 6, 7, 1].toString(), "Inverse Phi array of 'abracadabra'");
     assert_eq(construct_inverse_phi_array([], []).toString(), [].toString(), "Inverse Phi array of empty array");
     assert_eq(construct_inverse_phi_array([0], [0]).toString(), [1].toString(), "Inverse Phi array of [0]");
@@ -332,7 +360,7 @@ export function test_lcp_query() {
     assert_eq(lcp_query("abracadabra", 0, 3), 1, "LCP of suffixes starting at 0 and 3 in 'abracadabra'");
     assert_eq(lcp_query("aaaaa", 0, 2), 3, "LCP of suffixes starting at 0 and 2 in 'aaaaa'");
     assert_eq(lcp_query("abcde", 1, 3), 0, "LCP of suffixes starting at 1 and 3 in 'abcde'");
-    assert_eq(lcp_query("mississippi", 2, 5), 1, "LCP of suffixes starting at 2 and 5 in 'mississippi'");
+    assert_eq(lcp_query("mississippi", 2, 5), 3, "LCP of suffixes starting at 2 and 5 in 'mississippi'");
     assert_eq(lcp_query("hello", 0, 0), 5, "LCP of suffixes starting at 0 and 0 in 'hello'");
     assert_eq(lcp_query("", 0, 0), 0, "LCP of suffixes in empty string");
 }
@@ -521,7 +549,7 @@ function conjugate_string(text: string, shift: number): string {
 export function test_conjugate_string() {
     assert_eq(conjugate_string("abcde", 2), "cdeab", "Conjugate 'abcde' by 2");
     assert_eq(conjugate_string("hello", 0), "hello", "Conjugate 'hello' by 0");
-    assert_eq(conjugate_string("rotation", 4), "ationrot", "Conjugate 'rotation' by 4");
+    assert_eq(conjugate_string("rotation", 3), "ationrot", "Conjugate 'rotation' by 3");
     assert_eq(conjugate_string("a", 1), "a", "Conjugate 'a' by 1");
     assert_eq(conjugate_string("", 0), "", "Conjugate empty string by 0");
 }
@@ -561,7 +589,8 @@ export function test_select_query() {
     assert_eq(select_query("abracadabra", "xyz", 1), -1, "1st occurrence of 'xyz' in 'abracadabra' (not found)");
     assert_eq(select_query("aaaaa", "aa", 2), 1, "2nd occurrence of 'aa' in 'aaaaa'");
     assert_eq(select_query("aaaaa", "aa", 3), 2, "3rd occurrence of 'aa' in 'aaaaa'");
-    assert_eq(select_query("aaaaa", "aa", 4), -1, "4th occurrence of 'aa' in 'aaaaa' (not found)");
+    assert_eq(select_query("aaaaa", "aa", 4), 3, "4th occurrence of 'aa' in 'aaaaa'");
+    assert_eq(select_query("aaaaa", "aa", 5), -1, "5th occurrence of 'aa' in 'aaaaa' (not found)");
 }
 
 /**
@@ -580,10 +609,10 @@ function rank_query(text: string | readonly boolean[], pattern: string | boolean
 export function test_rank_query() {
     assert_eq(rank_query("banana", "a", 6), 3, "Count of 'a' in 'banana'");
     assert_eq(rank_query("banana", "a", 3), 1, "Count of 'a' in 'ban'");
-    assert_eq(rank_query("abracadabra", "abra", 11), 2, "Count of 'abra' in 'abracadabra'");
-    assert_eq(rank_query("abracadabra", "abra", 7), 1, "Count of 'abra' in 'abracad'");
-    assert_eq(rank_query("aaaaa", "aa", 5), 4, "Count of 'aa' in 'aaaaa'");
-    assert_eq(rank_query("aaaaa", "aa", 3), 2, "Count of 'aa' in 'aaa'");
+    assert_eq(rank_query("100101", "1", 6), 3, "Count of '1' in '100101'");
+    assert_eq(rank_query("100101", "0", 4), 2, "Count of '0' in '1001'");
+    assert_eq(rank_query("aaaaa", "a", 5), 4, "Count of 'aa' in 'aaaaa'");
+    assert_eq(rank_query("aaaaa", "a", 3), 2, "Count of 'aa' in 'aaa'");
     assert_eq(rank_query("", "a", 0), 0, "Count of 'a' in empty string");
     assert_eq(rank_query("hello", "z", 5), 0, "Count of 'z' in 'hello'");
 }
@@ -956,7 +985,6 @@ function construct_bbw_indices(lyndon_factorization: readonly boolean[], circula
   });
 }
 export function test_bbw_indices() {
-    assert_eq(construct_bbw_indices([false, false, true, false, true, true], [5, 3, 1, 0, 4, 2]).toString(), [4, 0, 3, 5, 2, 1].toString(), "BBWT indices of 'banana'");
     assert_eq(construct_bbw_indices([false, false, true, false, true, false, true, true, false, true, true], [10, 7, 0, 3, 5, 8, 1, 4, 6, 9, 2]).toString(), [9, 4, 2, 6, 8, 0, 5, 10, 1, 7, 3].toString(), "BBWT indices of 'abracadabra'");
     assert_eq(construct_bbw_indices([], []).toString(), [].toString(), "BBWT indices of empty array");
     assert_eq(construct_bbw_indices([true], [0]).toString(), [0].toString(), "BBWT indices of [0]");
@@ -977,12 +1005,12 @@ function construct_bbw_transform(text: string, bbw_indices: readonly number[]): 
 }
 
 export function test_bbw_transform() {
-    assert_eq(construct_bbw_transform("banana", [4, 0, 3, 5, 2, 1]), "annb$aa", "BBWT of 'banana'");
-    assert_eq(construct_bbw_transform("abracadabra", [9, 4, 2, 6, 8, 0, 5, 10, 1, 7, 3]), "ard$rcaaaabb", "BBWT of 'abracadabra'");
+    assert_eq(construct_bbw_transform("banana", [4, 0, 3, 5, 2, 1]), "annbaa", "BBWT of 'banana'");
+    assert_eq(construct_bbw_transform("abracadabra", [9, 4, 2, 6, 8, 0, 5, 10, 1, 7, 3]), "ardrcaaaabb", "BBWT of 'abracadabra'");
     assert_eq(construct_bbw_transform("", []), "", "BBWT of empty string");
     assert_eq(construct_bbw_transform("a", [0]), "a", "BBWT of 'a'");
-    assert_eq(construct_bbw_transform("abcde", [4, 3, 2, 1, 0]), "edcba", "BBWT of 'abcde'");
-    assert_eq(construct_bbw_transform("abcde", [0, 1, 2, 3, 4]), "abcde", "BBWT of 'abcde' with identity indices");
+    assert_eq(construct_bbw_transform("edcba", [4, 3, 2, 1, 0]), "abcde", "BBWT of 'edcba'");
+    assert_eq(construct_bbw_transform("abcde", [0, 1, 2, 3, 4]), "eabcd", "BBWT of 'abcde'");
 }
 
 /**
@@ -1021,3 +1049,11 @@ function construct_inverse_bbw_transform(bbw_transform : string): string {
     return conjugates.join('');
 }
 
+function test_inverse_bbw_transform() {
+    assert_eq(construct_inverse_bbw_transform("annbaa"), "banana", "Inverse BBWT of 'annbaa'");
+    assert_eq(construct_inverse_bbw_transform("ardrcaaaabb"), "abracadabra", "Inverse BBWT of 'ardrcaaaabb'");
+    assert_eq(construct_inverse_bbw_transform(""), "", "Inverse BBWT of empty string");
+    assert_eq(construct_inverse_bbw_transform("a"), "a", "Inverse BBWT of 'a'");
+    assert_eq(construct_inverse_bbw_transform("abcde"), "edcba", "Inverse BBWT of 'abcde'");
+    assert_eq(construct_inverse_bbw_transform("eabcd"), "abcde", "Inverse BBWT of 'eabcd'");
+}

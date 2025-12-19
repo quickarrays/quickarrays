@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "scripts": {
     "test": "jest",
-    "start": "node test.js"
+    "start": "node test.js",
+    "build:ts": "tsc -p .",
+    "build": "npm run build:ts && python3 algorithm.py"
   },
   "dependencies": {
     "typescript": "^5.9.3"
@@ -15,7 +17,6 @@
     "@babel/preset-env": "^7.28.5",
     "@babel/preset-typescript": "^7.28.5",
     "@types/jest": "^30.0.0",
-    "babel-cli": "^6.26.0",
     "jest": "^30.2.0",
     "ts-jest": "^29.4.6",
     "typescript": "^5.9.3"
