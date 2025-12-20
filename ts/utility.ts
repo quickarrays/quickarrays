@@ -550,3 +550,69 @@ export function test_whitespace_encoding_decoding(): void {
   assert_eq(decodedText, originalText, "Test 6: Round-trip encoding and decoding");
 }
 
+/**
+ * Edge case tests for utility functions
+ */
+export function test_utility_edge_cases() {
+    // Test number_of_runs with very long string
+    const longString = "a".repeat(10000);
+    assert_eq(number_of_runs(longString), 1, "Long string of same character");
+
+    // Test number_of_runs with alternating pattern
+    const alternating = "ababababab";
+    assert_eq(number_of_runs(alternating), 10, "Alternating characters");
+
+    // Test number_of_factors with very large array
+    const largeArray = new Array(10000).fill(false);
+    largeArray[100] = true;
+    largeArray[500] = true;
+    largeArray[9999] = true;
+    assert_eq(number_of_factors(largeArray), 3, "Large array with few true values");
+
+    // Test pad_right with empty pad character
+    assert_eq(pad_right("hello", "", 10), "hello", "pad_right with empty char");
+
+    // Test pad_left with empty pad character
+    assert_eq(pad_left("hello", "", 10), "hello", "pad_left with empty char");
+
+    // Test pad_right with multi-character padding
+    assert_eq(pad_right("hi", "ab", 6), "hiabab", "pad_right with multi-char");
+
+    // Test pad_left with multi-character padding
+    assert_eq(pad_left("hi", "ab", 6), "ababhi", "pad_left with multi-char");
+
+    // Test increment_array with very large numbers
+    const result = increment_array([Number.MAX_SAFE_INTEGER], 1);
+    assert_eq(result[0], Number.MAX_SAFE_INTEGER + 1, "Increment very large number");
+
+    // Test replace_invalid_position with all valid positions
+    const validResult = replace_invalid_position([0, 1, 2, 3, 4], 10);
+    assert_eq(validResult, [0, 1, 2, 3, 4], "All valid positions");
+
+    // Test prettify_string with null character in middle
+    const withNull = prettify_string("a\0b\0c");
+    assert_eq(withNull.includes("$"), true, "Null characters replaced");
+
+    // Test prettify_array with mixed types
+    const mixedResult = prettify_array([1, "two", 3]);
+    assert_eq(mixedResult.includes("two"), true, "Mixed types handled");
+
+    // Test encodeWhitespaces with all whitespace types
+    const allWhitespace = encodeWhitespaces(" \t\n\r\v\f");
+    assert_eq(allWhitespace.includes(" "), false, "No spaces in encoded");
+    assert_eq(allWhitespace.includes("\t"), false, "No tabs in encoded");
+    assert_eq(allWhitespace.includes("\n"), false, "No newlines in encoded");
+
+    // Test decodeWhitespaces round trip
+    const original = "hello\tworld\n";
+    const encoded = encodeWhitespaces(original);
+    const decoded = decodeWhitespaces(encoded);
+    assert_eq(decoded, original, "Round trip whitespace encoding");
+
+    // Test prettify_factorization with empty arrays
+    assert_eq(prettify_factorization([], []), "", "Empty factorization");
+
+    // Test prettify_factorization with single element
+    assert_eq(prettify_factorization(["a"], [true]), "a|", "Single element factorization");
+}
+

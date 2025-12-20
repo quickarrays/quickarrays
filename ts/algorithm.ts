@@ -76,9 +76,6 @@ export function test_exponent() {
 function count_regularity(border_array: number[]) : string {
     if(!border_array || border_array.length === 0) { return 'empty'; }
     const n = border_array.length;
-    if (n == 0) {
-        return 'empty';
-    }
     const last_border = border_array[n - 1];
     const period = count_period(border_array);
     const exponent = count_exponent(border_array);
@@ -150,11 +147,8 @@ export function test_suffix_array() {
  * @wikipedia Border_(string_matching)
  */
 function construct_border_array(text: string): number[] {
-    if (!text) { return []; }
+  if (!text) { return []; }
   const n: number = text.length;
-  if (n === 0) {
-      return [];
-  }
   const border: number[] = new Array<number>(n);
   border[0] = 0;
   for (let i = 1; i < n; i++) {
@@ -1491,5 +1485,244 @@ export function test_phi_array_identity() {
         const randomString = random_ternary_string(2+i);
         test_helper(randomString);
     }
+}
+
+/**
+ * Edge case tests for error handling
+ */
+export function test_error_handling() {
+    // Test construct_bw_transform with mismatched array lengths
+    try {
+        construct_bw_transform("abc", [1, 2]);
+        throw new Error("Should have thrown AlgorithmError");
+    } catch (e) {
+        if (!(e instanceof AlgorithmError)) {
+            throw new Error("Expected AlgorithmError");
+        }
+    }
+
+    // Test conjugate_string with negative shift
+    try {
+        conjugate_string("hello", -1);
+        throw new Error("Should have thrown AlgorithmError");
+    } catch (e) {
+        if (!(e instanceof AlgorithmError)) {
+            throw new Error("Expected AlgorithmError");
+        }
+    }
+
+    // Test conjugate_string with shift greater than length
+    try {
+        conjugate_string("hello", 10);
+        throw new Error("Should have thrown AlgorithmError");
+    } catch (e) {
+        if (!(e instanceof AlgorithmError)) {
+            throw new Error("Expected AlgorithmError");
+        }
+    }
+
+    // Test select_query with zero nth parameter
+    try {
+        select_query("banana", "a", 0);
+        throw new Error("Should have thrown AlgorithmError");
+    } catch (e) {
+        if (!(e instanceof AlgorithmError)) {
+            throw new Error("Expected AlgorithmError");
+        }
+    }
+
+    // Test select_query with negative nth parameter
+    try {
+        select_query("banana", "a", -1);
+        throw new Error("Should have thrown AlgorithmError");
+    } catch (e) {
+        if (!(e instanceof AlgorithmError)) {
+            throw new Error("Expected AlgorithmError");
+        }
+    }
+
+    // Test construct_plcp_array with mismatched lengths
+    try {
+        construct_plcp_array([1, 2, 3], [1, 2]);
+        throw new Error("Should have thrown AlgorithmError");
+    } catch (e) {
+        if (!(e instanceof AlgorithmError)) {
+            throw new Error("Expected AlgorithmError");
+        }
+    }
+
+    // Test construct_lf_array with mismatched lengths
+    try {
+        construct_lf_array("abc", "ab");
+        throw new Error("Should have thrown AlgorithmError");
+    } catch (e) {
+        if (!(e instanceof AlgorithmError)) {
+            throw new Error("Expected AlgorithmError");
+        }
+    }
+
+    // Test construct_lyndon_factorization with short inverse suffix array
+    try {
+        construct_lyndon_factorization("hello", [1, 2]);
+        throw new Error("Should have thrown AlgorithmError");
+    } catch (e) {
+        if (!(e instanceof AlgorithmError)) {
+            throw new Error("Expected AlgorithmError");
+        }
+    }
+
+    // Test delta with empty array
+    try {
+        delta([]);
+        throw new Error("Should have thrown AlgorithmError");
+    } catch (e) {
+        if (!(e instanceof AlgorithmError)) {
+            throw new Error("Expected AlgorithmError");
+        }
+    }
+
+    // Test omega_order with undefined strings
+    try {
+        omega_order(undefined as any, "abc");
+        throw new Error("Should have thrown AlgorithmError");
+    } catch (e) {
+        if (!(e instanceof AlgorithmError)) {
+            throw new Error("Expected AlgorithmError");
+        }
+    }
+}
+
+/**
+ * Boundary condition tests
+ */
+export function test_boundary_conditions() {
+    // Test count_period with very large border arrays
+    const largeArray = new Array(1000).fill(0).map((_, i) => i < 500 ? i : 500);
+    const result1 = count_period(largeArray);
+    assert_eq(result1 > 0, true, "count_period should handle large arrays");
+
+    // Test construct_suffix_array with repeated characters
+    assert_eq(construct_suffix_array("aaaaaaaaaa"), [9, 8, 7, 6, 5, 4, 3, 2, 1, 0], "Suffix array of repeated chars");
+
+    // Test construct_border_array with very long string
+    const longString = "ab".repeat(500);
+    const result2 = construct_border_array(longString);
+    assert_eq(result2.length, 1000, "Border array of long string");
+
+    // Test construct_suffix_array with special characters
+    const result3 = construct_suffix_array("!@#$%");
+    assert_eq(result3.length, 5, "Suffix array with special chars");
+
+    // Test construct_rotation_array with single repeating character
+    assert_eq(construct_rotation_array("bbbb"), [0, 1, 2, 3], "Rotation array of repeated char");
+
+    // Test lcp_query with out of bounds indices
+    assert_eq(lcp_query("hello", -1, 0), 0, "LCP with negative index1");
+    assert_eq(lcp_query("hello", 0, -1), 0, "LCP with negative index2");
+    assert_eq(lcp_query("hello", 10, 0), 0, "LCP with index1 > length");
+    assert_eq(lcp_query("hello", 0, 10), 0, "LCP with index2 > length");
+
+    // Test rank_query with index at boundaries
+    assert_eq(rank_query("hello", "l", 0), 0, "Rank query at index 0");
+    assert_eq(rank_query("hello", "l", 5), 2, "Rank query at end");
+
+    // Test construct_index_array with zero length
+    assert_eq(construct_index_array(0), [], "Index array with 0 length");
+
+    // Test construct_index_array with negative length
+    assert_eq(construct_index_array(-5), [], "Index array with negative length");
+}
+
+/**
+ * Tests for null and undefined inputs
+ */
+export function test_null_undefined_inputs() {
+    // Test various functions with null inputs
+    assert_eq(count_period(null as any), 0, "count_period with null");
+    assert_eq(count_exponent(null as any), 0, "count_exponent with null");
+    assert_eq(count_regularity(null as any), 'empty', "count_regularity with null");
+    assert_eq(construct_suffix_array(null as any), [], "construct_suffix_array with null");
+    assert_eq(construct_border_array(null as any), [], "construct_border_array with null");
+    assert_eq(construct_bw_transform(null as any, null as any), "", "construct_bw_transform with null");
+    assert_eq(construct_first_array(null as any), "", "construct_first_array with null");
+    assert_eq(construct_rotation_array(null as any), [], "construct_rotation_array with null");
+    assert_eq(construct_inverse_suffix_array(null as any), [], "construct_inverse_suffix_array with null");
+    assert_eq(construct_lcp_array(null as any, null as any), [], "construct_lcp_array with null");
+    assert_eq(count_lcp_array(null as any), 0, "count_lcp_array with null");
+    assert_eq(construct_plcp_array(null as any, null as any), [], "construct_plcp_array with null");
+    assert_eq(construct_psi_array(null as any, null as any), [], "construct_psi_array with null");
+    assert_eq(construct_lyndon_factorization(null as any, null as any), [], "construct_lyndon_factorization with null");
+    assert_eq(count_delta(null as any), 0, "count_delta with null");
+    assert_eq(count_delta_argmax(null as any), 0, "count_delta_argmax with null");
+    assert_eq(construct_substring_complexity(null as any), [], "construct_substring_complexity with null");
+    assert_eq(conjugate_string(null as any, 0), "", "conjugate_string with null");
+    assert_eq(select_query(null as any, "a", 1), -1, "select_query with null");
+    assert_eq(rank_query(null as any, "a", 0), 0, "rank_query with null");
+    assert_eq(construct_lf_array(null as any, null as any), [], "construct_lf_array with null");
+    assert_eq(construct_sl_string(null as any), [], "construct_sl_string with null");
+    assert_eq(construct_lpf_array(null as any), [], "construct_lpf_array with null");
+    assert_eq(construct_lnf_array(null as any), [], "construct_lnf_array with null");
+    assert_eq(construct_nss_array(null as any), [], "construct_nss_array with null");
+    assert_eq(construct_pss_array(null as any), [], "construct_pss_array with null");
+    assert_eq(construct_lyndon_array(null as any), [], "construct_lyndon_array with null");
+    assert_eq(construct_necklace_conjugate_transform(null as any), "", "construct_necklace_conjugate_transform with null");
+    assert_eq(construct_invert_transform(null as any), "", "construct_invert_transform with null");
+    assert_eq(construct_revert_transform(null as any), "", "construct_revert_transform with null");
+    assert_eq(construct_circular_suffix_array(null as any, null as any), [], "construct_circular_suffix_array with null");
+    assert_eq(construct_inverse_circular_suffix_array(null as any), [], "construct_inverse_circular_suffix_array with null");
+    assert_eq(construct_bbw_indices(null as any, null as any), [], "construct_bbw_indices with null");
+    assert_eq(construct_bbw_transform(null as any, null as any), "", "construct_bbw_transform with null");
+    assert_eq(construct_inverse_bbw_transform(null as any), "", "construct_inverse_bbw_transform with null");
+    assert_eq(lcp_query(null as any, 0, 0), 0, "lcp_query with null");
+    assert_eq(construct_inverse_phi_array(null as any, null as any), [], "construct_inverse_phi_array with null");
+}
+
+/**
+ * Complex integration tests
+ */
+export function test_complex_integration() {
+    // Test full suffix array pipeline with unicode
+    const unicode = "café";
+    const sa = construct_suffix_array(unicode);
+    const isa = construct_inverse_suffix_array(sa);
+    const lcp = construct_lcp_array(unicode, sa);
+    
+    assert_eq(sa.length, unicode.length, "SA length matches");
+    assert_eq(isa.length, unicode.length, "ISA length matches");
+    assert_eq(lcp.length, unicode.length, "LCP length matches");
+
+    // Test BWT transform and inverse with complex string
+    const text = "mississippi";
+    const ra = construct_rotation_array(text);
+    const bwt = construct_bw_transform(text, ra);
+    
+    assert_eq(bwt.length, text.length, "BWT length matches");
+
+    // Test Lyndon factorization consistency
+    const texts = ["banana", "abracadabra", "aaaaa", "abcde"];
+    
+    texts.forEach(t => {
+        const sa2 = construct_suffix_array(t);
+        const isa2 = construct_inverse_suffix_array(sa2);
+        const lf = construct_lyndon_factorization(t, isa2);
+        
+        assert_eq(lf.length, t.length, `LF length matches for ${t}`);
+        assert_eq(lf.filter(x => x).length > 0, true, `At least one factor end for ${t}`);
+    });
+
+    // Test BBWT round trip with various strings
+    const testStrings = ["a", "ab", "abc", "aaa", "abab"];
+    
+    testStrings.forEach(t => {
+        const sa3 = construct_suffix_array(t);
+        const isa3 = construct_inverse_suffix_array(sa3);
+        const lf3 = construct_lyndon_factorization(t, isa3);
+        const csa = construct_circular_suffix_array(t, lf3);
+        const bbwti = construct_bbw_indices(lf3, csa);
+        const bbwt3 = construct_bbw_transform(t, bbwti);
+        const recovered = construct_inverse_bbw_transform(bbwt3);
+        
+        assert_eq(recovered, t, `BBWT round trip for ${t}`);
+    });
 }
 

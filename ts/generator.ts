@@ -302,3 +302,29 @@ export function test_kolakoski_word() {
     assert_eq(generate_kolakoski_word(3), "abbaaba", "Kolakoski Word 3");
     assert_eq(generate_kolakoski_word(4), "abbaababba", "Kolakoski Word 4");
 }
+
+/**
+ * Edge case tests for generators with negative inputs
+ */
+export function test_generator_edge_cases() {
+    // All generators should handle negative inputs gracefully
+    assert_eq(generate_fibonacci_word(-5), "b", "Fibonacci with negative input");
+    assert_eq(generate_tribonacci_word(-5), "a", "Tribonacci with negative input");
+    assert_eq(generate_thue_morse_word(-5), "a", "Thue-Morse with negative input");
+    assert_eq(generate_mephisto_waltz_word(-5), "a", "Mephisto-Waltz with negative input");
+    assert_eq(generate_vtm_word(-5), "a", "VTM with negative input");
+    assert_eq(generate_sierpinski_word(-5), "a", "Sierpinski with negative input");
+    assert_eq(generate_pell_word(-5), "a", "Pell with negative input");
+    assert_eq(generate_chacon_word(-5), "a", "Chacon with negative input");
+    assert_eq(generate_von_neumann_word(-5), "a", "von Neumann with negative input");
+    assert_eq(generate_rudin_shapiro_word(-5), "a", "Rudin-Shapiro with negative input");
+    assert_eq(generate_baum_sweet_word(-5), "a", "Baum-Sweet with negative input");
+    assert_eq(generate_kolakoski_word(-5), "ab", "Kolakoski with negative input");
+
+    // Test generators with larger values to ensure they don't crash
+    const fib7 = generate_fibonacci_word(7);
+    assert_eq(fib7.length > 0, true, "Fibonacci Word 7 generated");
+    
+    const thue5 = generate_thue_morse_word(5);
+    assert_eq(thue5.length, 32, "Thue-Morse Word 5 has correct length");
+}
