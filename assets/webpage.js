@@ -303,10 +303,10 @@ function updateArrays() {
 				return;
 			}
 			if(structures_list.isIndex(dsName)) {
-				varDs = replace_invalid_position(varDs, ds_text.length);
 				if(varBase != 0) {
 					varDs = increment_array(varDs);
 				}
+				varDs = replace_invalid_position(varDs, varBase+ds_text.length);
 			}
 			if(structures_list.isString(dsName)) {
 				if(options_list.enabled("whitespace")) {
