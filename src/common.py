@@ -37,19 +37,19 @@ EXTERNAL_JS_DIR = JS_DIR / 'ext'
 
 HTML_DIR = BUILD_DIR / 'html'
 SKELETON_HTML = SOURCE_DIR / 'skeleton.html'
-BUILD_HTML = BUILD_DIR / 'index.html'
+BUILD_HTML = BUILD_DIR / 'uncompressed.html'
 COUNTERS_HTML = HTML_DIR / 'counters.html'
 ALGORITHM_ENABLE_HTML = HTML_DIR / 'algorithm_enable.html'
 ALGORITHM_DISABLE_HTML = HTML_DIR / 'algorithm_disable.html'
 TRANSFORM_HTML = HTML_DIR / 'transform.html'
 GENERATOR_HTML = HTML_DIR / 'generator.html'
+STANDALONE_HTML = BUILD_DIR / 'index.html'
 
 
 CONCATENATED_CSS = BUILD_DIR / "concatenated.css"
 CONCATENATED_HTML = BUILD_DIR / 'concatenated.html'
 
 DIST_DIR = SOURCE_DIR.parent / 'dist'
-DIST_HTML = DIST_DIR / 'standalone.html'
 DIST_PACKED_HTML = DIST_DIR / 'index.html'
 
 
@@ -143,7 +143,7 @@ def generate_makefile() -> str:
 	buffer.append(f"BUILD_HTML := {BUILD_HTML}")
 	buffer.append(f'ASSETS_DIR := {ASSET_DIR}')
 	buffer.append(f'BUILD_DIR := {BUILD_DIR}')
-	buffer.append(f'DIST_HTML := {DIST_HTML}')
+	buffer.append(f'STANDALONE_HTML := {STANDALONE_HTML}')
 	buffer.append(f'DIST_PACKED_HTML := {DIST_PACKED_HTML}')
 	buffer.append('ASSET_CSS := {}'.format(' '.join(str(f) for f in asset_css_files)))
 	buffer.append('ASSET_JS := {}'.format(' '.join(str(f) for f in asset_js_files)))
@@ -151,7 +151,7 @@ def generate_makefile() -> str:
 	buffer.append('BUILD_DIR_ASSET_JS := $(subst $(ASSETS_DIR),$(BUILD_DIR)/js,$(ASSET_JS))')
 
 	buffer.append('.PHONY: all check test clean')
-	buffer.append('all: $(BUILD_HTML) $(DIST_HTML) $(DIST_PACKED_HTML)')
+	buffer.append('all: $(BUILD_HTML) $(STANDALONE_HTML) $(DIST_PACKED_HTML)')
 
 	for asset_file in asset_css_files:
 		dest_file = BUILD_DIR / 'css' / asset_file.name
@@ -195,14 +195,14 @@ def generate_makefile() -> str:
 	buffer.append(f'\t@mkdir -p {BUILD_HTML.parent}')
 	buffer.append(f'\tpython3 {SKELETON_PY}')
 
-	buffer.append(f'$(DIST_PACKED_HTML): $(DIST_HTML)')
+	buffer.append(f'$(DIST_PACKED_HTML): $(STANDALONE_HTML)')
 	buffer.append(f'\t@npx parcel build $< --public-url ./')
 
 	buffer.append('$(GENERATED_JS): $(JS_GEN_FILES) ')
 	buffer.append(f'\tpython3 {COMPILE_JAVASCRIPT_PY}')
 	
-	buffer.append(f'$(DIST_HTML): $(BUILD_HTML) {STANDALONE_PY}')
-	buffer.append(f'\t@mkdir -p {DIST_HTML.parent}')
+	buffer.append(f'$(STANDALONE_HTML): $(BUILD_HTML) {STANDALONE_PY}')
+	buffer.append(f'\t@mkdir -p {STANDALONE_HTML.parent}')
 	buffer.append(f'\tpython3 {STANDALONE_PY}')
 
 	buffer.append('check:')

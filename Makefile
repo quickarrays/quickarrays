@@ -3,17 +3,17 @@ TS_CONFIG := ./tsconfig.json
 TS_FILES := ./src/algorithm.ts ./src/generator.ts ./src/utility.ts
 JS_GEN_FILES := ./build/js/gen/counters.js ./build/js/gen/algorithm_pipeline.js ./build/js/gen/generator_pipeline.js ./build/js/gen/tutorial.js ./build/js/gen/citation.js ./build/js/gen/algorithm.js ./build/js/gen/generator.js ./build/js/gen/utility.js
 GENERATED_JS := ./build/js/generated.js
-BUILD_HTML := ./build/index.html
+BUILD_HTML := ./build/uncompressed.html
 ASSETS_DIR := ./assets
 BUILD_DIR := ./build
-DIST_HTML := ./dist/standalone.html
+STANDALONE_HTML := ./build/index.html
 DIST_PACKED_HTML := ./dist/index.html
 ASSET_CSS := ./assets/qa.css
 ASSET_JS := ./assets/ds_list.js ./assets/text_opt_element.js ./assets/webpage.js ./assets/counter_list.js
 BUILD_DIR_ASSET_CSS := $(subst $(ASSETS_DIR),$(BUILD_DIR)/css,$(ASSET_CSS))
 BUILD_DIR_ASSET_JS := $(subst $(ASSETS_DIR),$(BUILD_DIR)/js,$(ASSET_JS))
 .PHONY: all check test clean
-all: $(BUILD_HTML) $(DIST_HTML) $(DIST_PACKED_HTML)
+all: $(BUILD_HTML) $(STANDALONE_HTML) $(DIST_PACKED_HTML)
 ./build/css/qa.css: ./assets/qa.css
 	@mkdir -p ./build/css
 	ln -sr ./assets/qa.css ./build/css/qa.css
@@ -56,12 +56,12 @@ $(EXTERNAL_JS_FILES): ./src/external.url ./src/external.py
 $(BUILD_HTML): ./src/skeleton.py $(EXTERNAL_JS_FILES) ./src/skeleton.html $(GENERATED_JS) $(BUILD_DIR_ASSET_JS) $(BUILD_DIR_ASSET_CSS)
 	@mkdir -p ./build
 	python3 ./src/skeleton.py
-$(DIST_PACKED_HTML): $(DIST_HTML)
+$(DIST_PACKED_HTML): $(STANDALONE_HTML)
 	@npx parcel build $< --public-url ./
 $(GENERATED_JS): $(JS_GEN_FILES) 
 	python3 ./src/compile_javascript.py
-$(DIST_HTML): $(BUILD_HTML) ./src/standalone.py
-	@mkdir -p ./dist
+$(STANDALONE_HTML): $(BUILD_HTML) ./src/standalone.py
+	@mkdir -p ./build
 	python3 ./src/standalone.py
 check:
 	npx tsc -p .

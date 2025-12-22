@@ -45,22 +45,17 @@ jobs:
       
       - name: Build development version
         run: make 
-
-      - name: copy files
-        run: |
-          mkdir dist/public
-          cp dist/index.html dist/public/index.html
       
       - name: Upload development build as artifact
         uses: actions/upload-artifact@v4
         with:
           name: development-build
-          path: dist/public
+          path: dist
       
       - name: Deploy to GitHub Pages
         if: github.ref == 'refs/heads/master' && github.event_name == 'push'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist/public
+          publish_dir: ./dist
           publish_branch: gh-pages

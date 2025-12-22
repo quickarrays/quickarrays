@@ -103,4 +103,4 @@ def main(html_output_filepath : Path, do_inplace: bool):
 
 if __name__ == "__main__":
 	main(C.CONCATENATED_HTML, False)
-	main(C.DIST_HTML, True)
+	main(C.STANDALONE_HTML, True)
