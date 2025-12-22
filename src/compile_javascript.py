@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""   """
+"""Concatenates JavaScript files and strips test functions for production builds."""
 # pylint: disable=bad-indentation,line-too-long,invalid-name
 
-import argparse
 import re
 import sys
 from pathlib import Path
+import common as C
 
 FUNC_RE = re.compile(
 	r"function\s+([A-Za-z0-9_]+)\s*\(",
@@ -69,20 +69,12 @@ def strip_functions(code, names_to_strip):
 
 
 def main():
-	parser = argparse.ArgumentParser(description="Concatenate JS files and strip tests")
-	parser.add_argument("--indir", "-i", required=True, help="Input directory with JS files")
-	parser.add_argument("--outfile", "-o", required=True, help="Output JS file")
-	args = parser.parse_args()
-
-	input_dir = Path(args.indir)
-	output_file = Path(args.outfile)
-
 	all_code = []
 	all_functions = set()
 	test_functions = set()
 
 	# ---- Read and collect ----
-	for js_file in sorted(input_dir.rglob("*.js")):
+	for js_file in sorted(C.JS_GEN_DIR.rglob("*.js")):
 		code = js_file.read_text()
 
 		# Strip non-browser-compatible lines
@@ -119,8 +111,8 @@ def main():
 		if line.strip()
 	)
 
-	output_file.parent.mkdir(parents=True, exist_ok=True)
-	output_file.write_text(full_code, encoding="utf-8")
+	C.GENERATED_JS.parent.mkdir(parents=True, exist_ok=True)
+	C.GENERATED_JS.write_text(full_code, encoding="utf-8")
 
 if __name__ == "__main__":
 	main()

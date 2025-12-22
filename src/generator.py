@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""   """
+"""Generates string generator JavaScript and HTML from TypeScript function annotations."""
 # pylint: disable=bad-indentation,line-too-long,invalid-name
 
 import re

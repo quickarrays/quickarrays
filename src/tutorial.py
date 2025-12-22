@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""   """
+"""Generates tutorial JavaScript entries from TypeScript annotation comments."""
 # pylint: disable=bad-indentation,line-too-long,invalid-name
 
 import re

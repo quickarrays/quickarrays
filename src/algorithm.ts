@@ -29,7 +29,7 @@ class AlgorithmError extends Error {
  * @name p
  * @description Shortest Period
  * @tutorial The shortest period of a string is the smallest positive integer such that the string is a prefix of an infinite repetition of the prefix of that length. Concretely, the shortest period \(p\) of the text \(T\) is the length of the shortest prefix \(P\) of \(T\) such that \(T\) is a prefix of \(P^{k}\) for some integer \(k \geq 1\).
- * @wikipedia Periodicity_(string_matching)#Period
+ * @wikipedia Periodic_sequence
  */
 function count_period(border_array: number[]) : number {
     if(!border_array || border_array.length === 0) { return 0; }
@@ -50,7 +50,7 @@ export function test_period() {
  * @name e
  * @description Exponent
  * @tutorial The exponent of a string is the division of the string's length by its shortest period, representing how many times the shortest period needs to be repeated to form the string. Formally, the exponent of the text \(T\) is defined as the length of \(T\) divided by the length of its shortest period \(p\), i.e., \(\frac{|T|}{p}\).
- * @wikipedia Periodicity_(string_matching)#Exponent
+ * @wikipedia Periodic_sequence
  */
 function count_exponent(border_array: number[]) : number {
     if (!border_array || border_array.length === 0) { return 0; }
@@ -144,7 +144,7 @@ export function test_suffix_array() {
  * @type length
  * @description Border Array
  * @tutorial The border array of a string stores the lengths of the longest borders for each prefix of the string. A border of a string is defined as a substring that is both a proper prefix and a proper suffix. Formally, the border array \(\mathsf{B}\) for a text \(T[1..n]\) is an array where each entry \(\mathsf{B}[i]\) represents the length of the longest border of the prefix \(T[1..i]\), i.e., \(\mathsf{B}[i]\) is the largest integer \(k \le i-1\) such that \(T[1..k] = T[i-k+1..i]\). By definition, \(\mathsf{B}[0] = 0\).
- * @wikipedia Border_(string_matching)
+ * @wikipedia Knuth–Morris–Pratt_algorithm
  */
 function construct_border_array(text: string): number[] {
   if (!text) { return []; }
@@ -599,7 +599,6 @@ function delta(substring_complexity: number[]): [number, number] {
  * @name &delta;
  * @description Substring Complexity Measure
  * @tutorial The substring complexity measure quantifies the maximum ratio of substring complexity to length. Given an array of substring complexities for lengths \(1\) to \(n\), it computes the maximum value of \(\frac{\mathsf{SC}[k]}{k}\) for \(k \in [1..n]\), where \(\mathsf{SC}[k]\) is the substring complexity for length \(k\).
- * @wikipedia Substring_complexity
  * @cite raskhodnikova13sublinear
  */
 function count_delta(substring_complexity: number[]): number {
@@ -619,7 +618,6 @@ export function test_delta() {
  * @name max &delta;
  * @description Substring Complexity Measure Length
  * @tutorial The substring complexity measure length identifies the substring length that maximizes the ratio of substring complexity to length. Given an array of substring complexities for lengths \(1\) to \(n\), it computes the length \(k\) that maximizes \(\frac{\mathsf{SC}[k]}{k}\), where \(\mathsf{SC}[k]\) is the substring complexity for length \(k\).
- * @wikipedia Substring_complexity
  * @cite raskhodnikova13sublinear
  */
 function count_delta_argmax(substring_complexity: number[]): number {
@@ -641,7 +639,6 @@ export function test_delta_argmax() {
  * @type length
  * @description Substring Complexity Array
  * @tutorial The substring complexity array quantifies the number of distinct substrings of various lengths within a string. Given the Longest Common Prefix (LCP) array of a string, the substring complexity array \(\mathsf{SC}[1..n]\) is defined such that for each length \(k \in [1..n]\), \(\mathsf{SC}[k]\) represents the count of distinct substrings of length \(k\). The computation leverages the LCP values to efficiently determine the number of new substrings introduced at each length.
- * @wikipedia Substring_complexity
  * @cite raskhodnikova13sublinear
  */
 function construct_substring_complexity(lcp_array: number[]): number[] {
@@ -835,7 +832,6 @@ export function test_lf_array() {
  * @type length
  * @description S/L SAIS type string
  * @tutorial The S/L type string classifies each character in a string as either S-type or L-type based on the lexicographic order of the suffixes starting at those characters. A character at position \(i\) is classified as S-type if the suffix starting at \(i\) is lexicographically smaller than the suffix starting at \(i+1\), and L-type if it is larger. If the suffixes are equal, the type is determined by the type of the suffix starting at \(i+1\). Additionally, an S-type character that is the first character or immediately preceded by an L-type character is marked as S*-type.
- * @wikipedia Suffix_array_induced_sorting
  * @cite nong11sais
  */
 function construct_sl_string(text : string) : string[] {

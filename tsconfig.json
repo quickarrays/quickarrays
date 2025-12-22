@@ -3,7 +3,8 @@
     "module": "commonjs", // or "ES2015", "ESNext"
     "target": "es6",  // Ensure target is also modern (ES6+) for compatibility
     "lib": ["es2015", "dom"], // Ensures 'fill' and DOM types are available
-    "outDir": "js"
+    "outDir": "./build/js/gen/",
+    "rootDir": "./src"
   },
-    "include": ["algorithm.ts", "generator.ts", "utility.ts"]
+    "include": ["./src/algorithm.ts", "./src/generator.ts", "./src/utility.ts"]
 }

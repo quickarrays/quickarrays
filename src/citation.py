@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""   """
+"""Generates citation JavaScript from TypeScript annotations using pandoc and CSL formatting."""
 # pylint: disable=bad-indentation,line-too-long,invalid-name
 
 import subprocess
@@ -93,7 +93,7 @@ def main():
 			if "cite" not in ann:
 				continue
 			bibID = ann['cite']
-			html_output = get_reference_html("@" + bibID, 'references.bib', 'plain.csl')
+			html_output = get_reference_html("@" + bibID, C.REFERENCES_BIBTEX_FILE, C.BIBIOLGRAPHY_STYLE_FILE)
 			if not html_output:
 				print(f"Warning: No output for citation {bibID}", file=sys.stderr)
 				continue
