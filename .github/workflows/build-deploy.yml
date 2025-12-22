@@ -47,7 +47,9 @@ jobs:
         run: make 
 
       - name: copy files
-        run: mkdir dist/public && cp dist/index.html dist/public/index.html
+        run: |
+          mkdir dist/public
+          cp dist/index.html dist/public/index.html
       
       - name: Upload development build as artifact
         uses: actions/upload-artifact@v4
