@@ -9,7 +9,7 @@ BUILD_DIR := ./build
 DIST_HTML := ./dist/standalone.html
 DIST_PACKED_HTML := ./dist/index.html
 ASSET_CSS := ./assets/qa.css
-ASSET_JS := ./assets/ds_list.js ./assets/text_opt_element.js ./assets/lzend.js ./assets/webpage.js ./assets/counter_list.js
+ASSET_JS := ./assets/ds_list.js ./assets/text_opt_element.js ./assets/webpage.js ./assets/counter_list.js
 BUILD_DIR_ASSET_CSS := $(subst $(ASSETS_DIR),$(BUILD_DIR)/css,$(ASSET_CSS))
 BUILD_DIR_ASSET_JS := $(subst $(ASSETS_DIR),$(BUILD_DIR)/js,$(ASSET_JS))
 .PHONY: all check test clean
@@ -23,9 +23,6 @@ all: $(BUILD_HTML) $(DIST_HTML) $(DIST_PACKED_HTML)
 ./build/js/text_opt_element.js: ./assets/text_opt_element.js
 	@mkdir -p ./build/js
 	ln -sr ./assets/text_opt_element.js ./build/js/text_opt_element.js
-./build/js/lzend.js: ./assets/lzend.js
-	@mkdir -p ./build/js
-	ln -sr ./assets/lzend.js ./build/js/lzend.js
 ./build/js/webpage.js: ./assets/webpage.js
 	@mkdir -p ./build/js
 	ln -sr ./assets/webpage.js ./build/js/webpage.js
