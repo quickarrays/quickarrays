@@ -27,6 +27,7 @@ QuickArrays is a web-based tool for visualizing and generating data structures a
 - Node.js 20+
 - Python 3.12+
 - Make
+- pandoc for citations
 
 ### Testing
 
