@@ -16,22 +16,22 @@ BUILD_DIR_ASSET_JS := $(subst $(ASSETS_DIR),$(BUILD_DIR)/js,$(ASSET_JS))
 all: $(BUILD_HTML) $(DIST_HTML) $(DIST_PACKED_HTML)
 ./build/css/qa.css: ./assets/qa.css
 	@mkdir -p ./build/css
-	ln -sv ./assets/qa.css ./build/css/qa.css
+	ln -sr ./assets/qa.css ./build/css/qa.css
 ./build/js/ds_list.js: ./assets/ds_list.js
 	@mkdir -p ./build/js
-	ln -sv ./assets/ds_list.js ./build/js/ds_list.js
+	ln -sr ./assets/ds_list.js ./build/js/ds_list.js
 ./build/js/text_opt_element.js: ./assets/text_opt_element.js
 	@mkdir -p ./build/js
-	ln -sv ./assets/text_opt_element.js ./build/js/text_opt_element.js
+	ln -sr ./assets/text_opt_element.js ./build/js/text_opt_element.js
 ./build/js/lzend.js: ./assets/lzend.js
 	@mkdir -p ./build/js
-	ln -sv ./assets/lzend.js ./build/js/lzend.js
+	ln -sr ./assets/lzend.js ./build/js/lzend.js
 ./build/js/webpage.js: ./assets/webpage.js
 	@mkdir -p ./build/js
-	ln -sv ./assets/webpage.js ./build/js/webpage.js
+	ln -sr ./assets/webpage.js ./build/js/webpage.js
 ./build/js/counter_list.js: ./assets/counter_list.js
 	@mkdir -p ./build/js
-	ln -sv ./assets/counter_list.js ./build/js/counter_list.js
+	ln -sr ./assets/counter_list.js ./build/js/counter_list.js
 ./build/js/gen/algorithm.js: ./src/algorithm.ts $(TS_CONFIG)
 	@mkdir -p ./build/js/gen
 	npx babel ./src/algorithm.ts --out-file ./build/js/gen/algorithm.js --presets=@babel/preset-typescript

@@ -157,12 +157,12 @@ def generate_makefile() -> str:
 		dest_file = BUILD_DIR / 'css' / asset_file.name
 		buffer.append(f'{dest_file}: {asset_file}')
 		buffer.append(f'\t@mkdir -p {dest_file.parent}')
-		buffer.append(f'\tln -sv {asset_file} {dest_file}')
+		buffer.append(f'\tln -sr {asset_file} {dest_file}')
 	for asset_file in asset_js_files:
 		dest_file = BUILD_DIR / 'js' / asset_file.name
 		buffer.append(f'{dest_file}: {asset_file}')
 		buffer.append(f'\t@mkdir -p {dest_file.parent}')
-		buffer.append(f'\tln -sv {asset_file} {dest_file}')
+		buffer.append(f'\tln -sr {asset_file} {dest_file}')
 
 
 	for ts_file in ALL_TS_FILES:
