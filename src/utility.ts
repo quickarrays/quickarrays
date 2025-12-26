@@ -22,10 +22,7 @@ function assert_eq(a: any, b: any, message: string): void {
  * @returns The total number of runs in the string. Returns 0 for an empty string.
  */
 function number_of_runs(text: string): number {
-    /* Handle the edge case of an empty string. An empty string has no runs. */
-    if (text.length === 0) {
-        return 0;
-    }
+    if(!text.length) { return 0; }
 
     let runs: number = 1; /* Initialize runs to 1 because the first character always starts a run. */
     let runchar: string = text[0]; /* Store the character of the current run. */
@@ -69,6 +66,7 @@ export function test_number_of_runs(): void {
  * @returns The total count of `true` booleans (factor ends) found in the factorization.
  */
 function number_of_factors(factorization: readonly boolean[]): number {
+    if(!factorization) { return 0; }
     return factorization.reduce((count, value) => count + (value ? 1 : 0), 0);
 }
 
@@ -614,5 +612,209 @@ export function test_utility_edge_cases() {
 
     // Test prettify_factorization with single element
     assert_eq(prettify_factorization(["a"], [true]), "a|", "Single element factorization");
+}
+
+
+// NEW
+
+interface IntRow {
+	name: string;
+	data: number[];
+}
+
+interface StringRow {
+	name: string;
+	data: string[];
+}
+
+interface BoolRow {
+	name: string;
+	data: boolean[];
+}
+
+type Row = IntRow | StringRow | BoolRow;
+
+function repeat(str: string, n: number): string {
+	let r = "";
+	while (n-- > 0) r += str;
+	return r;
+}
+
+function escapeLatex(s: unknown): string {
+	return String(s)
+		.replace(/\\/g, "\\textbackslash{}")
+		.replace(/([#$%&_{}])/g, "\\$1");
+}
+
+
+function isBoolRow(row: Row): row is BoolRow {
+        return typeof row.data[0] === "boolean";
+}
+
+function isStringRow(row: Row): row is StringRow {
+        return typeof row.data[0] === "string";
+}
+
+function partitionsFromBool(boolArr: boolean[]): number[] {
+	const parts: number[] = [];
+	let len = 0;
+
+	for (let i = 0; i < boolArr.length; i++) {
+		len++;
+		if (boolArr[i]) {
+			parts.push(len);
+			len = 0;
+		}
+	}
+	return parts;
+}
+
+function export_latex(rows: Row[]): string {
+	const n = rows[0].data.length;
+
+	const tRow = rows.find(isStringRow);
+	if (!tRow) {
+		throw new Error("Row T (string[]) required");
+	}
+	const T = tRow.data;
+
+	const out: string[] = [];
+	out.push(`\\begin{tabular}{l|${"c".repeat(n)}}`);
+	out.push("\\hline");
+
+	for (const row of rows) {
+		let line = `${escapeLatex(row.name)} & `;
+
+		if (isBoolRow(row)) {
+			const parts = partitionsFromBool(row.data);
+			let pos = 0;
+
+			for (let p = 0; p < parts.length; p++) {
+				const k = parts[p];
+				let text = "";
+
+				for (let i = 0; i < k; i++) {
+					text += escapeLatex(T[pos++]);
+				}
+
+				line += `\\multicolumn{${k}}{c}{${text}}`;
+				if (p !== parts.length - 1) line += " & ";
+			}
+		} else {
+			for (let i = 0; i < n; i++) {
+				line += escapeLatex(row.data[i]);
+				if (i !== n - 1) line += " & ";
+			}
+		}
+
+		line += " \\\\";
+		out.push(line);
+	}
+
+	out.push("\\hline");
+	out.push("\\end{tabular}");
+	return out.join("\n");
+}
+
+function export_markdown(rows: Row[]): string {
+	const n = rows[0].data.length;
+
+	const tRow = rows.find(isStringRow);
+	if (!tRow) {
+		throw new Error("Row T (string[]) required for boolean partitions");
+	}
+	const T = tRow.data;
+
+	const out: string[] = [];
+
+	/* header */
+	const header: string[] = [" "];
+	for (let i = 0; i < n; i++) {
+		header.push(String(i + 1));
+	}
+	out.push("|" + header.join("|") + "|");
+	out.push("|" + repeat("---|", n + 1));
+
+	for (const row of rows) {
+		const cells: string[] = [row.name];
+
+		if (isBoolRow(row)) {
+			let s = "";
+			for (let i = 0; i < n; i++) {
+				s += T[i];
+				if (row.data[i]) s += "|";
+			}
+			cells.push(s);
+		} else {
+			for (let i = 0; i < n; i++) {
+				cells.push(String(row.data[i]));
+			}
+		}
+
+		out.push("|" + cells.join("|") + "|");
+	}
+
+	return out.join("\n");
+}
+
+function escape_csv(value: unknown): string {
+	const s = String(value);
+	if (/[",\n]/.test(s)) {
+		return `"${s.replace(/"/g, '""')}"`;
+	}
+	return s;
+}
+
+
+
+function export_csv(rows: Row[]): string {
+	const n = rows[0].data.length;
+
+	const out: string[] = [];
+	for (const row of rows) {
+		const cells: string[] = [];
+		cells.push(row.name);
+
+                for (let i = 0; i < n; i++) {
+                    cells.push(String(row.data[i]));
+                }
+
+		out.push(cells.map(escape_csv).join(","));
+	}
+
+	return out.join("\n");
+}
+export function test_export_formats(): void {
+    const rows: Row[] = [
+        { name: "T", data: ["a", "b", "c", "d", "e"] },
+        { name: "F", data: [true, false, true, true, false] },
+        { name: "N", data: [1, 2, 3, 4, 5] },
+        { name: "S", data: ["one", "two", "three", "four", "five"] },
+    ];
+
+    const expectedLatex = `\\begin{tabular}{l|ccccc}
+\\hline
+T & a & b & c & d & e \\\\
+F & \\multicolumn{1}{c}{a} & \\multicolumn{2}{c}{bc} & \\multicolumn{1}{c}{d} \\\\
+N & 1 & 2 & 3 & 4 & 5 \\\\
+S & one & two & three & four & five \\\\
+\\hline
+\\end{tabular}`;
+
+    const expectedMarkdown = `| |1|2|3|4|5|
+|---|---|---|---|---|---|
+|T|a|b|c|d|e|
+|F|a|bc|d|e|
+|N|1|2|3|4|5|
+|S|one|two|three|four|five|`;
+
+    const expectedCSV = `T,a,b,c,d,e
+F,true,false,true,true,false
+N,1,2,3,4,5
+S,one,two,three,four,five`;
+
+    assert_eq(export_latex(rows), expectedLatex, "LaTeX export failed");
+    assert_eq(export_markdown(rows), expectedMarkdown, "Markdown export failed");
+    assert_eq(export_csv(rows), expectedCSV, "CSV export failed");
 }
 

@@ -38,11 +38,11 @@ def main():
 		name = ann["name"]
 		desc = ann.get("description", "")
 		title_attr = f' title="{desc}"' if desc else ""
-		html_rows.append(
-			f'<option value="{short}"{title_attr}>{name}</option>'
-		)
+		html = f'<option value="{short}"{title_attr}>{name}</option>'
+		html_rows.append((html, name))
 
-	Path(C.GENERATOR_HTML).write_text("\n".join(html_rows), encoding="utf-8")
+	html_rows.sort(key=lambda x: (x[1] is None, x[1].lower()))
+	Path(C.GENERATOR_HTML).write_text("\n".join(map(lambda x: x[0], html_rows)), encoding="utf-8")
 
 if __name__ == "__main__":
 	main()

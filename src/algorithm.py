@@ -98,8 +98,9 @@ def generate_counters(code : str):
 			)
 		else:
 			block = f'<div class="qa-counter qa-item" data-ds="{prop}">{name}</div>'
+		datapair = (block, name)
 
-		html_items.append(block)
+		html_items.append(datapair)
 
 	# HTML for all entries
 	for fname, _ in count_funcs:
@@ -109,7 +110,8 @@ def generate_counters(code : str):
 	for fname, _ in transform_funcs:
 		add_html(fname)
 
-	Path(C.COUNTERS_HTML).write_text("\n\n".join(html_items), encoding='utf-8')
+	html_items.sort(key=lambda x: (x[1] is None, x[1].lower()) )
+	Path(C.COUNTERS_HTML).write_text("\n\n".join(map(lambda x: x[0], html_items)), encoding='utf-8')
 
 
 def generate_algorithm(code):
@@ -145,14 +147,17 @@ def generate_algorithm(code):
 			html += '<span class="qa-tooltiptext">' + ann["description"] + '</span>'
 		html += '</div>'
 
+		datapair = (html, ann["name"])
 		if ann["kind"] == "enable":
-			enable_functions.append(html)
+			enable_functions.append(datapair)
 		elif ann["kind"] == "disable":
-			disable_functions.append(html)
+			disable_functions.append(datapair)
 
+	enable_functions.sort(key=lambda x: (x[1] is None, x[1].lower()) )
+	disable_functions.sort(key=lambda x: (x[1] is None, x[1].lower()) )
 	# Write HTML files
-	Path(C.ALGORITHM_ENABLE_HTML).write_text("\n".join(enable_functions), encoding='utf-8')
-	Path(C.ALGORITHM_DISABLE_HTML).write_text("\n".join(disable_functions), encoding='utf-8')
+	Path(C.ALGORITHM_ENABLE_HTML).write_text("\n".join(map(lambda x: x[0], enable_functions)), encoding='utf-8')
+	Path(C.ALGORITHM_DISABLE_HTML).write_text("\n".join(map(lambda x: x[0], disable_functions)), encoding='utf-8')
 
 def provider_for(arg):
 	if arg in ("text", "n"):
@@ -242,8 +247,10 @@ def generate_transform(code : str):
 			line = f'<option value="{short}" title="{description}">{display}</option>'
 		else:
 			line = f'<option value="{short}">{display}</option>'
-		options.append(line)
-	Path(C.TRANSFORM_HTML).write_text("\n".join(options), encoding='utf-8')
+		datapair = (line, ann["name"])
+		options.append(datapair)
+	options.sort(key=lambda x: (x[1] is None, x[1].lower()) )
+	Path(C.TRANSFORM_HTML).write_text("\n".join(map(lambda x: x[0], options)), encoding='utf-8')
 
 
 
@@ -253,11 +260,6 @@ def main():
 	generate_algorithm(code)
 	generate_algorithm_pipeline(code)
 	generate_transform(code)
-
-
-
-
-
 
 
 if __name__ == "__main__":

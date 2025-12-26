@@ -84,7 +84,7 @@ const counter_automatic_default = true;
 function update_history_internal() {
 	var newQuery = $.query.empty();
 
-	const text_query = options_list.enabled("whitespace") ? decodeWhitespaces(qa_text.value) : text_query = qa_text.value;
+	const text_query = options_list.enabled("whitespace") ? decodeWhitespaces(qa_text.value) : qa_text.value;
 	if(text_query) { newQuery = newQuery.set("text", text_query); }
 
 	const structures_query = structures_list.getEnabled();
@@ -270,6 +270,36 @@ function construct_text() {
 	return ds_text;
 }
 
+function prettify_row(ds_text, dsName, varDs, varSep, varBase, do_padding) {
+	if(structures_list.isIndex(dsName)) {
+		if(varBase != 0) {
+			varDs = increment_array(varDs);
+		}
+		varDs = replace_invalid_position(varDs, varBase+ds_text.length);
+	}
+	const ds_htmlname = ds_name2html[dsName] ? ds_name2html[dsName] : dsName;
+	if(structures_list.isString(dsName)) {
+		varDs = varDs.split('\0').join("$");
+	}
+	if(!do_padding) { return {'name' : ds_htmlname, 'data' : varDs}; }
+
+	if(structures_list.isString(dsName)) {
+		if(options_list.enabled("whitespace")) {
+			varDs = encodeWhitespaces(varDs);
+		}
+		varDs = prettify_string(varDs, varSep, varBase, options_list.enabled("tabularize"));
+	} else if(structures_list.isFactorization(dsName)) {
+		if(options_list.enabled("facttext")) {
+			varDs = prettify_factorization(options_list.enabled("whitespace") ? encodeWhitespaces(ds_text) : ds_text, varDs, varSep, varBase);
+		} else { 
+			varDs = prettify_array(varDs.map((b) => b ? 1 : 0), varSep, varBase); 
+		}
+	} else { 
+		varDs = prettify_array(varDs, varSep, varBase); 
+	}
+	return {'name' : ds_htmlname, 'data' : varDs};
+}
+
 function updateArrays() {
 	qa_separator_input.value = encodeWhitespaces(qa_separator_input.value);
 	updateWhitespaces();
@@ -277,15 +307,11 @@ function updateArrays() {
 	const ds_text = construct_text();
 	const DS = build_ds(ds_text);
 	DS['text'] = ds_text;
-
+ds_text
 	const Counters = build_counters(DS);
 	Counters['text'] = number_of_runs(ds_text);
-	// const Counters = {
-	// 	'delta' : count_delta(DS.substring_complexity),
-	// 	'text' : ds_text.length,
-	// };
 
-	const sep = decodeWhitespaces(qa_separator_input.value);
+	const varSep = decodeWhitespaces(qa_separator_input.value);
 
 	let pad = 0;
 	structures_list.forEachEnabled(function(dsName) {
@@ -295,37 +321,25 @@ function updateArrays() {
 
 	const varBase = options_list.enabled("baseone") ? 1 : 0;
 
-	{ const result = [];
-		structures_list.forEachEnabled(function(dsName) {
-			let varDs = DS[dsName];
-			if(!varDs) {
-				result.push("Function " + dsName + ": not defined");
-				return;
-			}
-			if(structures_list.isIndex(dsName)) {
-				if(varBase != 0) {
-					varDs = increment_array(varDs);
-				}
-				varDs = replace_invalid_position(varDs, varBase+ds_text.length);
-			}
-			if(structures_list.isString(dsName)) {
-				if(options_list.enabled("whitespace")) {
-					varDs = encodeWhitespaces(varDs);
-				}
-				varDs = prettify_string(varDs, sep, varBase, options_list.enabled("tabularize"));
-			} else if(structures_list.isFactorization(dsName)) {
-				if(options_list.enabled("facttext")) {
-					varDs = prettify_factorization(options_list.enabled("whitespace") ? encodeWhitespaces(ds_text) : ds_text, varDs, sep, varBase);
-				} else { 
-					varDs = prettify_array(varDs.map((b) => b ? 1 : 0), sep, varBase); 
-				}
-			} else { 
-				varDs = prettify_array(varDs, sep, varBase); 
-			}
-			const ds_htmlname = ds_name2html[dsName] ? ds_name2html[dsName] : dsName;
-			result.push(pad_right(ds_htmlname + ":", ' ', pad + 2) + varDs);
-		});
+	const rows = [];
+	structures_list.forEachEnabled(function(dsName) {
+		let varDs = DS[dsName];
+		if(!varDs) {
+			rows.push("Function " + dsName + ": not defined");
+			return;
+		}
+		rows.push(prettify_row(ds_text, dsName, varDs, varSep, varBase, qa_output_select.value == 'plain'));
+	});
+
+	if(qa_output_select.value == 'plain') { 
+		const result = rows.map((row) => { return pad_right(row.name + ":", ' ', pad + 2) + row.data; } );
 		qa_ds_output.value = result.join('\n');
+	} else if (qa_output_select.value == 'latex') {
+		qa_ds_output.value = export_latex(rows);
+	} else if (qa_output_select.value == 'markdown') {
+		qa_ds_output.value = export_markdown(rows);
+	} else {
+		qa_ds_output.value = export_csv(rows);
 	}
 
 	enabled_counters = qa_counter_automatic.checked ? structures_list : counters_list;
@@ -365,21 +379,6 @@ function initDragAndDrop(listEnabled, listDisabled) {
 	});
 }
 
-// const tutorials = {};
-// tutorials['bw_transform'] = {
-// 	'title' : 'Transformations',
-// 	'content' : 'You can apply transformations to the generated string. For example, you can convert all characters to uppercase by using the custom transformation with the code "text[i].toUpperCase()".',
-// 	'cite': 'Mozilla Developer Network (MDN), "String.prototype.toUpperCase()", https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/toUpperCase',
-// 	'wikipedia': 'String_(computer_science)#Changing_case'
-// };
-// tutorials['thue-morse'] = {
-// 	'title' : 'Thue-Morse Sequence',
-// 	'content' : 'The Thue-Morse sequence is a binary sequence that is constructed by starting with 0 and successively appending the binary complement of the sequence obtained so far. It is known for its applications in combinatorics and theoretical computer science. It uses the morphism \\(0 \\to 01, 1 \\to 10 \\).',
-// 	'oeis': 'A010060',
-// 	'cite': 'Allouche, J.-P.; Shallit, J. (1999), "The ubiquitous Prouhet-Thue-Morse sequence", in Graham, R. L.; Grötschel, M.; Lovász, L. (eds.), Handbook of Combinatorics, Elsevier and MIT Press, pp. 873–901.',
-// 	'wikipedia': 'Thue%E2%80%93Morse_sequence'
-// };
-
 var qa_tutorial_open_button;
 var qa_tutorial_close_button;
 var qa_tutorial_overlay;
@@ -388,6 +387,7 @@ var qa_tutorial_content;
 var qa_tutorial_oeis
 var qa_tutorial_cite;
 var qa_tutorial_wikipedia;
+var qa_output_select;
 
 function update_tutorial(id, name) {
 		if(tutorials[id] === undefined) { return; }
@@ -437,6 +437,7 @@ window.onload = function () {
 	qa_tutorial_cite = document.getElementById('qa-tutorial-cite');
 	qa_tutorial_wikipedia = document.getElementById('qa-tutorial-wikipedia');
 
+
 	//tutorial
 	qa_tutorial_open_button.onclick = function() { qa_tutorial_overlay.style.display = "block"; }
 	qa_tutorial_close_button.onclick = function() { qa_tutorial_overlay.style.display = "none"; }
@@ -447,6 +448,7 @@ window.onload = function () {
 		}
 	}
 
+	qa_output_select = document.getElementById('qa-output-select');
 
 	qa_counter_itemlists = document.getElementById('qa-counter-itemlists');
 	qa_counter_automatic = document.getElementById('qa-counter-automatic');
@@ -480,7 +482,7 @@ window.onload = function () {
 	const counter_list_enabled = document.getElementById('qa-counter-enabled');
 	const counter_list_disabled = document.getElementById('qa-counter-disabled');
 
-	const triggering = [qa_transform_active, qa_prepend_input, qa_append_input, qa_transform_list, qa_transform_input, qa_generate_string_list];
+	const triggering = [qa_transform_active, qa_prepend_input, qa_append_input, qa_transform_list, qa_transform_input, qa_generate_string_list, qa_output_select];
 	for(const idx in triggering) {
 		triggering[idx].addEventListener('change', function() {
 			updateArrays();

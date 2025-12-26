@@ -25,7 +25,7 @@
         <div class="qa-description">
             <label for="qa-generate-string-list">Enter your text below or generate it:</label>
             <select id="qa-generate-string-list" name="qa-generate-string-list">
-                <option value="custom">Custom</option>
+                <option value="custom" selected>Custom</option>
                 {{html/generator.html}}
             </select>
             <span id="qa-generate-string-span" class="qa-hidden">
@@ -77,7 +77,14 @@
             <label class="qa-option"><input type="checkbox" class="qa-option-cbx" name="qa-option-tabularize" data-opt="tabularize" checked>Tabularize Text</label>
             <label class="qa-option">Separator:&nbsp;&nbsp;<input id="qa-separator-input" type="text" class="qa-shorttext"></label>
         </div>
-        <div class="qa-description">QuickArrays built the following data structures and factorizations for you:</div>
+        <div class="qa-description">QuickArrays built the following data structures and factorizations for you in
+            <select id="qa-output-select" name="qa-output-select">
+                <option value="plain" selected>text form</option>
+                <option value="latex">LaTeX</option>
+                <option value="markdown">markdown</option>
+                <option value="csv">CSV</option>
+            </select>:
+        </div>
         <textarea class="qa-textarea" style="flex-grow:1;line-height:175%;" id="qa-ds-output" readonly></textarea>
 
         <div id="qa-counter-output"></div>

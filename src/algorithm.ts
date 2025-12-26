@@ -1722,3 +1722,312 @@ export function test_complex_integration() {
     });
 }
 
+/**
+ * @name LZ78
+ * @kind disable
+ * @type factor
+ * @description LZ78 Factorization
+ * @tutorial The Lempel-Ziv-78 (LZ78) factorization decomposes a string into a sequence of factors based on previously seen substrings. Each factor consists of a reference to the longest previously seen factor (or zero if none exists) followed by a new character. 
+ * @cite ziv78lz
+ */
+function construct_lz78_factorization(text: string): boolean[] {
+    if (!text) { return []; }
+    const n: number = text.length;
+    const factorization: boolean[] = new Array(n).fill(false);
+    const dictionary: Map<string, number> = new Map();
+    let currentIndex: number = 0;
+    while (currentIndex < n) {
+        let currentSubstring: string = "";
+
+        // Find the longest prefix in the dictionary
+        for (let j = currentIndex; j < n; j++) {
+            currentSubstring += text[j];
+            if(!dictionary.has(currentSubstring)) { break; }
+        }
+
+        // Add the new factor to the dictionary
+        const newFactor: string = currentSubstring;
+        dictionary.set(newFactor, currentIndex);
+
+        // Mark the end of the factor
+        factorization[currentIndex + newFactor.length - 1] = true;
+
+        // Move to the next position
+        currentIndex += newFactor.length;
+    }
+    return factorization;
+}
+export function test_lz78_factorization() {
+    assert_eq(construct_lz78_factorization("ababc"), [true, true, false, true, true], "LZ78 factorization of 'ababc'");
+    assert_eq(construct_lz78_factorization("aaaaa"), [true, false, true, false, true], "LZ78 factorization of 'aaaaa'");
+    assert_eq(construct_lz78_factorization("banana"), [true, true, true, false, true, true], "LZ78 factorization of 'banana'");
+    assert_eq(construct_lz78_factorization("abracadabra"), [true, true, true, false, true, false, true, false, true, false, true], "LZ78 factorization of 'abracadabra'");
+    assert_eq(construct_lz78_factorization(""), [], "LZ78 factorization of empty string");
+    assert_eq(construct_lz78_factorization("a"), [true], "LZ78 factorization of 'a'");
+    assert_eq(construct_lz78_factorization("abcde"), [true, true, true, true, true], "LZ78 factorization of 'abcde'");
+    assert_eq(construct_lz78_factorization("edcba"), [true, true, true, true, true], "LZ78 factorization of 'edcba'");
+    assert_eq(construct_lz78_factorization(null), [], "LZ78 factorization of null input");
+}
+
+
+/**
+ * @name LZW
+ * @kind disable
+ * @type factor
+ * @description LZW Factorization
+ * @tutorial The Lempel-Ziv-Welch (LZW) factorization decomposes a string into a sequence of factors by building a dictionary of previously seen substrings. Each factor is the longest prefix of the remaining text that exists in the dictionary, followed by the next character.
+ * @cite welch84lzw
+ */
+function construct_lzw_factorization(text : string): boolean[] {
+  if (!text) {
+    return [];
+  }
+  const n = text.length;
+  const factorization = new Array(n).fill(false);
+  const dictionary = new Map();
+  // Initialize the dictionary with single characters
+  for (let i = 0; i < n; i++) {
+    const char = text[i];
+    if (!dictionary.has(char)) {
+      dictionary.set(char, dictionary.size);
+    }
+  }
+  for(let i = 0; i < n; ) {
+    let s = "";
+    for (let j = i; j < n; j++) {
+      s += text[j];
+      if (!dictionary.has(s)) { 
+           s = s.slice(0, -1);
+           break; 
+           }
+    }
+    let endpos = i + s.length - 1;
+    if (endpos >= n) {
+      // Reached the end of the text
+      factorization[n - 1] = true;
+      break;
+    }
+    if (s.length == 0) {
+      throw new AlgorithmError("LZW factorization failed to find a valid substring.", "construct_lzw_factorization", { text
+      });
+    }
+    factorization[endpos] = true;
+    // Add new substring to the dictionary
+    if (i+s.length < n) { s += text[i+s.length]; }
+    if (!dictionary.has(s)) {
+      dictionary.set(s, dictionary.size);
+    }
+    // Move to the next position
+    i = endpos+1;
+  }
+  return factorization;
+}
+
+
+export function test_lzw_factorization() {
+    assert_eq(construct_lzw_factorization("ababc"), [true, true, false, true, true], "LZW factorization of 'ababc'");
+    assert_eq(construct_lzw_factorization("aaaaa"), [true, false, true, false, true], "LZW factorization of 'aaaaa'");
+    assert_eq(construct_lzw_factorization("banana"), [true, true, true, false, true, true], "LZW factorization of 'banana'");
+    assert_eq(construct_lzw_factorization("abracadabra"), [true,true,true,true,true,true,true,false,true,false,true], "LZW factorization of 'abracadabra'");
+    assert_eq(construct_lzw_factorization(""), [], "LZW factorization of empty string");
+    assert_eq(construct_lzw_factorization("a"), [true], "LZW factorization of 'a'");
+    assert_eq(construct_lzw_factorization("abcde"), [true, true, true, true, true], "LZW factorization of 'abcde'");
+    assert_eq(construct_lzw_factorization("edcba"), [true, true, true, true, true], "LZW factorization of 'edcba'");
+    assert_eq(construct_lzw_factorization(null), [], "LZW factorization of null input");
+}
+    
+
+    
+    
+    
+    
+/**
+ * @name NeckF
+ * @kind disable
+ * @type factor
+ * @description Necklace Factorization
+ * @tutorial The Necklace factorization is the Lyndon factorization colliding all equal Lyndon factors to a single factor that is a necklace. The number of factors is the number of distinct Lyndon factors.
+ * @cite chen58lyndon
+ */
+function construct_necklace_factorization(text: string, lyndon_factorization: boolean[]): boolean[] {
+    if (!text || !lyndon_factorization) { return []; }
+    const n: number = text.length;
+    const necklace_factorization: boolean[] = new Array(n).fill(false);
+    let factor_start: number = 0;
+    let last_factor = "";
+    while (factor_start < n) {
+        let factor_end: number = factor_start;
+        while (factor_end < n && lyndon_factorization[factor_end] == false) {
+            factor_end++;
+        }
+        // Now factor_end is at the end of the current Lyndon factor
+        const current_factor = text.slice(factor_start, factor_end + 1);
+        if(current_factor === last_factor) {
+            assert_eq(necklace_factorization[factor_start-1], true, "Previous factor end should be marked true for equal Lyndon factors");
+            necklace_factorization[factor_start-1] = false;
+            necklace_factorization[factor_end] = true;
+            factor_start = factor_end + 1;
+            continue;
+        }
+        last_factor = current_factor;
+        // Mark the end of the necklace factor
+        necklace_factorization[factor_end] = true;
+        // Move to the next factor
+        factor_start = factor_end + 1;
+    }
+    return necklace_factorization;
+}
+export function test_necklace_factorization() {
+    function test_helper(input: string, expected: boolean[], description: string) {
+        const isa = construct_inverse_suffix_array(construct_suffix_array(input));
+        const lyndonFactorization = construct_lyndon_factorization(input, isa);
+        const necklaceFactorization = construct_necklace_factorization(input, lyndonFactorization);
+        assert_eq(necklaceFactorization, expected, description);
+    }
+    test_helper("banana", [true, false, false, false, true, true], "Necklace factorization of 'banana'");
+    test_helper("abracadabra", [false,false,false,false,false,false,true,false,false,true,true], "Necklace factorization of 'abracadabra'");
+    test_helper("", [], "Necklace factorization of empty string");
+    test_helper("a", [true], "Necklace factorization of 'a'");
+    test_helper("aaaaa", [false, false, false, false, true], "Necklace factorization of 'aaaaa'");
+    test_helper("edcba", [true, true, true, true, true], "Necklace factorization of 'edcba'");
+    test_helper("abcde", [false, false, false, false, true], "Necklace factorization of 'abcde'");
+}
+
+
+/**
+ * @name o-pali
+ * @kind disable
+ * @type length
+ * @description Odd Maximal Palindromic Length Array
+ * @tutorial The odd maximal palindromic length array (o-pali) stores at each position the length of the left arm of the longest odd-length palindromic substring centered at that position, excluding the position itself in the length measurement. Hence, a palindrome of length \(2k+1\) contributes \(k\) to the o-pali array at its center position.
+ * @cite manacher75new
+ */
+function construct_odd_maximal_palindromic_length_array(text: string): number[] {
+    if (!text) { return []; }
+    const n: number = text.length;
+    const o_pali: number[] = new Array(n).fill(0);
+    let center: number = 0;
+    let right: number = 0;
+    for (let i = 0; i < n; i++) {
+        let mirror: number = 2 * center - i;
+        if (i < right) {
+            o_pali[i] = Math.min(right - i, o_pali[mirror]);
+        }
+        // Expand around center i
+        while (i - o_pali[i] - 1 >= 0 && i + o_pali[i] + 1 < n && text[i - o_pali[i] - 1] === text[i + o_pali[i] + 1]) {
+            o_pali[i]++;
+        }
+        // Update center and right boundary
+        if (i + o_pali[i] > right) {
+            center = i;
+            right = i + o_pali[i];
+        }
+    }
+    return o_pali;
+}
+export function test_odd_maximal_palindromic_length_array() {
+    assert_eq(construct_odd_maximal_palindromic_length_array("ababa"), [0,1,2,1,0], "o-pali of 'ababa'");
+    assert_eq(construct_odd_maximal_palindromic_length_array("racecar"), [0,0,0,3,0,0,0], "o-pali of 'racecar'");
+    assert_eq(construct_odd_maximal_palindromic_length_array(""), [], "o-pali of empty string");
+    assert_eq(construct_odd_maximal_palindromic_length_array("a"), [0], "o-pali of 'a'");
+    assert_eq(construct_odd_maximal_palindromic_length_array("abcde"), [0,0,0,0,0], "o-pali of 'abcde'");
+}
+
+/**
+ * @name e-pali
+ * @kind disable
+ * @type length
+ * @description Even Maximal Palindromic Length Array
+ * @tutorial The even maximal palindromic length array (e-pali) stores at each position the length of the longest even-length palindromic substring centered between that and its preding position.
+ * @cite manacher75new
+ */
+function construct_even_maximal_palindromic_length_array(text: string): number[] {
+    if (!text) { return []; }
+    const n: number = text.length;
+    const e_pali: number[] = new Array(n).fill(0);
+    let center: number = 0;
+    let right: number = 0;
+    for (let i = 0; i < n; i++) {
+        let mirror: number = 2 * center - i + 1;
+        if (i < right) {
+            e_pali[i] = Math.min(right - i, e_pali[mirror]);
+        }
+        // Expand around center between i-1 and i
+        while (i - e_pali[i] - 1 >= 0 && i + e_pali[i] < n && text[i - e_pali[i] - 1] === text[i + e_pali[i]]) {
+            e_pali[i]++;
+        }
+        // Update center and right boundary
+        if (i + e_pali[i] > right) {
+            center = i - 1;
+            right = i + e_pali[i];
+        }
+    }
+    return e_pali;
+}
+export function test_even_maximal_palindromic_length_array() {
+    assert_eq(construct_even_maximal_palindromic_length_array("abba"), [0,0,2,0], "e-pali of 'abba'");
+    assert_eq(construct_even_maximal_palindromic_length_array("noon"), [0,0,2,0], "e-pali of 'noon'");
+    assert_eq(construct_even_maximal_palindromic_length_array(""), [], "e-pali of empty string");
+    assert_eq(construct_even_maximal_palindromic_length_array("a"), [0], "e-pali of 'a'");
+    assert_eq(construct_even_maximal_palindromic_length_array("abcde"), [0,0,0,0,0], "e-pali of 'abcde'");
+}
+
+
+function get_lzend_reference(text : string, substring : string, factorization : boolean[]) : number {
+  let startIndex = 0; 
+  // Loop as long as an occurrence is found (indexOf returns -1 when no match)
+  while((startIndex = text.indexOf(substring, startIndex)) !== -1) {
+    if (factorization[startIndex + substring.length - 1]) {
+      return startIndex; // Found an occurrence with a valid ending reference
+    }
+    startIndex += substring.length; 
+  }
+  return -1;
+}
+
+/**
+ * @name LZend
+ * @kind disable
+ * @type factor
+ * @description LZ-end Factorization
+ * @tutorial The LZ-end factorization is a restriction of the Lempel-Ziv 77 factorization where each new factor, omitting its last new character, must be the longest possible prefix of the remaining text that also appears ending exactly at the end of a previous factor, or just a single character if no such match exists. 
+ *
+ * @cite kreft13lzend
+ */
+function construct_lzend_factorization(text : string): boolean[] {
+  if (!text) {
+    return [];
+  }
+  const n = text.length;
+  const factorization = new Array(n).fill(false);
+  for (let i = 0; i < n;) {
+    let factor = "";
+    let s = "";
+    for (let j = i; j < n; j++) {
+      s += text[j];
+      if(text.slice(0,i).indexOf(s) === -1) {
+        break;
+      }
+      if(get_lzend_reference(text.slice(0,i), s, factorization) !== -1) {
+        factor = s;
+      }
+    }
+    if(!factor) { factor = text[i]; }
+    else { factor += text[i + factor.length - 1]; }
+
+    let endpos = i + factor.length - 1;
+    if (endpos >= n) {
+      factorization[n - 1] = true;
+      break;
+    }
+    factorization[endpos] = true;
+    i = endpos + 1;
+  }
+  return factorization;
+}
+export function test_lzend_factorization() {
+    assert_eq(construct_lzend_factorization("alabar_a_la_alabarda$"), [true,true,false,true,false,true,true,false,true,false,true,false,true,false,false,false,false,false,true,false,true], "LZ-end factorization of 'alabar_a_la_alabarda$'");
+    assert_eq(construct_lzend_factorization("ababc"), [true, true, false, false, true], "LZ-end factorization of 'ababc'");
+    assert_eq(construct_lzend_factorization("aaaaa"), [true, false, true, false, true], "LZ-end factorization of 'aaaaa'");
+    assert_eq(construct_lzend_factorization("banana"), [true, true, true, false, false, true], "LZ-end factorization of 'banana'");
+}
