@@ -80,6 +80,7 @@ var transform_default;
 var prepend_default;
 var append_default;
 const counter_automatic_default = true;
+var transform_input_default;
 
 function update_history_internal() {
 	var newQuery = $.query.empty();
@@ -107,6 +108,11 @@ function update_history_internal() {
 
 	const transform_query = qa_transform_list.value;
 	if(transform_query != transform_default) { newQuery = newQuery.set("transform", transform_query); }
+
+	const transform_input_query = qa_transform_input.value;
+	if(transform_input_query != transform_input_default) { 
+		newQuery = newQuery.set("transform_input", transform_input_query); }
+
 
 	const prepend_query = qa_prepend_input.value;
 	if(prepend_query != prepend_default) { newQuery = newQuery.set("prepend", prepend_query); }
@@ -156,6 +162,16 @@ function load_history_internal() {
 
 	const transform_query = $.query.get("transform").toString();
 	if(transform_query) { qa_transform_list.value = transform_query; }
+	if(transform_query == 'custom') {
+		changeVisibility(qa_transform_input, true);
+		changeVisibility(qa_transform_active_span, true);
+	} else {
+		changeVisibility(qa_transform_input, false);
+		changeVisibility(qa_transform_active_span, false);
+	}
+
+	const transform_input_query = $.query.get("transform_input").toString();
+	if(transform_input_query) { qa_transform_input.value = transform_input_query; }
 
 	const prepend_query = $.query.get("prepend").toString();
 	if(prepend_query) { qa_prepend_input.value = prepend_query; }
@@ -566,6 +582,7 @@ window.onload = function () {
 	generate_string_default = qa_generate_string_list.value;
 	generate_string_range_default = qa_generate_string_range.value;
 	transform_default = qa_transform_list.value;
+	transform_input_default = qa_transform_input.placeholder;
 	prepend_default = qa_prepend_input.value;
 	append_default = qa_append_input.value;
 

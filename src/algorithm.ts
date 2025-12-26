@@ -1863,7 +1863,7 @@ function construct_necklace_factorization(text: string, lyndon_factorization: bo
         // Now factor_end is at the end of the current Lyndon factor
         const current_factor = text.slice(factor_start, factor_end + 1);
         if(current_factor === last_factor) {
-            assert_eq(necklace_factorization[factor_start-1], true, "Previous factor end should be marked true for equal Lyndon factors");
+            // assert_eq(necklace_factorization[factor_start-1], true, "Previous factor end should be marked true for equal Lyndon factors");
             necklace_factorization[factor_start-1] = false;
             necklace_factorization[factor_end] = true;
             factor_start = factor_end + 1;

@@ -235,10 +235,10 @@ def generate_transform(code : str):
 	for block, fname, _ in C.BLOCK_FUNC_RE.findall(code):
 		if not fname.startswith("construct_"):
 			continue
-		if not fname.endswith("_transform"):
-			continue
+		# if not fname.endswith("_transform"):
+		# 	continue
 		ann = C.parse_annotation(block)
-		if "name" not in ann:
+		if "name" not in ann or "type" not in ann or ann["type"] != "string":
 			continue
 		short = fname[len("construct_"):]  # remove prefix
 		display = ann["name"]
