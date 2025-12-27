@@ -80,7 +80,6 @@ var transform_default;
 var prepend_default;
 var append_default;
 const counter_automatic_default = true;
-var transform_input_default;
 
 function update_history_internal() {
 	var newQuery = $.query.empty();
@@ -110,7 +109,7 @@ function update_history_internal() {
 	if(transform_query != transform_default) { newQuery = newQuery.set("transform", transform_query); }
 
 	const transform_input_query = qa_transform_input.value;
-	if(transform_input_query != transform_input_default) { 
+	if(transform_input_query != '') { 
 		newQuery = newQuery.set("transform_input", transform_input_query); }
 
 
@@ -220,11 +219,15 @@ function updateWhitespaces() {
 	}
 }
 
+function eval_with_context(context, js_code) {
+	return eval('with(context) { ' + js_code + ' }');
+}
+
 function custom_transform_text(text, eval_string) {
 	var ret = '';
 	for(var i = 0; i < text.length; i++) {
 		try {
-			const newchar = eval(eval_string);
+			const newchar = eval_with_context({'i': i, 'text': text}, eval_string);
 			ret += newchar !== undefined ? newchar : text[i];
 		}
 		catch (error) {
@@ -582,7 +585,6 @@ window.onload = function () {
 	generate_string_default = qa_generate_string_list.value;
 	generate_string_range_default = qa_generate_string_range.value;
 	transform_default = qa_transform_list.value;
-	transform_input_default = qa_transform_input.placeholder;
 	prepend_default = qa_prepend_input.value;
 	append_default = qa_append_input.value;
 

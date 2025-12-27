@@ -190,7 +190,7 @@ def generate_algorithm_pipeline(code):
 			if p in funcs:
 				deps[f].append(p)
 			elif a not in ['n', 'text']:
-				print(f"Note: argument {a} of function {f} has no provider function.", file=sys.stderr)
+				print(f"WARNING: argument {a} of function {f} has no provider function.", file=sys.stderr)
 
 	# Topological sort
 	in_degree = {f: 0 for f in funcs}
