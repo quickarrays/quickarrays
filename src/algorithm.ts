@@ -24,6 +24,25 @@ class AlgorithmError extends Error {
     }
 }
 
+/**
+ * @name &sigma;
+ * @description Alphabet size
+ * @tutorial The shortest period of a string is the smallest positive integer such that the string is a prefix of an infinite repetition of the prefix of that length. Concretely, the shortest period \(p\) of the text \(T\) is the length of the shortest prefix \(P\) of \(T\) such that \(T\) is a prefix of \(P^{k}\) for some integer \(k \geq 1\).
+ * @wikipedia Alphabet_(formal_languages)
+ */
+function count_sigma(text: string) : number {
+    if(!text) { return 0; }
+    return new Set(text).size;
+}
+export function test_sigma() {
+    assert_eq(count_sigma("abab"), 2, "Alphabet size of 'abab'");
+    assert_eq(count_sigma("abcde"), 5, "Alphabet size of 'abcde'");
+    assert_eq(count_sigma("aaaaa"), 1, "Alphabet size of 'aaaaa'");
+    assert_eq(count_sigma("ababa"), 2, "Alphabet size of 'ababa'");
+    assert_eq(count_sigma("a"), 1, "Alphabet size of 'a'");
+    assert_eq(count_sigma(""), 0, "Alphabet size of empty string");
+}
+
 
 /**
  * @name p
@@ -901,6 +920,42 @@ export function test_lpf_array() {
 }
 
 /**
+ * @name LPnF
+ * @kind disable
+ * @type length
+ * @description Longest Previous Non-Overlapping Factor array
+ * @tutorial The Longest Previous Non-Overlapping Factor (LPnF) array stores the length of the longest prefix of each suffix of a string that matches a substring ending at a prior position within the same string. Formally, for a given text \(T[1..n]\), the LPnF array \(\mathsf{LPnF}[1..n]\) is defined such that \(\mathsf{LPnF}[i] = \max_{j \in [1..i-1]} \min(i-j,\text{lcp}(T[i..n], T[j..n]))\) for each \(i \in [1..n]\), where \(\text{lcp}(S_1, S_2)\) denotes the length of the longest common prefix between the suffixes \(S_1\) and \(S_2\).
+ * @reference crochemore11computing
+ */
+function construct_lpnf_array(text: string): number[] {
+    if(!text) { return []; }
+    const n: number = text.length;
+    const result: number[] = new Array<number>(n);
+    result[0] = 0;
+    for (let i = 1; i < n; i++) {
+        let maxLCP = 0;
+        for (let j = 0; j < i; j++) { // Check all positions before i
+            let lcp = 0; // Use incremental LCP computation
+            while (i + lcp < n && j + lcp < i && text[i + lcp] === text[j + lcp]) {
+                lcp++;
+            }
+            maxLCP = Math.max(maxLCP, lcp);
+        }
+        result[i] = maxLCP;
+    }
+    return result;
+}
+export function test_lpnf_array() {
+    assert_eq(construct_lpnf_array("banana"), [0, 0, 0, 2, 2, 1], "LPnF array of 'banana'");
+    assert_eq(construct_lpnf_array("abracadabra"), [0,0,0,1,0,1,0,4,3,2,1], "LPnF array of 'abracadabra'");
+    assert_eq(construct_lpnf_array("aaaaa"), [0, 1, 2, 2, 1], "LPnF array of 'aaaaa'");
+    assert_eq(construct_lpnf_array(""), [], "LPnF array of empty string");
+    assert_eq(construct_lpnf_array("a"), [0], "LPnF array of 'a'");
+    assert_eq(construct_lpnf_array("abcde"), [0, 0, 0, 0, 0], "LPnF array of 'abcde'");
+}
+
+
+/**
  * @name LNF
  * @kind disable
  * @type length
@@ -968,6 +1023,73 @@ export function test_lzss_factorization() {
     test_helper("", []);
     test_helper("a", [true]);
 }
+
+/**
+ * @name LZSSno
+ * @kind disable
+ * @type factor
+ * @description LZSS non-overlapping Factorization
+ * @tutorial The Lempel-Ziv-Storer-Szymanski non-overlapping (LZSSno) factorization decomposes a string into a sequence of factors, where each factor is either a new character or a reference to a substring ending at an earlier positition. The factorization is constructed greedily by selecting the longest previous non-overlapping factor at each position in the string. Formally, given a text \(T[1..n]\) the length of the factor starting at position \(i\) is \(\max \{1\} \cup \{\min(i-j, \text{lcp}(T[i..n], T[j..n])) \mid j \in [1..i-1] \}\).
+ * @cite storer82lzss
+ */
+function construct_lzssno_factorization(lpnf_array: readonly number[]): boolean[] {
+    return greedy_factorize(lpnf_array);
+}
+
+export function test_lzssno_factorization() {
+    function test_helper(text: string, expected : boolean[]) {
+        const lpnf_array = construct_lpnf_array(text);
+        const lzssno_factorization = construct_lzssno_factorization(lpnf_array);
+        assert_eq(lzssno_factorization, expected, `LZSSno factorization test for '${text}'`);
+    }
+    test_helper("banana", [true, true, true, false, true, true]);
+    test_helper("abracadabra", [true, true, true, true, true, true, true, false, false, false, true]);
+    test_helper("aaaaa", [true, true, false, true, true]);
+    test_helper("abcde", [true, true, true, true, true]);
+    test_helper("", []);
+    test_helper("a", [true]);
+}
+
+
+function greedy_factorize_with_new_letter(factor_array : readonly number[]) : boolean[] {
+    if(!factor_array) { return []; }
+    const n: number = factor_array.length;
+    if(n === 0) { return []; }
+    const result: boolean[] = new Array<boolean>(n).fill(false);
+    for (let i: number = 0; i < n; ) {
+        const currentFactor: number = factor_array[i];
+        let distance = currentFactor === 0 ? 1 : Math.min(currentFactor+1, n - i);
+        result[i+distance-1] = true;
+        i += distance;
+    }
+    return result;
+}
+
+/**
+ * @name LZ77
+ * @kind disable
+ * @type factor
+ * @description LZ77 Factorization
+ * @tutorial The Lempel-Ziv-77  (LZ77) factorization decomposes a string into a sequence of factors, where each factor is either a new character or a reference to a substring starting at a prior position within the same string. The factorization is constructed greedily by selecting the longest previous factor at each position in the string, with an additional character appended to the factor. Formally, given a text \(T[1..n]\) the length of the factor starting at position \(i\) is \(\max \{1\} \cup \{\text{lcp}(T[i..n], T[j..n]) + 1 \mid j \in [1..i-1] \}\).
+ * @cite ziv77lz
+ */
+function construct_lz77_factorization(lpf_array: readonly number[]): boolean[] {
+    return greedy_factorize_with_new_letter(lpf_array);
+}
+export function test_lz77_factorization() {
+    function test_helper(text: string, expected : boolean[]) {
+        const lpf_array = construct_lpf_array(text);
+        const lz77_factorization = construct_lz77_factorization(lpf_array);
+        assert_eq(lz77_factorization, expected, `LZ77 factorization test for '${text}'`);
+    }
+    test_helper("banana", [true, true, true, false, false, true]);
+    test_helper("abracadabra", [true, true, true, false, true, false, true, false, false, false, true]);
+    test_helper("aaaaa", [true, false, false, false, true]);
+    test_helper("abcde", [true, true, true, true, true]);
+    test_helper("", []);
+    test_helper("a", [true]);
+}
+
 
 
 /**
