@@ -876,17 +876,17 @@ function construct_lpf_array(text: string): number[] {
     if(!text) { return []; }
     const n: number = text.length;
     const result: number[] = new Array<number>(n);
-
-    for (let i: number = 0; i < n; i++) {
-        let maxval: number = 0;
-
-        for (let j: number = 0; j < i; j++) {
-            const lcpval: number = lcp_query(text, i, j);
-            if (maxval < lcpval) {
-                maxval = lcpval;
+    result[0] = 0;
+    for (let i = 1; i < n; i++) {
+        let maxLCP = 0;
+        for (let j = 0; j < i; j++) { // Check all positions before i
+            let lcp = 0; // Use incremental LCP computation
+            while (i + lcp < n && j + lcp < n && text[i + lcp] === text[j + lcp]) {
+                lcp++;
             }
+            maxLCP = Math.max(maxLCP, lcp);
         }
-        result[i] = maxval;
+        result[i] = maxLCP;
     }
     return result;
 }
@@ -2003,12 +2003,13 @@ function construct_lzend_factorization(text : string): boolean[] {
   for (let i = 0; i < n;) {
     let factor = "";
     let s = "";
+    const prefix = text.slice(0, i);
     for (let j = i; j < n; j++) {
       s += text[j];
-      if(text.slice(0,i).indexOf(s) === -1) {
+      if(prefix.indexOf(s) === -1) {
         break;
       }
-      if(get_lzend_reference(text.slice(0,i), s, factorization) !== -1) {
+      if(get_lzend_reference(prefix, s, factorization) !== -1) {
         factor = s;
       }
     }
