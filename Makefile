@@ -1,7 +1,7 @@
 EXTERNAL_JS_FILES := ./build/js/ext/jquery-3.7.1.slim.js ./build/js/ext/jquery.query-object.js ./build/js/ext/tex-mml-chtml.js ./build/js/ext/Sortable.js
 TS_CONFIG := ./tsconfig.json
 TS_FILES := ./src/algorithm.ts ./src/generator.ts ./src/utility.ts
-JS_GEN_FILES := ./build/js/gen/counters.js ./build/js/gen/algorithm_pipeline.js ./build/js/gen/generator_pipeline.js ./build/js/gen/tutorial.js ./build/js/gen/citation.js ./build/js/gen/algorithm.js ./build/js/gen/generator.js ./build/js/gen/utility.js
+JS_GEN_FILES := ./build/js/gen/algorithm_pipeline.js ./build/js/gen/generator_pipeline.js ./build/js/gen/tutorial.js ./build/js/gen/citation.js ./build/js/gen/algorithm.js ./build/js/gen/generator.js ./build/js/gen/utility.js
 GENERATED_JS := ./build/js/generated.js
 BUILD_HTML := ./build/uncompressed.html
 ASSETS_DIR := ./assets
@@ -9,7 +9,7 @@ BUILD_DIR := ./build
 STANDALONE_HTML := ./build/index.html
 DIST_PACKED_HTML := ./dist/index.html
 ASSET_CSS := ./assets/qa.css
-ASSET_JS := ./assets/ds_list.js ./assets/text_opt_element.js ./assets/webpage.js ./assets/counter_list.js
+ASSET_JS := ./assets/webpage.js ./assets/text_opt_element.js ./assets/counter_list.js ./assets/ds_list.js
 BUILD_DIR_ASSET_CSS := $(subst $(ASSETS_DIR),$(BUILD_DIR)/css,$(ASSET_CSS))
 BUILD_DIR_ASSET_JS := $(subst $(ASSETS_DIR),$(BUILD_DIR)/js,$(ASSET_JS))
 .PHONY: all check test clean
@@ -17,18 +17,18 @@ all: $(BUILD_HTML) $(STANDALONE_HTML) $(DIST_PACKED_HTML)
 ./build/css/qa.css: ./assets/qa.css
 	@mkdir -p ./build/css
 	ln -sr ./assets/qa.css ./build/css/qa.css
-./build/js/ds_list.js: ./assets/ds_list.js
-	@mkdir -p ./build/js
-	ln -sr ./assets/ds_list.js ./build/js/ds_list.js
-./build/js/text_opt_element.js: ./assets/text_opt_element.js
-	@mkdir -p ./build/js
-	ln -sr ./assets/text_opt_element.js ./build/js/text_opt_element.js
 ./build/js/webpage.js: ./assets/webpage.js
 	@mkdir -p ./build/js
 	ln -sr ./assets/webpage.js ./build/js/webpage.js
+./build/js/text_opt_element.js: ./assets/text_opt_element.js
+	@mkdir -p ./build/js
+	ln -sr ./assets/text_opt_element.js ./build/js/text_opt_element.js
 ./build/js/counter_list.js: ./assets/counter_list.js
 	@mkdir -p ./build/js
 	ln -sr ./assets/counter_list.js ./build/js/counter_list.js
+./build/js/ds_list.js: ./assets/ds_list.js
+	@mkdir -p ./build/js
+	ln -sr ./assets/ds_list.js ./build/js/ds_list.js
 ./build/js/gen/algorithm.js: ./src/algorithm.ts $(TS_CONFIG)
 	@mkdir -p ./build/js/gen
 	npx babel ./src/algorithm.ts --out-file ./build/js/gen/algorithm.js --presets=@babel/preset-typescript
@@ -38,7 +38,7 @@ all: $(BUILD_HTML) $(STANDALONE_HTML) $(DIST_PACKED_HTML)
 ./build/js/gen/utility.js: ./src/utility.ts $(TS_CONFIG)
 	@mkdir -p ./build/js/gen
 	npx babel ./src/utility.ts --out-file ./build/js/gen/utility.js --presets=@babel/preset-typescript
-./build/js/gen/counters.js ./build/js/gen/algorithm_pipeline.js: ./src/algorithm.ts ./src/algorithm.py
+./build/js/gen/algorithm_pipeline.js: ./src/algorithm.ts ./src/algorithm.py
 	@mkdir -p ./build/js/gen
 	python3 ./src/algorithm.py
 $(EXTERNAL_JS_FILES): ./src/external.url ./src/external.py

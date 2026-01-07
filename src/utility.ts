@@ -22,7 +22,7 @@ function assert_eq(a: any, b: any, message: string): void {
  * @returns The total number of runs in the string. Returns 0 for an empty string.
  */
 function number_of_runs(text: string): number {
-    if(!text.length) { return 0; }
+    if(!text) { return 0; }
 
     let runs: number = 1; /* Initialize runs to 1 because the first character always starts a run. */
     let runchar: string = text[0]; /* Store the character of the current run. */

@@ -246,7 +246,7 @@ function transform_text(text) {
 		if(qa_transform_active.checked == false) { return text; }
 		return custom_transform_text(text, qa_transform_input.value);
 	}
-	const DS = build_ds(text);
+	const DS = build_ds(text, structure_flags[selection]);
 	return DS[selection];
 }
 
@@ -323,12 +323,25 @@ function updateArrays() {
 	qa_separator_input.value = encodeWhitespaces(qa_separator_input.value);
 	updateWhitespaces();
 
+	let enabled_flag = 0;
+	structures_list.forEachEnabled(function(dsName) {
+		enabled_flag |= structure_flags[dsName];
+	});
+	counters_list.forEachEnabled(function(dsName) {
+		if(structure_flags[dsName]) {
+			enabled_flag |= structure_flags[dsName];
+		}
+		const countername = "counter_" + dsName;
+		if(structure_flags[countername]) {
+			enabled_flag |= structure_flags[countername];
+		}
+	});
+
 	const ds_text = construct_text();
-	const DS = build_ds(ds_text);
+	const DS = build_ds(ds_text, enabled_flag);
+
 	DS['text'] = ds_text;
 ds_text
-	const Counters = build_counters(DS);
-	Counters['text'] = number_of_runs(ds_text);
 
 	const varSep = decodeWhitespaces(qa_separator_input.value);
 
@@ -365,7 +378,7 @@ ds_text
 
 	const result = [];
 	enabled_counters.forEachEnabled(function(dsName) {
-		let varDs = Counters[dsName];
+		let varDs = DS["counter_" + dsName];
 		const ds_htmlname = counter_name2html[dsName] ? counter_name2html[dsName] : dsName;
 		if(varDs === undefined) {
 			if(qa_counter_automatic.checked) {

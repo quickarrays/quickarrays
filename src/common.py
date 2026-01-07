@@ -26,7 +26,6 @@ GENERATED_JS = JS_DIR / 'generated.js'
 CONCATENATED_JS = BUILD_DIR / 'concatenated.js'
 
 JS_GEN_DIR = JS_DIR / 'gen'
-COUNTERS_JS = JS_GEN_DIR / 'counters.js'
 ALGORITHM_PIPELINE_JS = JS_GEN_DIR / 'algorithm_pipeline.js'
 GENERATOR_PIPELINE_JS = JS_GEN_DIR / 'generator_pipeline.js'
 TUTORIAL_JS = JS_GEN_DIR / 'tutorial.js'
@@ -114,7 +113,7 @@ TUTORIAL_PY = SOURCE_DIR / 'tutorial.py'
 CITATION_PY = SOURCE_DIR / 'citation.py'
 SKELETON_PY = SOURCE_DIR / 'skeleton.py'
 
-ALL_GEN_JS_FILES = [COUNTERS_JS, ALGORITHM_PIPELINE_JS, GENERATOR_PIPELINE_JS, TUTORIAL_JS, CITATION_JS] + list(map(lambda name: JS_GEN_DIR / (Path(name).stem + '.js'), [ALGORITHM_TS, GENERATOR_TS, UTILITY_TS]))
+ALL_GEN_JS_FILES = [ALGORITHM_PIPELINE_JS, GENERATOR_PIPELINE_JS, TUTORIAL_JS, CITATION_JS] + list(map(lambda name: JS_GEN_DIR / (Path(name).stem + '.js'), [ALGORITHM_TS, GENERATOR_TS, UTILITY_TS]))
 
 EXTERNAL_URL = SOURCE_DIR / 'external.url'
 EXTERNAL_PY = SOURCE_DIR / 'external.py'
@@ -171,8 +170,8 @@ def generate_makefile() -> str:
 		buffer.append(f"\t@mkdir -p {JS_GEN_DIR}")
 		buffer.append(f"\tnpx babel {ts_file} --out-file {js_file} --presets=@babel/preset-typescript")
 		# buffer.append(f"\ttsc --outDir {JS_DIR} {ts_file}")
-	buffer.append(f'{COUNTERS_JS} {ALGORITHM_PIPELINE_JS}: {ALGORITHM_TS} {ALGORITHM_PY}')
-	buffer.append(f'\t@mkdir -p {COUNTERS_JS.parent}')
+	buffer.append(f'{ALGORITHM_PIPELINE_JS}: {ALGORITHM_TS} {ALGORITHM_PY}')
+	buffer.append(f'\t@mkdir -p {ALGORITHM_PIPELINE_JS.parent}')
 	buffer.append(f'\tpython3 {ALGORITHM_PY}')
 
 	buffer.append(f'$(EXTERNAL_JS_FILES): {EXTERNAL_FILELIST} {EXTERNAL_PY}')
