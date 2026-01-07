@@ -2154,3 +2154,156 @@ export function test_lzend_factorization() {
     assert_eq(construct_lzend_factorization("aaaaa"), [true, false, true, false, true], "LZ-end factorization of 'aaaaa'");
     assert_eq(construct_lzend_factorization("banana"), [true, true, true, false, false, true], "LZ-end factorization of 'banana'");
 }
+
+
+
+function is_stringattractor(text : string, attractor : readonly number[]) : boolean {
+	const n = text.length;
+	const posSet = new Set(attractor);
+
+	for (let i = 0; i < n; i++) {
+		let s = '';
+		for (let j = i; j < n; j++) {
+			s += text[j];
+
+			// Check if at least one occurrence is hit
+			let hit = false;
+			for (let k = 0; k + s.length <= n; k++) {
+				if (text.slice(k, k + s.length) === s) {
+					for (let p = k; p < k + s.length; p++) {
+						if (posSet.has(p)) {
+							hit = true;
+							break;
+						}
+					}
+				}
+				if (hit) break;
+			}
+
+			if (!hit) return false;
+		}
+	}
+	return true;
+}
+
+/**
+ * @name &Gamma;
+ * @kind disable
+ * @type factor
+ * @description Leftmost Smallest String Attractor
+ * @tutorial A string attractor is a set of positions in a string such that every distinct substring has at least one occurrence that crosses one of these positions. The smallest string attractor size is the minimum number of positions needed to form such a set. Here, \(\Gamma\) is the leftmost such smallest string attractor, i.e., the one that has the lexicographically smallest sequence of positions.
+ * @cite kempa18stringattractors
+ */
+function construct_gamma_factorization(text : string) : boolean[] {
+	if(!text) { return []; }
+	const n = text.length;
+
+	// Count all substrings
+	const freq = new Map();
+	for (let i = 0; i < n; i++) {
+		let s = '';
+		for (let j = i; j < n; j++) {
+			s += text[j];
+			freq.set(s, (freq.get(s) || 0) + 1);
+		}
+	}
+
+	// Compute minimal substrings
+	const minimal = [];
+	for (const [s, f] of freq.entries()) {
+		let minimalFlag = true;
+		for (let i = 0; i < s.length && minimalFlag; i++) {
+			const t = s.slice(0, i) + s.slice(i + 1);
+			if (t.length > 0 && freq.get(t) <= f) {
+				minimalFlag = false;
+			}
+		}
+		if (minimalFlag) minimal.push(s);
+	}
+
+	// For each minimal substring, compute all positions that hit it
+	const hits = minimal.map(s => {
+		const set = new Set();
+		for (let i = 0; i + s.length <= n; i++) {
+			if (text.slice(i, i + s.length) === s) {
+				for (let p = i; p < i + s.length; p++) {
+					set.add(p);
+				}
+			}
+		}
+		return set;
+	});
+
+	const positions = [...Array(n).keys()];
+
+	function backtrack(idx : number, chosen : Set<number>, best : Set<number>) : Set<number> {
+		if (best.size > 0  && chosen.size >= best.size) return new Set<number>();
+
+		// Check coverage
+		let ok = true;
+		for (const h of hits) {
+			let covered = false;
+			for (const p of chosen) {
+				if (h.has(p)) {
+					covered = true;
+					break;
+				}
+			}
+			if (!covered) {
+				ok = false;
+				break;
+			}
+		}
+
+		if (ok) {
+			return new Set<number>(chosen);
+		}
+
+		if (idx === positions.length) { return new Set<number>(); }
+
+		// Include position
+		chosen.add(positions[idx]);
+		var res = backtrack(idx + 1, chosen, best);
+    best = res.size > 0 ? res : best;
+		chosen.delete(positions[idx]);
+
+		// Exclude position
+		var res = backtrack(idx + 1, chosen, best);
+    best = res.size > 0 ? res : best;
+    return best;
+	}
+
+  const ret = backtrack(0, new Set<number>(), new Set<number>());
+  const result: boolean[] = new Array<boolean>(n).fill(false);
+  ret.forEach((val) => result[val] = true);
+  return result;
+}
+
+function factorization_to_positions(factorization : readonly boolean[]) : number[] {
+    const positions: number[] = [];
+    for (let i = 0; i < factorization.length; i++) {
+        if (factorization[i]) {
+            positions.push(i);
+        }
+    }
+    return positions;
+}
+
+export function test_gamma_factorization() {
+    function test_helper(text: string, exp_attr: readonly number[]) {
+        const attractor_fact = construct_gamma_factorization(text);
+        const attractor = factorization_to_positions(attractor_fact);
+        assert_eq(is_stringattractor(text, attractor), true, `Valid attractor '${attractor}' for text '${text}'`);
+        assert_eq(attractor, exp_attr, `Expected gamma size for text '${text}'`);
+    }
+    test_helper('a', [0]);
+    test_helper('banana', [0,1,2]);
+    test_helper('ananas', [0,1,5]);
+    test_helper('abracadabra', [0, 1, 2, 4, 6]); 
+    test_helper('mississippi', [0, 5, 7, 9]);
+    test_helper('', []);
+    test_helper('aaaa', [0]);
+    test_helper('abcde', [0,1,2,3,4]);
+    test_helper('edcba', [0,1,2,3,4]);
+    test_helper('abab', [0,1]);
+}
