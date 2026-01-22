@@ -24,6 +24,7 @@ BUILD_DIR = SOURCE_DIR.parent / 'build'
 JS_DIR = BUILD_DIR / 'js'
 GENERATED_JS = JS_DIR / 'generated.js'
 CONCATENATED_JS = BUILD_DIR / 'concatenated.js'
+WORKER_JS = BUILD_DIR / 'worker.js'
 
 JS_GEN_DIR = JS_DIR / 'gen'
 ALGORITHM_PIPELINE_JS = JS_GEN_DIR / 'algorithm_pipeline.js'

@@ -7,6 +7,10 @@ import re
 import sys
 import common as C
 
+WORKER_SCRIPT_RE = re.compile(
+	r'<script\s+[^>]*type="text/js-worker"\s+src="([^"]+)"[^>]*class="concatenate"[^>]*></script>',
+	re.IGNORECASE
+)
 
 SCRIPT_RE = re.compile(
 	r'<script\s+[^>]*src="([^"]+)"[^>]*class="concatenate"[^>]*></script>',
@@ -29,10 +33,20 @@ def main(html_output_filepath : Path, do_inplace: bool):
 	lines = C.BUILD_HTML.read_text(encoding="utf-8").splitlines(keepends=True)
 
 	js_list = []
+	worker_js_list = []
 	css_list = []
 	clean_lines = []
 
 	for line in lines:
+		worker_js_match = WORKER_SCRIPT_RE.search(line)
+		if worker_js_match:
+			worker_js_path = C.BUILD_DIR / Path(worker_js_match.group(1))
+			if worker_js_path.exists():
+				worker_js_list.append(worker_js_path)
+			else:
+				warn(f"Worker JS file not found: {worker_js_path}")
+			continue
+
 		js_match = SCRIPT_RE.search(line)
 		if js_match:
 			js_path = C.BUILD_DIR / Path(js_match.group(1))
@@ -52,6 +66,18 @@ def main(html_output_filepath : Path, do_inplace: bool):
 			continue
 
 		clean_lines.append(line)
+
+	# concatenate JS
+	if worker_js_list:
+		C.WORKER_JS.parent.mkdir(parents=True, exist_ok=True)
+		combined_js = []
+		for path in worker_js_list:
+			try:
+				combined_js.append(path.read_text(encoding="utf-8"))
+			except Exception as e:
+				warn(f"Failed to read JS {path}: {e}")
+		C.WORKER_JS.write_text("\n".join(combined_js), encoding="utf-8")
+
 
 	# concatenate JS
 	if js_list:
@@ -88,14 +114,18 @@ def main(html_output_filepath : Path, do_inplace: bool):
 				final_lines.append(
 					'<link rel="stylesheet" type="text/css" href="concatenated.css">\n'
 				)
-
-		if "</html>" in lower and js_list:
-			if do_inplace:
-				final_lines.append('<script>\n')
-				final_lines.append(C.CONCATENATED_JS.read_text(encoding="utf-8"))
+		if "</html>" in lower:
+			if worker_js_list:
+				final_lines.append('<script type="text/js-worker">\n')
+				final_lines.append(C.WORKER_JS.read_text(encoding="utf-8"))
 				final_lines.append('</script>\n')
-			else:
-				final_lines.append('<script src="concatenated.js"></script>\n')
+			if js_list:
+				if do_inplace:
+					final_lines.append('<script>\n')
+					final_lines.append(C.CONCATENATED_JS.read_text(encoding="utf-8"))
+					final_lines.append('</script>\n')
+				else:
+					final_lines.append(f'<script src="{C.CONCATENATED_JS.name}"></script>\n')
 
 		final_lines.append(line)
 

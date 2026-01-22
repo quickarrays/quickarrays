@@ -16,6 +16,7 @@
     "@babel/parser": "^7.28.5",
     "@babel/preset-env": "^7.28.5",
     "@babel/preset-typescript": "^7.28.5",
+    "@parcel/optimizer-terser": "^2.16.3",
     "@parcel/transformer-inline-string": "^2.16.3",
     "@types/jest": "^30.0.0",
     "babel-cli": "^6.26.0",

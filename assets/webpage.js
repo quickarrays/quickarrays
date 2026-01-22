@@ -79,6 +79,7 @@ var generate_string_range_default;
 var transform_default;
 var prepend_default;
 var append_default;
+var timeout_default;
 const counter_automatic_default = true;
 
 function update_history_internal() {
@@ -112,6 +113,10 @@ function update_history_internal() {
 	if(transform_input_query != '') { 
 		newQuery = newQuery.set("transform_input", transform_input_query); }
 
+	const timeout_query = qa_timeout_range.value;
+	if(timeout_query != timeout_default) {
+		newQuery = newQuery.set("timeout", timeout_query);
+	}
 
 	const prepend_query = qa_prepend_input.value;
 	if(prepend_query != prepend_default) { newQuery = newQuery.set("prepend", prepend_query); }
@@ -171,6 +176,9 @@ function load_history_internal() {
 
 	const transform_input_query = $.query.get("transform_input").toString();
 	if(transform_input_query) { qa_transform_input.value = transform_input_query; }
+
+	const timeout_query = $.query.get("timeout").toString();
+	if(timeout_query) { qa_timeout_range.value = timeout_query; qa_timeout_value.textContent = timeout_query; }
 
 	const prepend_query = $.query.get("prepend").toString();
 	if(prepend_query) { qa_prepend_input.value = prepend_query; }
@@ -319,30 +327,7 @@ function prettify_row(ds_text, dsName, varDs, varSep, varBase, do_padding) {
 	return {'name' : ds_htmlname, 'data' : varDs};
 }
 
-function updateArrays() {
-	qa_separator_input.value = encodeWhitespaces(qa_separator_input.value);
-	updateWhitespaces();
-
-	let enabled_flag = 0;
-	structures_list.forEachEnabled(function(dsName) {
-		enabled_flag |= structure_flags[dsName];
-	});
-	counters_list.forEachEnabled(function(dsName) {
-		if(structure_flags[dsName]) {
-			enabled_flag |= structure_flags[dsName];
-		}
-		const countername = "counter_" + dsName;
-		if(structure_flags[countername]) {
-			enabled_flag |= structure_flags[countername];
-		}
-	});
-
-	const ds_text = construct_text();
-	const DS = build_ds(ds_text, enabled_flag);
-
-	DS['text'] = ds_text;
-ds_text
-
+function fill_updates(DS) {
 	const varSep = decodeWhitespaces(qa_separator_input.value);
 
 	let pad = 0;
@@ -360,7 +345,7 @@ ds_text
 			rows.push("Function " + dsName + ": not defined");
 			return;
 		}
-		rows.push(prettify_row(ds_text, dsName, varDs, varSep, varBase, qa_output_select.value == 'plain'));
+		rows.push(prettify_row(DS['text'], dsName, varDs, varSep, varBase, qa_output_select.value == 'plain'));
 	});
 
 	if(qa_output_select.value == 'plain') { 
@@ -386,13 +371,96 @@ ds_text
 			}
 			result.push(dsName + ": not defined");
 		} else {
-		result.push(ds_htmlname + ": " + varDs);
+			result.push(ds_htmlname + ": " + varDs);
 		}
 	});
 	qa_counter_output.innerHTML = [...result].map((el) => '<span class="qa-item">' + el + '</span>').join('&nbsp;');
 
 	updateTextAreas();
 	update_history();
+}
+
+var qa_worker = null;
+var qa_is_loaded = false;
+
+function updateArrays() {
+	if(!qa_is_loaded || qa_worker !== null) {
+		return;
+	}
+	qa_separator_input.value = encodeWhitespaces(qa_separator_input.value);
+	updateWhitespaces();
+
+	let enabled_flag = 0;
+	structures_list.forEachEnabled(function(dsName) {
+		enabled_flag |= structure_flags[dsName];
+	});
+	counters_list.forEachEnabled(function(dsName) {
+		if(structure_flags[dsName]) {
+			enabled_flag |= structure_flags[dsName];
+		}
+		const countername = "counter_" + dsName;
+		if(structure_flags[countername]) {
+			enabled_flag |= structure_flags[countername];
+		}
+	});
+
+	const ds_text = construct_text();
+
+	const script_elements = document.querySelectorAll('script[type="text/js-worker"]');
+	if(!script_elements || !script_elements[0].innerHTML) {
+		qa_computation_status.textContent =  `⚠️ Warning: No worker scripts found!`;
+		qa_timeout_range.disabled = true;
+		const DS = build_ds(ds_text, enabled_flag);
+		DS['text'] = ds_text;
+		fill_updates(DS);
+		return;
+	}
+
+	const blob = new Blob(
+		Array.prototype.map.call(
+			document.querySelectorAll("script[type='text/js-worker']"),
+			(script) => script.textContent,
+		),
+		{ type: "text/javascript" },
+	);
+
+	// Creating a new global "worker" variable from all our "text/js-worker" scripts.
+	const blobURL = window.URL.createObjectURL(blob);
+
+	const timeout_seconds = Number(qa_timeout_range.value);
+	qa_computation_status.textContent = `⏳ Computing... (timeout: ${timeout_seconds}s)`;
+
+	const time_now = Date.now();
+	const timeout_id = timeout_seconds > 0
+		? setTimeout(() => {
+			qa_worker.terminate()
+			qa_worker = null;
+			qa_computation_status.textContent =  `⚠️ Killed after ${timeout_seconds}s`
+		}, timeout_seconds * 1000)
+		: null
+
+	qa_worker = new Worker(blobURL); //
+
+	qa_worker.onerror = (error) => {
+		qa_worker.terminate();
+		qa_worker = null;
+		clearTimeout(timeout_id);
+		qa_computation_status.textContent = `❌ Error during computation: ${error.message}`;
+	};
+	qa_worker.postMessage([ds_text, enabled_flag]);
+
+	qa_worker.onmessage = (event) => {
+		const DS = event.data;
+		DS['text'] = ds_text;
+
+		qa_worker.terminate();
+		qa_worker = null;
+		clearTimeout(timeout_id);
+		qa_computation_status.textContent = `✅ Computation finished in ${((Date.now() - time_now)/1000).toFixed(2)}s`;
+
+		fill_updates(DS);
+	};
+
 }
 
 function initDragAndDrop(listEnabled, listDisabled) {
@@ -420,6 +488,10 @@ var qa_tutorial_oeis
 var qa_tutorial_cite;
 var qa_tutorial_wikipedia;
 var qa_output_select;
+
+var qa_timeout_range;
+var qa_timeout_value;
+var qa_computation_status;
 
 function update_tutorial(id, name) {
 		if(tutorials[id] === undefined) { return; }
@@ -459,7 +531,6 @@ function update_tutorial(id, name) {
 }
 
 window.onload = function () {
-
 	qa_tutorial_open_button = document.getElementById('qa-tutorial-open-button');
 	qa_tutorial_close_button = document.getElementById('qa-tutorial-close-button');
 	qa_tutorial_overlay = document.getElementById('qa-tutorial-overlay');
@@ -469,16 +540,13 @@ window.onload = function () {
 	qa_tutorial_cite = document.getElementById('qa-tutorial-cite');
 	qa_tutorial_wikipedia = document.getElementById('qa-tutorial-wikipedia');
 
-
-	//tutorial
-	qa_tutorial_open_button.onclick = function() { qa_tutorial_overlay.style.display = "block"; }
-	qa_tutorial_close_button.onclick = function() { qa_tutorial_overlay.style.display = "none"; }
-	// Close the pop-up when clicking anywhere outside the box
-	window.onclick = function(event) {
-		if (event.target == qa_tutorial_overlay) {
-			qa_tutorial_overlay.style.display = "none";
-		}
-	}
+	qa_timeout_range = document.getElementById('qa-timeout-range');
+	qa_timeout_value = document.getElementById('qa-timeout-value');
+	qa_timeout_range.oninput = () => {
+		qa_timeout_value.textContent = qa_timeout_range.value;
+		update_history();
+	};
+	qa_computation_status = document.getElementById('qa-computation-status');
 
 	qa_output_select = document.getElementById('qa-output-select');
 
@@ -501,6 +569,50 @@ window.onload = function () {
 	qa_generate_string_rank = document.getElementById('qa-generate-string-rank');
 	qa_generate_string_span = document.getElementById('qa-generate-string-span');
 
+	timeout_default = qa_timeout_range.value;
+	qa_separator_input.value = encodeWhitespaces(separator_default);
+	generate_string_default = qa_generate_string_list.value;
+	generate_string_range_default = qa_generate_string_range.value;
+	transform_default = qa_transform_list.value;
+	prepend_default = qa_prepend_input.value;
+	append_default = qa_append_input.value;
+
+	const ds_list_enabled = document.getElementById('qa-structures-enabled');
+	const ds_list_disabled = document.getElementById('qa-structures-disabled');
+
+	const counter_list_enabled = document.getElementById('qa-counter-enabled');
+	const counter_list_disabled = document.getElementById('qa-counter-disabled');
+
+	// initalize data structure settings container
+	structures_list = new DataStructureList(ds_list_enabled, ds_list_disabled, updateArrays, true);
+	document.querySelectorAll(".qa-structure").forEach((elem) => { structures_list.add(elem); });
+	structures_default = structures_list.getEnabled();
+
+	// initialize counter settings container
+	counters_list = new CounterList(counter_list_enabled, counter_list_disabled, updateArrays, true);
+	document.querySelectorAll(".qa-counter").forEach((elem) => { counters_list.add(elem); });
+	counters_default = counters_list.getEnabled();
+
+	// initialize option settings container
+	options_list = new OptionList(updateArrays);
+	document.querySelectorAll(".qa-option-cbx").forEach((elem) => { options_list.add(elem); });
+	options_default = options_list.getEnabled();
+
+	initDragAndDrop(ds_list_enabled, ds_list_disabled);
+	initDragAndDrop(counter_list_enabled, counter_list_disabled);
+
+	load_history_internal();
+
+	//tutorial
+	qa_tutorial_open_button.onclick = function() { qa_tutorial_overlay.style.display = "block"; }
+	qa_tutorial_close_button.onclick = function() { qa_tutorial_overlay.style.display = "none"; }
+	// Close the pop-up when clicking anywhere outside the box
+	window.onclick = function(event) {
+		if (event.target == qa_tutorial_overlay) {
+			qa_tutorial_overlay.style.display = "none";
+		}
+	}
+
 	document.querySelectorAll(".qa-item").forEach((elem) => {
 		if(tutorials[elem.dataset.ds] === undefined) { return; }
 		elem.onmouseover = function() { 
@@ -508,11 +620,6 @@ window.onload = function () {
 		};
 	});
 
-	const ds_list_enabled = document.getElementById('qa-structures-enabled');
-	const ds_list_disabled = document.getElementById('qa-structures-disabled');
-
-	const counter_list_enabled = document.getElementById('qa-counter-enabled');
-	const counter_list_disabled = document.getElementById('qa-counter-disabled');
 
 	const triggering = [qa_transform_active, qa_prepend_input, qa_append_input, qa_transform_list, qa_transform_input, qa_generate_string_list, qa_output_select];
 	for(const idx in triggering) {
@@ -578,40 +685,13 @@ window.onload = function () {
 	document.querySelectorAll(".qa-structure").forEach((elem) => { ds_name2html[elem.dataset.ds] = getOwnText(elem); });
 	document.querySelectorAll(".qa-counter").forEach((elem) => { counter_name2html[elem.dataset.ds] = getOwnText(elem); });
 
-	// initalize data structure settings container
-	structures_list = new DataStructureList(ds_list_enabled, ds_list_disabled, updateArrays, true);
-	document.querySelectorAll(".qa-structure").forEach((elem) => { structures_list.add(elem); });
-	structures_default = structures_list.getEnabled();
-
-	// initialize counter settings container
-	counters_list = new CounterList(counter_list_enabled, counter_list_disabled, updateArrays, true);
-	document.querySelectorAll(".qa-counter").forEach((elem) => { counters_list.add(elem); });
-	counters_default = counters_list.getEnabled();
-
-	// initialize option settings container
-	options_list = new OptionList(updateArrays);
-	document.querySelectorAll(".qa-option-cbx").forEach((elem) => { options_list.add(elem); });
-	options_default = options_list.getEnabled();
-
-	qa_separator_input.value = encodeWhitespaces(separator_default);
-
-	generate_string_default = qa_generate_string_list.value;
-	generate_string_range_default = qa_generate_string_range.value;
-	transform_default = qa_transform_list.value;
-	prepend_default = qa_prepend_input.value;
-	append_default = qa_append_input.value;
-
-	load_history_internal();
-
-
 	// update output while typing
 	qa_text.oninput = updateArrays;
 	qa_text.onpropertychange = updateArrays;
 	qa_separator_input.oninput = updateArrays;
 	qa_separator_input.onpropertychange = updateArrays;
 
-	updateArrays();
 	update_history_internal();
-	initDragAndDrop(ds_list_enabled, ds_list_disabled);
-	initDragAndDrop(counter_list_enabled, counter_list_disabled);
+	qa_is_loaded = true;
+	updateArrays();
 };

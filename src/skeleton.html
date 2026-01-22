@@ -106,6 +106,16 @@
         {{html/counters.html}}
     </div>
 </div>
+
+<div class="qa-description">
+<label for="qa-timeout">Timeout:</label>
+<input type="range" id="qa-timeout-range" min="0" max="30" value="3" step="1">
+<span id="qa-timeout-value">3</span>s
+&nbsp;&nbsp;
+<span id="qa-computation-status"></span>
+</div>
+
+
          <div class="qa-description">
              The state of QuickArrays is stored in the URL.<br />
              By creating a bookmark, you can return to the current state at any time.
@@ -128,6 +138,12 @@
         <a id="qa-tutorial-wikipedia"></a>
     </div>
 </div>
+
+
+<script type="text/js-worker" src="js/generated.js" class="concatenate"></script>
+<script type="text/js-worker" src="js/worker.js" class="concatenate"></script>
+
+
 <script src="js/ext/jquery-3.7.1.slim.js" class="concatenate"></script>
 <script src="js/ext/jquery.query-object.js" class="concatenate"></script>
 <script src="js/ext/Sortable.js" class="concatenate"></script>

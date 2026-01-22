@@ -9,7 +9,7 @@ BUILD_DIR := ./build
 STANDALONE_HTML := ./build/index.html
 DIST_PACKED_HTML := ./dist/index.html
 ASSET_CSS := ./assets/qa.css
-ASSET_JS := ./assets/webpage.js ./assets/text_opt_element.js ./assets/counter_list.js ./assets/ds_list.js
+ASSET_JS := ./assets/webpage.js ./assets/text_opt_element.js ./assets/counter_list.js ./assets/worker.js ./assets/ds_list.js
 BUILD_DIR_ASSET_CSS := $(subst $(ASSETS_DIR),$(BUILD_DIR)/css,$(ASSET_CSS))
 BUILD_DIR_ASSET_JS := $(subst $(ASSETS_DIR),$(BUILD_DIR)/js,$(ASSET_JS))
 .PHONY: all check test clean
@@ -26,6 +26,9 @@ all: $(BUILD_HTML) $(STANDALONE_HTML) $(DIST_PACKED_HTML)
 ./build/js/counter_list.js: ./assets/counter_list.js
 	@mkdir -p ./build/js
 	ln -sr ./assets/counter_list.js ./build/js/counter_list.js
+./build/js/worker.js: ./assets/worker.js
+	@mkdir -p ./build/js
+	ln -sr ./assets/worker.js ./build/js/worker.js
 ./build/js/ds_list.js: ./assets/ds_list.js
 	@mkdir -p ./build/js
 	ln -sr ./assets/ds_list.js ./build/js/ds_list.js
