@@ -28,13 +28,14 @@ quickarrays-dev/
 ├── assets/                   # Static assets
 │   ├── qa.css                # Main stylesheet
 │   ├── webpage.js            # Web page logic
+│   ├── worker.js             # Web worker logic
 │   ├── ds_list.js            # Data structure list
 │   ├── counter_list.js       # Counter list
 │   └── text_opt_element.js   # option element
 ├── build/                    # Build artifacts (generated)
 │   ├── js/gen/               # Generated JavaScript from TypeScript
 │   ├── js/ext/               # External JavaScript libraries
-│   ├── js/                   # Asset JavaScript files
+│   ├── js/                   # Asset and Generated JavaScript files
 │   ├── css/                  # CSS files
 │   └── index.html            # Standalone HTML with inlined resources
 ├── dist/                     # Development build output (generated)
@@ -43,6 +44,7 @@ quickarrays-dev/
 ├── package.json              # Node.js dependencies
 ├── tsconfig.json             # TypeScript configuration
 ├── babel.config.json         # Babel configuration
+├── .parcelrc                 # Parcel configuration
 └── jest.config.js            # Jest test configuration
 ```
 
