@@ -28,24 +28,37 @@ body {
 }
 
 .qa-header {
-    flex-shrink:0;
-    height: 4em;
-    
+    flex-shrink: 0;
+    height: 3em;
     background-color: #DDD;
-    /* background-image: url(../../tudocomp.svg); */
-    background-repeat: no-repeat;
-    background-size: auto 3em;
-    background-position: 0.5em 0.5em;
 }
 
-.qa-header h1{
+.qa-header h1.qa-title {
     margin: 0;
-    padding-top: 2em;
-    padding-right: 1em;
+    padding-top: .5em;
+    padding-right: .5em;
 
-    font-size: 1em;
-    font-weight: bold;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: .25em;
+
+    font-size: 1.5em;
+    font-weight: 700;
     text-align: right;
+}
+
+.qa-title-icon {
+    display: inline-flex;
+    height: .9em;
+    width: .9em;
+    flex: 0 0 auto;
+}
+
+.qa-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
 }
 
 @media (max-width: 720px) {    
