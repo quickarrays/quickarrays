@@ -1,5 +1,6 @@
 <!DOCTYPE HTML>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
@@ -15,8 +16,9 @@
     <!-- <link rel="icon" type="image/png" href="../tudocomp-icon.png"> -->
 
 </head>
+
 <body>
-    
+
     <div class="qa-header">
         <h1 class="qa-title">
             <span class="qa-title-icon" aria-hidden="true">
@@ -28,7 +30,7 @@
             <span class="qa-title-text">QuickArrays</span>
         </h1>
     </div>
-    
+
     <div class="qa-main">
         <div class="qa-description">
             <span id="qa-tutorial-controls" class="qa-tutorial-controls">
@@ -47,7 +49,8 @@
         <div class="qa-itemlist qa-hidden" id="qa-generate-string-span">
             <div>
                 <label for="qa-generate-string-range">Length:</label>
-                <input type="range" id="qa-generate-string-range" name="qa-generate-string-range" min="1" max="1024" value="168" step="1">
+                <input type="range" id="qa-generate-string-range" name="qa-generate-string-range" min="1" max="1024"
+                    value="168" step="1">
                 <span id="qa-generate-string-rank">16</span>
                 <span id="qa-generate-string-order"></span>
             </div>
@@ -62,16 +65,21 @@
                 <option value="custom">Custom</option>
             </select>
             <span id='qa-transform-active-span' class='qa-hidden'>
-                <input type="checkbox" id="qa-transform-active" name="qa-transform-active"/> <label for="qa-transform-active">activate</label>
+                <input type="checkbox" id="qa-transform-active" name="qa-transform-active" /> <label
+                    for="qa-transform-active">activate</label>
             </span>
-            <textarea class="qa-textarea qa-hidden" id="qa-transform-input" placeholder="text[i] == 'a' ? 'b' : 'a'"></textarea>
+            <textarea class="qa-textarea qa-hidden" id="qa-transform-input"
+                placeholder="text[i] == 'a' ? 'b' : 'a'"></textarea>
         </div>
 
-        <div class="qa-description" id="qa-structures-description">Choose your data structures and factorizations (drag and drop or double-click):<br />
-        You can use drag and drop to reorder your selection!</div>
+        <div class="qa-description" id="qa-structures-description">Choose your data structures and factorizations (drag
+            and drop or double-click):<br />
+            You can use drag and drop to reorder your selection!</div>
         <div class="qa-itemlist" id="qa-structures-box">
             <div id="qa-structures-enabled" class="qa-itemlist-enabled">
-                <div class="qa-itemlist-header"><span class="qa-itemlist-title">Enabled<span class="qa-itemlist-colon">:</span></span><button type="button" class="qa-toggle-btn" aria-expanded="true">(hide)</button></div>
+                <div class="qa-itemlist-header"><span class="qa-itemlist-title">Enabled<span
+                            class="qa-itemlist-colon">:</span></span><button type="button" class="qa-toggle-btn"
+                        aria-expanded="true">(hide)</button></div>
                 <div class="qa-item qa-structure qa-structure-string" data-ds="text">T</div>
                 {{html/algorithm_enable.html}}
             </div>
@@ -81,19 +89,29 @@
                 </select>
             </div>
             <div id="qa-structures-disabled-string" class="qa-itemlist-disabled">
-                <div class="qa-itemlist-header"><span class="qa-itemlist-title">String transforms<span class="qa-itemlist-colon">:</span></span><button type="button" class="qa-toggle-btn" aria-expanded="true">(hide)</button></div>
+                <div class="qa-itemlist-header"><span class="qa-itemlist-title">String transforms<span
+                            class="qa-itemlist-colon">:</span></span><button type="button" class="qa-toggle-btn"
+                        aria-expanded="true">(hide)</button></div>
             </div>
             <div id="qa-structures-disabled-index" class="qa-itemlist-disabled">
-                <div class="qa-itemlist-header"><span class="qa-itemlist-title">Index permutations<span class="qa-itemlist-colon">:</span></span><button type="button" class="qa-toggle-btn" aria-expanded="true">(hide)</button></div>
+                <div class="qa-itemlist-header"><span class="qa-itemlist-title">Index permutations<span
+                            class="qa-itemlist-colon">:</span></span><button type="button" class="qa-toggle-btn"
+                        aria-expanded="true">(hide)</button></div>
             </div>
             <div id="qa-structures-disabled-length" class="qa-itemlist-disabled">
-                <div class="qa-itemlist-header"><span class="qa-itemlist-title">Length arrays<span class="qa-itemlist-colon">:</span></span><button type="button" class="qa-toggle-btn" aria-expanded="true">(hide)</button></div>
+                <div class="qa-itemlist-header"><span class="qa-itemlist-title">Length arrays<span
+                            class="qa-itemlist-colon">:</span></span><button type="button" class="qa-toggle-btn"
+                        aria-expanded="true">(hide)</button></div>
             </div>
             <div id="qa-structures-disabled-factor" class="qa-itemlist-disabled">
-                <div class="qa-itemlist-header"><span class="qa-itemlist-title">Factorizations<span class="qa-itemlist-colon">:</span></span><button type="button" class="qa-toggle-btn" aria-expanded="true">(hide)</button></div>
+                <div class="qa-itemlist-header"><span class="qa-itemlist-title">Factorizations<span
+                            class="qa-itemlist-colon">:</span></span><button type="button" class="qa-toggle-btn"
+                        aria-expanded="true">(hide)</button></div>
             </div>
             <div id="qa-structures-disabled-other" class="qa-itemlist-disabled">
-                <div class="qa-itemlist-header"><span class="qa-itemlist-title">Other<span class="qa-itemlist-colon">:</span></span><button type="button" class="qa-toggle-btn" aria-expanded="true">(hide)</button></div>
+                <div class="qa-itemlist-header"><span class="qa-itemlist-title">Other<span
+                            class="qa-itemlist-colon">:</span></span><button type="button" class="qa-toggle-btn"
+                        aria-expanded="true">(hide)</button></div>
             </div>
             <div id="qa-structures-disabled-source" class="qa-hidden">
                 {{html/algorithm_disable.html}}
@@ -101,15 +119,23 @@
         </div>
         <div class="qa-options">
             <label class="qa-option"><input type="checkbox" id="qa-compact-view">Compact view</label>
-            <label class="qa-option"><input type="checkbox" class="qa-option-cbx" name="qa-option-dollar" data-opt="dollar" checked>Append '$'</label>
+            <label class="qa-option"><input type="checkbox" class="qa-option-cbx" name="qa-option-dollar"
+                    data-opt="dollar" checked>Append '$'</label>
             <label class="qa-option"><input type="checkbox" id="qa-show-advanced-options">Show advanced options</label>
-            <label class="qa-option qa-advanced-option">Prepend:&nbsp;<input type="text" id="qa-prepend-input" name="qa-prepend-input" type="text" class="qa-shorttext"></label>
-            <label class="qa-option qa-advanced-option">Append:&nbsp; <input type="text" id="qa-append-input"  name="qa-append-input" type="text" class="qa-shorttext"></label>
-            <label class="qa-option qa-advanced-option"><input type="checkbox" class="qa-option-cbx" name="qa-option-baseone"    data-opt="baseone"    checked>Base Indices on '1'</label>
-            <label class="qa-option qa-advanced-option"><input type="checkbox" class="qa-option-cbx" name="qa-option-whitespace" data-opt="whitespace" checked>Whitespaces as ⎵ and ↵</label>
-            <label class="qa-option qa-advanced-option"><input type="checkbox" class="qa-option-cbx" name="qa-option-facttext"   data-opt="facttext"   checked>Factorization as Bars</label>
-            <label class="qa-option qa-advanced-option"><input type="checkbox" class="qa-option-cbx" name="qa-option-tabularize" data-opt="tabularize" checked>Tabularize Text</label>
-            <label class="qa-option qa-advanced-option">Separator:&nbsp;&nbsp;<input id="qa-separator-input" type="text" class="qa-shorttext"></label>
+            <label class="qa-option qa-advanced-option">Prepend:&nbsp;<input type="text" id="qa-prepend-input"
+                    name="qa-prepend-input" type="text" class="qa-shorttext"></label>
+            <label class="qa-option qa-advanced-option">Append:&nbsp; <input type="text" id="qa-append-input"
+                    name="qa-append-input" type="text" class="qa-shorttext"></label>
+            <label class="qa-option qa-advanced-option"><input type="checkbox" class="qa-option-cbx"
+                    name="qa-option-baseone" data-opt="baseone" checked>Base Indices on '1'</label>
+            <label class="qa-option qa-advanced-option"><input type="checkbox" class="qa-option-cbx"
+                    name="qa-option-whitespace" data-opt="whitespace" checked>Whitespaces as ⎵ and ↵</label>
+            <label class="qa-option qa-advanced-option"><input type="checkbox" class="qa-option-cbx"
+                    name="qa-option-facttext" data-opt="facttext" checked>Factorization as Bars</label>
+            <label class="qa-option qa-advanced-option"><input type="checkbox" class="qa-option-cbx"
+                    name="qa-option-tabularize" data-opt="tabularize" checked>Tabularize Text</label>
+            <label class="qa-option qa-advanced-option">Separator:&nbsp;&nbsp;<input id="qa-separator-input" type="text"
+                    class="qa-shorttext"></label>
         </div>
         <div class="qa-description">QuickArrays built the following data structures and factorizations for you in
             <select id="qa-output-select" name="qa-output-select">
@@ -122,51 +148,63 @@
         <textarea class="qa-textarea" style="flex-grow:1;line-height:175%;" id="qa-ds-output" readonly></textarea>
 
         <div id="qa-counter-output" class="qa-itemlist-enabled"></div>
-<div class="qa-description">Choose your counters
-        <input type="checkbox" id="qa-counter-automatic" value="1" checked="checked"></input>
-        <label for="qa-counter-automatic">automatically</label>.
-        &nbsp;&nbsp;
-        A text counters returns the size of its run length encoding, a factorization counter the numbers of its factors.
-</div>
-<div class="qa-itemlist qa-hidden" id="qa-counter-itemlists">
-    <div id="qa-counter-enabled" class="qa-itemlist-enabled">
-        <div class="qa-itemlist-header"><span class="qa-itemlist-title">Enabled<span class="qa-itemlist-colon">:</span></span><button type="button" class="qa-toggle-btn" aria-expanded="true">(hide)</button></div>
-        <div class="qa-item qa-counter qa-counter-rle" data-ds="text">runs(T)</div>
-        <div class="qa-item qa-counter" data-ds="n">n</div>
-    </div>
-    <div id="qa-counter-disabled-rle" class="qa-itemlist-disabled">
-        <div class="qa-itemlist-header"><span class="qa-itemlist-title">Size of run length encoding of<span class="qa-itemlist-colon">:</span></span><button type="button" class="qa-toggle-btn" aria-expanded="true">(hide)</button></div>
-    </div>
-    <div id="qa-counter-disabled-factor" class="qa-itemlist-disabled">
-        <div class="qa-itemlist-header"><span class="qa-itemlist-title">Number of factors of<span class="qa-itemlist-colon">:</span></span><button type="button" class="qa-toggle-btn" aria-expanded="true">(hide)</button></div>
-    </div>
-    <div id="qa-counter-disabled-other" class="qa-itemlist-disabled">
-        <div class="qa-itemlist-header"><span class="qa-itemlist-title">Other<span class="qa-itemlist-colon">:</span></span><button type="button" class="qa-toggle-btn" aria-expanded="true">(hide)</button></div>
-    </div>
-    <div id="qa-counter-disabled-source" class="qa-hidden">
-        {{html/counters.html}}
-    </div>
-</div>
+        <div class="qa-description">Choose your counters
+            <input type="checkbox" id="qa-counter-automatic" value="1" checked="checked"></input>
+            <label for="qa-counter-automatic">automatically</label>.
+            &nbsp;&nbsp;
+            A text counters returns the size of its run length encoding, a factorization counter the numbers of its
+            factors.
+        </div>
+        <div class="qa-itemlist qa-hidden" id="qa-counter-itemlists">
+            <div id="qa-counter-enabled" class="qa-itemlist-enabled">
+                <div class="qa-itemlist-header"><span class="qa-itemlist-title">Enabled<span
+                            class="qa-itemlist-colon">:</span></span><button type="button" class="qa-toggle-btn"
+                        aria-expanded="true">(hide)</button></div>
+                <div class="qa-item qa-counter qa-counter-rle" data-ds="text">runs(T)</div>
+                <div class="qa-item qa-counter" data-ds="n">n</div>
+            </div>
+            <div id="qa-counter-disabled-other" class="qa-itemlist-disabled">
+                <div class="qa-itemlist-header"><span class="qa-itemlist-title">Other counters<span
+                            class="qa-itemlist-colon">:</span></span><button type="button" class="qa-toggle-btn"
+                        aria-expanded="true">(hide)</button></div>
+            </div>
+            <div id="qa-counter-disabled-rle" class="qa-itemlist-disabled">
+                <div class="qa-itemlist-header"><span class="qa-itemlist-title">Size of run length encoding<span
+                            class="qa-itemlist-colon">:</span></span><button type="button" class="qa-toggle-btn"
+                        aria-expanded="true">(hide)</button></div>
+            </div>
+            <div id="qa-counter-disabled-factor" class="qa-itemlist-disabled">
+                <div class="qa-itemlist-header"><span class="qa-itemlist-title">Number of factors<span
+                            class="qa-itemlist-colon">:</span></span><button type="button" class="qa-toggle-btn"
+                        aria-expanded="true">(hide)</button></div>
+            </div>
+            <div id="qa-counter-disabled-source" class="qa-hidden">
+                {{html/counters.html}}
+            </div>
+        </div>
 
-<div class="qa-description">
-<label for="qa-timeout">Timeout:</label>
-<input type="range" id="qa-timeout-range" min="0" max="30" value="3" step="1">
-<span id="qa-timeout-value">3</span>s
-&nbsp;&nbsp;
-<span id="qa-computation-status"></span>
-</div>
+        <div class="qa-description">
+            <label for="qa-timeout">Timeout:</label>
+            <input type="range" id="qa-timeout-range" min="0" max="30" value="3" step="1">
+            <span id="qa-timeout-value">3</span>s
+            &nbsp;&nbsp;
+            <span id="qa-computation-status"></span>
+        </div>
 
 
-         <div class="qa-description">
-             The state of QuickArrays is stored in the URL.<br />
-             By creating a bookmark, you can return to the current state at any time.
-         </div>
-         <div style="text-align:right">
-             Questions or problems? Feel free to use our <a href="https://github.com/quickarrays/quickarrays.github.io/issues">bug tracker</a>, or drop <a href="https://ellert.xyz/">Jonas</a> or <a href="https://dkppl.de/">Dominik</a> a mail</a>.
+        <div class="qa-description">
+            The state of QuickArrays is stored in the URL.<br />
+            By creating a bookmark, you can return to the current state at any time.
+        </div>
+        <div style="text-align:right">
+            Questions or problems? Feel free to use our <a
+                href="https://github.com/quickarrays/quickarrays.github.io/issues">bug tracker</a>, or drop <a
+                href="https://ellert.xyz/">Jonas</a> or <a href="https://dkppl.de/">Dominik</a> a mail</a>.
 
-             Like it? Cite us and give us <a href="https://github.com/quickarrays/quickarrays.github.io">a star on GitHub</a>!
-         </div>
-</div>
+            Like it? Cite us and give us <a href="https://github.com/quickarrays/quickarrays.github.io">a star on
+                GitHub</a>!
+        </div>
+    </div>
 </body>
 
 <div id="qa-tutorial-overlay">
