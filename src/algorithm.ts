@@ -1298,17 +1298,23 @@ export function test_necklace_conjugate_transform() {
  * @kind disable
  * @type string
  * @description Inverts a string by mapping each character to its complementary character
- * @tutorial The invert transform of a string maps each character to its complementary character based on the minimum and maximum characters in the string. Specifically, given a text \(T[1..n]\), the invert transform \(\mathsf{Invert}(T)\) maps each character \(T[i]\) to \(\text{max_j} T[j] - (c - \text{min_j T[j]})\).
+ * @tutorial The invert transform of a string maps each character to its complementary character based on the effective alphabet of the string. Specifically, given a string that contains \(s\) distinct symbols, it swaps the \(i\)-th smallest symbol with the \((s - i + 1)\)-th smallest one, for every \(i \in \{1,\dots,s\}\).
  */
 function construct_invert_transform(text: string) {
-    if (!text) { return ""; }
-    const sorted_chars = [...text].sort();
-    const minchar = sorted_chars[0];
-    const maxchar = sorted_chars.reverse()[0];
-    function invert(c: string): string {
-        return String.fromCharCode(maxchar.charCodeAt(0) - (c.charCodeAt(0) - minchar.charCodeAt(0)));
+    if (!text) return "";
+
+    // Build alphabet (unique symbols), sorted by code unit
+    const alphabet = Array.from(new Set([...text])).sort();
+    const sigma = alphabet.length;
+
+    // Build complement mapping
+    const map = new Map<string, string>();
+    for (let r = 0; r < sigma; r++) {
+        map.set(alphabet[r], alphabet[sigma - 1 - r]);
     }
-    return [...text].map(invert).join('');
+
+    // Transform
+    return [...text].map(c => map.get(c) ?? c).join("");
 }
 
 export function test_invert_transform() {
