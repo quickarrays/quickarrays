@@ -806,6 +806,7 @@ window.onload = function () {
 	initDragAndDropGrouped('qa-structs', ds_list_enabled, ds_list_disabled, cat => 'qa-structure-' + cat, 'qa-structure');
 	initDragAndDropGrouped('qa-counters', counter_list_enabled, counter_list_disabled, cat => 'qa-counter-' + cat, 'qa-counter');
 
+	applyLegacyRedirects();
 	load_history_internal();
 
 	//tutorial
