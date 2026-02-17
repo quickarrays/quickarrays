@@ -1262,9 +1262,9 @@ export function test_lyndon_array() {
 
 
 /**
- * @name necklace
- * @kind hidden
- * @type string 
+ * @name Necklace
+ * @kind disable
+ * @type string
  * @description Lexicographically smallest conjugate of a given string.
  * @tutorial The necklace conjugate of a string is the lexicographically smallest string that can be obtained by rotating the original string. This involves generating all possible rotations (conjugates) of the string and selecting the smallest one in lexicographic order.
  */
@@ -1295,8 +1295,8 @@ export function test_necklace_conjugate_transform() {
 
 /**
  * @name Invert
- * @kind hidden
- * @type string 
+ * @kind disable
+ * @type string
  * @description Inverts a string by mapping each character to its complementary character
  * @tutorial The invert transform of a string maps each character to its complementary character based on the minimum and maximum characters in the string. Specifically, given a text \(T[1..n]\), the invert transform \(\mathsf{Invert}(T)\) maps each character \(T[i]\) to \(\text{max_j} T[j] - (c - \text{min_j T[j]})\).
  */
@@ -1322,7 +1322,7 @@ export function test_invert_transform() {
 
 /**
  * @name Revert
- * @kind hidden
+ * @kind disable
  * @type string
  * @description Reverts a string by reading it backwards
  * @tutorial The revert transform of a string is obtained by reversing the order of its characters. Given a text \(T[1..n]\), the revert transform \(\mathsf{Revert}(T)\) produces the string \(T[n] T[n-1] \ldots T[1]\), where the characters are arranged in the opposite order, effectively reading the string backwards.
