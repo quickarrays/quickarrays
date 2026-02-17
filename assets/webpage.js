@@ -294,36 +294,6 @@ function updateWhitespaces() {
 	}
 }
 
-function eval_with_context(context, js_code) {
-	return eval('with(context) { ' + js_code + ' }');
-}
-
-function custom_transform_text(text, eval_string) {
-	var ret = '';
-	for (var i = 0; i < text.length; i++) {
-		try {
-			const newchar = eval_with_context({ 'i': i, 'text': text }, eval_string);
-			ret += newchar !== undefined ? newchar : text[i];
-		}
-		catch (error) {
-			alert("Error in transformation: " + error.message);
-			setTransformActive(false);
-			return text;
-		}
-	}
-	return ret;
-}
-
-function transform_text(text) {
-	const selection = qa_transform_list.value;
-	if (selection == 'none') { return text; }
-	if (selection == 'custom') {
-		if (!isTransformActive()) { return text; }
-		return custom_transform_text(text, qa_transform_input.value || qa_transform_input.placeholder);
-	}
-	const DS = build_ds(text, structure_flags[selection]);
-	return DS[selection];
-}
 
 
 function adjustedLimit(limit) {
@@ -342,54 +312,6 @@ function unadjustedLimit(limit) {
 	return lo;
 }
 
-function generate_text() {
-	if (qa_generate_string_list.value == 'custom') {
-		if (qa_generate_string_order) qa_generate_string_order.textContent = '';
-		return qa_text.value;
-	}
-	if (!(qa_generate_string_list.value in string_generators)) {
-		if (qa_generate_string_order) qa_generate_string_order.textContent = '';
-		return 'Unknown string generator: ' + qa_generate_string_list.value;
-	}
-	const limit = adjustedLimit(qa_generate_string_range.value);
-	const gen = string_generators[qa_generate_string_list.value];
-	let best = '', k = 0;
-	for (; k < 64; k++) {
-		const cand = gen(k);
-		if (cand.length > limit) break;
-		best = cand;
-	}
-	if (qa_generate_string_order) qa_generate_string_order.textContent = '(order ' + (k - 1) + ')';
-	return best;
-}
-
-
-function construct_text() {
-	if (qa_generate_string_range.value == 'custom') {
-	}
-
-	let ds_text = generate_text();
-	if (options_list.enabled("whitespace")) {
-		ds_text = decodeWhitespaces(ds_text);
-	}
-
-	if (!ds_text) { ds_text = qa_text.placeholder; }
-	ds_text = transform_text(ds_text);
-
-	if (ds_text.length == 0) {
-		qa_ds_output.value = '';
-		qa_counter_output.value = '';
-		return;
-	}
-	if (qa_prepend_input.value) {
-		ds_text = qa_prepend_input.value + ds_text;
-	}
-	if (qa_append_input.value) {
-		ds_text = ds_text + qa_append_input.value;
-	}
-	if (options_list.enabled("dollar")) ds_text += '\0';
-	return ds_text;
-}
 
 function prettify_row(ds_text, dsName, varDs, varSep, varBase, do_padding) {
 	if (structures_list.isIndex(dsName)) {
@@ -548,18 +470,7 @@ function updateArrays() {
 		}
 	}
 
-	const script_elements = document.querySelectorAll('script[type="text/js-worker"]');
-	if (!script_elements || !script_elements[0].innerHTML) {
-		qa_computation_status.textContent = `⚠️ Warning: No worker scripts found!`;
-		qa_timeout_range.disabled = true;
-		const ds_text = construct_text();
-		const DS = build_ds(ds_text, enabled_flag);
-		DS['text'] = ds_text;
-		fill_updates(DS);
-		return;
-	}
-
-	// Build worker params — all expensive work happens in the worker
+	// Build params — shared between worker and fallback path
 	const transformSelection = qa_transform_list.value;
 	let workerParams;
 	if (qa_generate_string_list.value !== 'custom') {
@@ -587,6 +498,20 @@ function updateArrays() {
 	workerParams.append = qa_append_input.value;
 	workerParams.dollar = options_list.enabled("dollar");
 	workerParams.enabled_flag = enabled_flag;
+
+	const script_elements = document.querySelectorAll('script[type="text/js-worker"]');
+	if (!script_elements || !script_elements[0].innerHTML) {
+		qa_computation_status.textContent = `⚠️ Warning: No worker scripts found!`;
+		qa_timeout_range.disabled = true;
+		const prepared = prepare_text(workerParams);
+		if (qa_generate_string_order) {
+			qa_generate_string_order.textContent = prepared.generator_order !== null ? '(order ' + prepared.generator_order + ')' : '';
+		}
+		const DS = build_ds(prepared.text, enabled_flag);
+		DS['text'] = prepared.text;
+		fill_updates(DS);
+		return;
+	}
 
 	const blob = new Blob(
 		Array.prototype.map.call(
