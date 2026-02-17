@@ -103,14 +103,17 @@ def generate_counters_html(code : str):
 		else:
 			label = name
 
+		structures = ann.get("structures", "")
+		structures_attr = f' data-structures="{structures}"' if structures else ""
+
 		if desc:
 			block = (
-				f'<div class="qa-counter qa-item qa-counter-{counter_type}" data-ds="{prop}">{label}\n'
+				f'<div class="qa-counter qa-item qa-counter-{counter_type}" data-ds="{prop}"{structures_attr}>{label}\n'
 				f'\t<div class="qa-tooltiptext">{desc}</div>\n'
 				f'</div>'
 			)
 		else:
-			block = f'<div class="qa-counter qa-item qa-counter-{counter_type}" data-ds="{prop}">{label}</div>'
+			block = f'<div class="qa-counter qa-item qa-counter-{counter_type}" data-ds="{prop}"{structures_attr}>{label}</div>'
 		datapair = (block, label)
 
 		html_items.append(datapair)

@@ -68,6 +68,8 @@ var qa_transform_input;
 
 var ds_name2html = {};
 var counter_name2html = {};
+// Maps counter dsName → array of structure dsNames that auto-enable it
+var counter_structures = {};
 
 var qa_prepend_input;
 var qa_append_input;
@@ -432,6 +434,14 @@ function fill_updates(DS) {
 			const sigma_html = counter_name2html["sigma"] || "&sigma;";
 			result.push(sigma_html + ": " + DS["counter_sigma"]);
 		}
+		// Show counters whose associated structures are currently enabled
+		for (const dsName in counter_structures) {
+			const associated = counter_structures[dsName];
+			if (!associated.some(s => structures_list.enabled(s))) continue;
+			const varDs = DS["counter_" + dsName];
+			if (varDs === undefined) continue;
+			result.push((counter_name2html[dsName] || dsName) + ": " + varDs);
+		}
 	}
 
 	enabled_counters.forEachEnabled(function(dsName) {
@@ -479,6 +489,16 @@ function updateArrays() {
 	// Always compute n and sigma
 	if (structure_flags.counter_n) enabled_flag |= structure_flags.counter_n;
 	if (structure_flags.counter_sigma) enabled_flag |= structure_flags.counter_sigma;
+
+	// In auto mode, enable counters whose associated structures are currently enabled
+	if (qa_counter_automatic.checked) {
+		for (const dsName in counter_structures) {
+			const associated = counter_structures[dsName];
+			if (!associated.some(s => structures_list.enabled(s))) continue;
+			const flag = structure_flags["counter_" + dsName];
+			if (flag) enabled_flag |= flag;
+		}
+	}
 
 	const ds_text = construct_text();
 
@@ -984,7 +1004,12 @@ window.onload = function () {
 	})();
 
 	document.querySelectorAll(".qa-structure").forEach((elem) => { ds_name2html[elem.dataset.ds] = getOwnText(elem); });
-	document.querySelectorAll(".qa-counter").forEach((elem) => { counter_name2html[elem.dataset.ds] = getOwnText(elem); });
+	document.querySelectorAll(".qa-counter").forEach((elem) => {
+		const ds = elem.dataset.ds;
+		counter_name2html[ds] = getOwnText(elem);
+		const structs = elem.dataset.structures;
+		if (structs) counter_structures[ds] = structs.split(',').map(s => s.trim()).filter(Boolean);
+	});
 
 	// update output while typing
 	qa_text.oninput = updateArrays;
