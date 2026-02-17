@@ -2,9 +2,20 @@ class DataStructureList {
     constructor(enabledParent, disabledParent, onChange, enableDblClick) {
         this.dictionary = {};
         this.enParent = enabledParent;
+        // disabledParent can be a single element or a map { string, index, length, factor, other }
         this.disParent = disabledParent;
         this.onChange = onChange;
         this.enableDblClick = enableDblClick;
+    }
+    _getDisabledParent(dsName) {
+        if (this.disParent && this.disParent.nodeType) return this.disParent;
+        const el = this.dictionary[dsName];
+        if (!el) return this.disParent && this.disParent.other || null;
+        if (el.classList.contains('qa-structure-string')) return this.disParent.string;
+        if (el.classList.contains('qa-structure-index')) return this.disParent.index;
+        if (el.classList.contains('qa-structure-length')) return this.disParent.length;
+        if (el.classList.contains('qa-structure-factor')) return this.disParent.factor;
+        return this.disParent.other;
     }
     add(domElement) {
         this.dictionary[domElement.dataset.ds] = domElement;
@@ -34,7 +45,7 @@ DataStructureList.prototype.setEnabled = function(dsList) {
 };
 
 DataStructureList.prototype.enabled = function(dsName) {
-    return this.dictionary[dsName] 
+    return this.dictionary[dsName]
         && this.dictionary[dsName].parentElement == this.enParent;
 };
 
@@ -75,8 +86,9 @@ DataStructureList.prototype.enable = function(dsName) {
 
 DataStructureList.prototype.disable = function(dsName) {
     var el = this.dictionary[dsName];
-    if(el) {
-        this.disParent.appendChild(el);
+    var parent = this._getDisabledParent(dsName);
+    if(el && parent) {
+        parent.appendChild(el);
         this.onChange();
     }
 };

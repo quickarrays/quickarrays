@@ -152,6 +152,17 @@ function update_history_internal() {
 	const counter_automatic_query = qa_counter_automatic.checked;
 	if(counter_automatic_query != counter_automatic_default) { newQuery = newQuery.set("counter_automatic", counter_automatic_query ? '1' : '0'); }
 
+	const cvCbx = document.getElementById('qa-compact-view');
+	if (cvCbx) {
+		const cvDefault = !!(window.matchMedia && window.matchMedia('(max-width: 640px)').matches);
+		if (cvCbx.checked !== cvDefault) newQuery = newQuery.set("compact", cvCbx.checked ? '1' : '0');
+	}
+	const advCbx = document.getElementById('qa-show-advanced-options');
+	if (advCbx) {
+		const advDefault = !(window.matchMedia && window.matchMedia('(max-width: 640px)').matches);
+		if (advCbx.checked !== advDefault) newQuery = newQuery.set("adv", advCbx.checked ? '1' : '0');
+	}
+
 	window.history.replaceState("", "", window.location.pathname + newQuery.toString());
 }
 
@@ -675,7 +686,27 @@ window.onload = function () {
 	append_default = qa_append_input.value;
 
 	const ds_list_enabled = document.getElementById('qa-structures-enabled');
-	const ds_list_disabled = document.getElementById('qa-structures-disabled');
+	const ds_list_disabled = {
+		string: document.getElementById('qa-structures-disabled-string'),
+		index:  document.getElementById('qa-structures-disabled-index'),
+		length: document.getElementById('qa-structures-disabled-length'),
+		factor: document.getElementById('qa-structures-disabled-factor'),
+		other:  document.getElementById('qa-structures-disabled-other'),
+	};
+
+	// Distribute source items into category sections
+	(function() {
+		const src = document.getElementById('qa-structures-disabled-source');
+		if (!src) return;
+		Array.from(src.querySelectorAll('.qa-structure')).forEach(el => {
+			if (el.classList.contains('qa-structure-string')) ds_list_disabled.string.appendChild(el);
+			else if (el.classList.contains('qa-structure-index')) ds_list_disabled.index.appendChild(el);
+			else if (el.classList.contains('qa-structure-length')) ds_list_disabled.length.appendChild(el);
+			else if (el.classList.contains('qa-structure-factor')) ds_list_disabled.factor.appendChild(el);
+			else ds_list_disabled.other.appendChild(el);
+		});
+		src.remove();
+	})();
 
 	const counter_list_enabled = document.getElementById('qa-counter-enabled');
 	const counter_list_disabled = document.getElementById('qa-counter-disabled');
@@ -695,7 +726,9 @@ window.onload = function () {
 	document.querySelectorAll(".qa-option-cbx").forEach((elem) => { options_list.add(elem); });
 	options_default = options_list.getEnabled();
 
-	initDragAndDrop(ds_list_enabled, ds_list_disabled);
+	['string', 'index', 'length', 'factor', 'other'].forEach(cat => {
+		initDragAndDrop(ds_list_enabled, ds_list_disabled[cat]);
+	});
 	initDragAndDrop(counter_list_enabled, counter_list_disabled);
 
 	load_history_internal();
@@ -778,9 +811,145 @@ window.onload = function () {
 	});
 
 	setupShowHide('qa-structures-enabled');
-	setupShowHide('qa-structures-disabled');
+	setupShowHide('qa-structures-disabled-string');
+	setupShowHide('qa-structures-disabled-index');
+	setupShowHide('qa-structures-disabled-length');
+	setupShowHide('qa-structures-disabled-factor');
+	setupShowHide('qa-structures-disabled-other');
 	setupShowHide('qa-counter-enabled');
 	setupShowHide('qa-counter-disabled');
+
+	// Compact view
+	(function() {
+		const DESC_NORMAL = 'Choose your data structures and factorizations (drag and drop or double-click):<br />\n        You can use drag and drop to reorder your selection!';
+		const DESC_COMPACT = 'Choose your data structures and factorizations (use the dropdown to add; double-click to remove):<br />\n        You can use drag and drop to reorder your selection!';
+		const DISABLED_IDS = ['qa-structures-disabled-string','qa-structures-disabled-index','qa-structures-disabled-length','qa-structures-disabled-factor','qa-structures-disabled-other'];
+
+		function structureGroup(el) {
+			if (!el) return 'other';
+			if (el.classList.contains('qa-structure-string')) return 'string';
+			if (el.classList.contains('qa-structure-index')) return 'index';
+			if (el.classList.contains('qa-structure-length')) return 'length';
+			if (el.classList.contains('qa-structure-factor')) return 'factor';
+			return 'other';
+		}
+
+		const GROUP_TITLES = { string: 'String transforms', index: 'Index permutations', length: 'Length arrays', factor: 'Factorizations', other: 'Other' };
+
+		function getLabel(el) {
+			const node = Array.from(el.childNodes).find(n => n.nodeType === Node.TEXT_NODE);
+			return (node ? node.textContent : el.textContent).trim();
+		}
+
+		function rebuildDropdown() {
+			const select = document.getElementById('qa-structures-add-select');
+			if (!select || !window.structures_list) return;
+			const placeholder = select.querySelector('option[value=""]');
+			select.innerHTML = '';
+			if (placeholder) select.appendChild(placeholder);
+			if (placeholder) placeholder.selected = true;
+			const groups = { string: [], index: [], length: [], factor: [], other: [] };
+			for (const ds in structures_list.dictionary) {
+				if (!structures_list.dictionary.hasOwnProperty(ds)) continue;
+				if (structures_list.enabled(ds)) continue;
+				const el = structures_list.dictionary[ds];
+				groups[structureGroup(el)].push(el);
+			}
+			for (const k in groups) groups[k].sort((a, b) => getLabel(a).localeCompare(getLabel(b)));
+			['string','index','length','factor','other'].forEach(key => {
+				if (!groups[key].length) return;
+				const og = document.createElement('optgroup');
+				og.label = GROUP_TITLES[key] || key;
+				groups[key].forEach(el => {
+					const opt = document.createElement('option');
+					opt.value = el.dataset.ds;
+					opt.textContent = getLabel(el);
+					og.appendChild(opt);
+				});
+				select.appendChild(og);
+			});
+		}
+
+		function setCompactView(on) {
+			const desc = document.getElementById('qa-structures-description');
+			const controls = document.getElementById('qa-structures-compact-controls');
+			const box = document.getElementById('qa-structures-box');
+			if (box) box.classList.toggle('qa-compact-on', on);
+			if (desc) desc.innerHTML = on ? DESC_COMPACT : DESC_NORMAL;
+			if (controls) controls.classList.toggle('qa-hidden', !on);
+			DISABLED_IDS.forEach(id => {
+				const el = document.getElementById(id);
+				if (el) el.classList.toggle('qa-hidden', on);
+			});
+			if (on) rebuildDropdown();
+		}
+
+		const cbx = document.getElementById('qa-compact-view');
+		const select = document.getElementById('qa-structures-add-select');
+		if (!cbx || !select) return;
+
+		// Keep dropdown in sync when structures change
+		const origUpdateArrays = window.updateArrays;
+		window.updateArrays = function() {
+			const r = origUpdateArrays.apply(this, arguments);
+			if (cbx.checked) rebuildDropdown();
+			return r;
+		};
+
+		let rebuildPending = false;
+		const scheduleRebuild = () => {
+			if (!cbx.checked) return;
+			if (rebuildPending) return;
+			rebuildPending = true;
+			requestAnimationFrame(() => { rebuildPending = false; rebuildDropdown(); });
+		};
+		const watchEls = [ds_list_enabled, ...DISABLED_IDS.map(id => document.getElementById(id))].filter(Boolean);
+		const obs = new MutationObserver(scheduleRebuild);
+		watchEls.forEach(el => obs.observe(el, { childList: true }));
+		const structuresBox = document.getElementById('qa-structures-box');
+		if (structuresBox) structuresBox.addEventListener('dblclick', scheduleRebuild, true);
+
+		cbx.addEventListener('change', () => {
+			setCompactView(cbx.checked);
+			if (typeof update_history === 'function') update_history();
+		});
+
+		select.addEventListener('change', () => {
+			const ds = select.value;
+			if (!ds || !window.structures_list) return;
+			structures_list.enable(ds);
+			const placeholder = select.querySelector('option[value=""]');
+			if (placeholder) placeholder.selected = true;
+			rebuildDropdown();
+		});
+
+		// Initial state from URL or screen width
+		const urlCompact = $.query.get('compact').toString();
+		const defaultOn = !!(window.matchMedia && window.matchMedia('(max-width: 640px)').matches);
+		const initialOn = urlCompact === '1' ? true : urlCompact === '0' ? false : defaultOn;
+		cbx.checked = initialOn;
+		setCompactView(initialOn);
+	})();
+
+	// Show/hide advanced options
+	(function() {
+		function applyAdvanced(on) {
+			document.querySelectorAll('.qa-advanced-option').forEach(el => {
+				el.classList.toggle('qa-hidden', !on);
+			});
+		}
+		const cbx = document.getElementById('qa-show-advanced-options');
+		if (!cbx) return;
+		const urlAdv = $.query.get('adv').toString();
+		const defaultOn = !(window.matchMedia && window.matchMedia('(max-width: 640px)').matches);
+		const initialOn = urlAdv === '1' ? true : urlAdv === '0' ? false : defaultOn;
+		cbx.checked = initialOn;
+		applyAdvanced(initialOn);
+		cbx.addEventListener('change', () => {
+			applyAdvanced(cbx.checked);
+			if (typeof update_history === 'function') update_history();
+		});
+	})();
 
 	document.querySelectorAll(".qa-structure").forEach((elem) => { ds_name2html[elem.dataset.ds] = getOwnText(elem); });
 	document.querySelectorAll(".qa-counter").forEach((elem) => { counter_name2html[elem.dataset.ds] = getOwnText(elem); });
