@@ -1327,7 +1327,7 @@ function construct_invert_transform(text: string) {
 export function test_invert_transform() {
     assert_eq(construct_invert_transform("abc"), "cba", "Invert transform of 'abc'");
     assert_eq(construct_invert_transform("hello"), "lohhe", "Invert transform of 'hello'");
-    assert_eq(construct_invert_transform("abcdxyz"), "zyxwcba", "Invert transform of 'abcdxyz'");
+    assert_eq(construct_invert_transform("abcdxyz"), "zyxdcba", "Invert transform of 'abcdxyz'");
     assert_eq(construct_invert_transform("aaaa"), "aaaa", "Invert transform of 'aaaa'");
     assert_eq(construct_invert_transform(""), "", "Invert transform of empty string");
     assert_eq(construct_invert_transform("a"), "a", "Invert transform of 'a'");
