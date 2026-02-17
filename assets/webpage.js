@@ -319,7 +319,7 @@ function transform_text(text) {
 	if (selection == 'none') { return text; }
 	if (selection == 'custom') {
 		if (!isTransformActive()) { return text; }
-		return custom_transform_text(text, qa_transform_input.value);
+		return custom_transform_text(text, qa_transform_input.value || qa_transform_input.placeholder);
 	}
 	const DS = build_ds(text, structure_flags[selection]);
 	return DS[selection];
@@ -582,7 +582,7 @@ function updateArrays() {
 	}
 	workerParams.transformSelection = transformSelection;
 	workerParams.customTransformActive = (transformSelection === 'custom') && isTransformActive();
-	workerParams.customFnSource = (transformSelection === 'custom') ? qa_transform_input.value : null;
+	workerParams.customFnSource = (transformSelection === 'custom') ? (qa_transform_input.value || qa_transform_input.placeholder) : null;
 	workerParams.prepend = qa_prepend_input.value;
 	workerParams.append = qa_append_input.value;
 	workerParams.dollar = options_list.enabled("dollar");
