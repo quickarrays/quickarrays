@@ -178,6 +178,20 @@ body {
     margin:.25em;
 }
 
+.qa-toggle-btn {
+    margin-left: 0.4em;
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    cursor: pointer;
+    text-decoration-line: underline;
+}
+
+.qa-toggle-btn:active {
+    transform: translateY(1px);
+}
+
 .qa-options {
     display: flex;
     flex-wrap: wrap;

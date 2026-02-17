@@ -1,10 +1,34 @@
-function toggleVisibility(parent_id, state) {
-	var structs = document.getElementById(parent_id);
-	for(var i = 0; i < structs.children.length; i++) {
-		if (structs.children[i].classList.contains('qa-item')) {
-			structs.children[i].style.display = state ? 'block' : 'none';
-		}
+function setupShowHide(containerId) {
+	const container = document.getElementById(containerId);
+	if (!container) return;
+	const btn = container.querySelector('.qa-toggle-btn');
+	const colon = container.querySelector('.qa-itemlist-colon');
+	if (!btn) return;
+	let shown = true;
+	function getItems() {
+		return Array.from(container.querySelectorAll(':scope > .qa-item'));
 	}
+	function render() {
+		btn.textContent = shown ? '(hide)' : '(show)';
+		btn.setAttribute('aria-expanded', String(shown));
+		getItems().forEach(el => el.classList.toggle('qa-hidden', !shown));
+		if (colon) colon.classList.toggle('qa-hidden', !shown);
+	}
+	const obs = new MutationObserver(() => {
+		if (!shown) {
+			getItems().forEach(el => el.classList.add('qa-hidden'));
+			if (colon) colon.classList.add('qa-hidden');
+		}
+	});
+	obs.observe(container, { childList: true });
+	btn.addEventListener('click', (e) => {
+		e.preventDefault();
+		e.stopPropagation();
+		shown = !shown;
+		render();
+		if (typeof update_history === 'function') update_history();
+	});
+	render();
 }
 
 function changeVisibility(element, is_visible) {
@@ -669,18 +693,10 @@ window.onload = function () {
 		qa_transform_active.checked = false;
 	});
 
-	document.getElementById('qa-structures-disabled-visible').addEventListener('change', function() {
-		toggleVisibility('qa-structures-disabled', this.checked);
-	});
-	document.getElementById('qa-structures-enabled-visible').addEventListener('change', function() {
-		toggleVisibility('qa-structures-enabled', this.checked);
-	});
-	document.getElementById('qa-counter-disabled-visible').addEventListener('change', function() {
-		toggleVisibility('qa-counter-disabled', this.checked);
-	});
-	document.getElementById('qa-counter-enabled-visible').addEventListener('change', function() {
-		toggleVisibility('qa-counter-enabled', this.checked);
-	});
+	setupShowHide('qa-structures-enabled');
+	setupShowHide('qa-structures-disabled');
+	setupShowHide('qa-counter-enabled');
+	setupShowHide('qa-counter-disabled');
 
 	document.querySelectorAll(".qa-structure").forEach((elem) => { ds_name2html[elem.dataset.ds] = getOwnText(elem); });
 	document.querySelectorAll(".qa-counter").forEach((elem) => { counter_name2html[elem.dataset.ds] = getOwnText(elem); });

@@ -56,14 +56,12 @@
         You can use drag and drop to reorder your selection!</div>
         <div class="qa-itemlist">
             <div id="qa-structures-enabled" class="qa-itemlist-enabled">
-                <input type="checkbox" id="qa-structures-enabled-visible" value="1" checked="checked"></input>
-                <div class="qa-itemlist-header">Enabled: </div>
+                <div class="qa-itemlist-header"><span class="qa-itemlist-title">Enabled<span class="qa-itemlist-colon">:</span></span><button type="button" class="qa-toggle-btn" aria-expanded="true">(hide)</button></div>
                 <div class="qa-item qa-structure qa-structure-string" data-ds="text">T</div>
                 {{html/algorithm_enable.html}}
             </div>
             <div id="qa-structures-disabled" class="qa-itemlist-disabled">
-                <input type="checkbox" id="qa-structures-disabled-visible" value="1" checked="checked"></input>
-                <div class="qa-itemlist-header">Disabled: </div>
+                <div class="qa-itemlist-header"><span class="qa-itemlist-title">Disabled<span class="qa-itemlist-colon">:</span></span><button type="button" class="qa-toggle-btn" aria-expanded="true">(hide)</button></div>
                 {{html/algorithm_disable.html}}
             </div>
         </div>
@@ -96,13 +94,11 @@
 </div>
 <div class="qa-itemlist qa-hidden" id="qa-counter-itemlists">
     <div id="qa-counter-enabled" class="qa-itemlist-enabled">
-        <input type="checkbox" id="qa-counter-enabled-visible" value="1" checked="checked"></input>
-        <div class="qa-itemlist-header">Enabled: </div>
+        <div class="qa-itemlist-header"><span class="qa-itemlist-title">Enabled<span class="qa-itemlist-colon">:</span></span><button type="button" class="qa-toggle-btn" aria-expanded="true">(hide)</button></div>
         <div class="qa-item qa-counter" data-ds="text">T</div>
     </div>
     <div id="qa-counter-disabled" class="qa-itemlist-disabled">
-        <input type="checkbox" id="qa-counter-disabled-visible" value="1" checked="checked"></input>
-        <div class="qa-itemlist-header">Disabled: </div>
+        <div class="qa-itemlist-header"><span class="qa-itemlist-title">Disabled<span class="qa-itemlist-colon">:</span></span><button type="button" class="qa-toggle-btn" aria-expanded="true">(hide)</button></div>
         {{html/counters.html}}
     </div>
 </div>
