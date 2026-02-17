@@ -88,7 +88,7 @@ DataStructureList.prototype.disable = function(dsName) {
     var el = this.dictionary[dsName];
     var parent = this._getDisabledParent(dsName);
     if(el && parent) {
-        parent.appendChild(el);
+        insertInLexOrder(parent, el, '.qa-structure');
         this.onChange();
     }
 };

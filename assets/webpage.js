@@ -38,6 +38,25 @@ function changeVisibility(element, is_visible) {
 	element.classList.add(addClass);
 }
 
+function getItemSortLabel(el) {
+	const node = Array.from(el.childNodes).find(n => n.nodeType === Node.TEXT_NODE);
+	return (node ? node.textContent : el.textContent).trim().toLowerCase();
+}
+
+function insertInLexOrder(parent, el, selector) {
+	const label = getItemSortLabel(el);
+	const siblings = Array.from(parent.querySelectorAll(':scope > ' + selector));
+	const before = siblings.find(s => s !== el && getItemSortLabel(s) > label);
+	if (before) parent.insertBefore(el, before);
+	else parent.appendChild(el);
+}
+
+function sortChildrenLex(parent, selector) {
+	const items = Array.from(parent.querySelectorAll(':scope > ' + selector));
+	items.sort((a, b) => getItemSortLabel(a).localeCompare(getItemSortLabel(b)));
+	items.forEach(el => parent.appendChild(el));
+}
+
 function getOwnText(element) {
 	let text = '';
 	for (const node of element.childNodes) {
@@ -616,7 +635,7 @@ function updateArrays() {
 // enabledEl: the enabled list DOM element
 // disabledMap: object mapping category keys to DOM elements, e.g. { string: el, index: el, ... }
 // categoryClassFn: function(cat) → CSS class that items in that category carry
-function initDragAndDropGrouped(groupName, enabledEl, disabledMap, categoryClassFn) {
+function initDragAndDropGrouped(groupName, enabledEl, disabledMap, categoryClassFn, itemClass) {
 	Sortable.create(enabledEl, {
 		group: { name: groupName, pull: true, put: true },
 		sort: true,
@@ -639,7 +658,11 @@ function initDragAndDropGrouped(groupName, enabledEl, disabledMap, categoryClass
 			sort: false,
 			draggable: '.qa-item',
 			ghostClass: 'qa-item-ghost',
-			dragClass: 'qa-item-drag'
+			dragClass: 'qa-item-drag',
+			onAdd: function (evt) {
+				sortChildrenLex(evt.to, '.' + itemClass);
+				updateArrays();
+			}
 		});
 	}
 }
@@ -796,6 +819,9 @@ window.onload = function () {
 			else ds_list_disabled.other.appendChild(el);
 		});
 		src.remove();
+		for (const cat in ds_list_disabled) {
+			if (ds_list_disabled[cat]) sortChildrenLex(ds_list_disabled[cat], '.qa-structure');
+		}
 	})();
 
 	const counter_list_enabled = document.getElementById('qa-counter-enabled');
@@ -815,6 +841,9 @@ window.onload = function () {
 			else counter_list_disabled.other.appendChild(el);
 		});
 		src.remove();
+		for (const cat in counter_list_disabled) {
+			if (counter_list_disabled[cat]) sortChildrenLex(counter_list_disabled[cat], '.qa-counter');
+		}
 	})();
 
 	// initalize data structure settings container
@@ -832,8 +861,8 @@ window.onload = function () {
 	document.querySelectorAll(".qa-option-cbx").forEach((elem) => { options_list.add(elem); });
 	options_default = options_list.getEnabled();
 
-	initDragAndDropGrouped('qa-structs', ds_list_enabled, ds_list_disabled, cat => 'qa-structure-' + cat);
-	initDragAndDropGrouped('qa-counters', counter_list_enabled, counter_list_disabled, cat => 'qa-counter-' + cat);
+	initDragAndDropGrouped('qa-structs', ds_list_enabled, ds_list_disabled, cat => 'qa-structure-' + cat, 'qa-structure');
+	initDragAndDropGrouped('qa-counters', counter_list_enabled, counter_list_disabled, cat => 'qa-counter-' + cat, 'qa-counter');
 
 	load_history_internal();
 
