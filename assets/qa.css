@@ -60,6 +60,29 @@ body {
     flex-shrink: 0;
     height: 3em;
     background-color: #DDD;
+    position: relative;
+}
+
+#qa-loading-spinner {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 0.75em;
+    transform: translateY(-50%);
+    width: 1.2em;
+    height: 1.2em;
+    border: 3px solid #bbb;
+    border-top-color: #555;
+    border-radius: 50%;
+    animation: qa-spin 0.7s linear infinite;
+}
+
+#qa-loading-spinner.qa-spinning {
+    display: block;
+}
+
+@keyframes qa-spin {
+    to { transform: translateY(-50%) rotate(360deg); }
 }
 
 .qa-header h1.qa-title {

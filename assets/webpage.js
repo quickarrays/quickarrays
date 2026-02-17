@@ -60,6 +60,7 @@ var qa_generate_string_range;
 var qa_generate_string_rank;
 var qa_generate_string_order;
 var qa_generate_string_span;
+var qa_loading_spinner;
 
 var qa_transform_active;
 var qa_transform_active_span;
@@ -471,9 +472,17 @@ function fill_updates(DS) {
 
 var qa_worker = null;
 var qa_is_loaded = false;
+var qa_pending_update = false;
 
 function updateArrays() {
-	if(!qa_is_loaded || qa_worker !== null) {
+	if (!qa_is_loaded) {
+		return;
+	}
+	if (qa_worker !== null) {
+		qa_pending_update = true;
+		if (qa_generate_string_order && qa_generate_string_list.value !== 'custom') {
+			qa_generate_string_order.textContent = '(order ??)';
+		}
 		return;
 	}
 	qa_separator_input.value = encodeWhitespaces(qa_separator_input.value);
@@ -538,17 +547,22 @@ function updateArrays() {
 		? setTimeout(() => {
 			qa_worker.terminate()
 			qa_worker = null;
+			if (qa_loading_spinner) qa_loading_spinner.classList.remove('qa-spinning');
 			qa_computation_status.textContent =  `⚠️ Killed after ${timeout_seconds}s`
+			if (qa_pending_update) { qa_pending_update = false; updateArrays(); }
 		}, timeout_seconds * 1000)
 		: null
 
 	qa_worker = new Worker(blobURL); //
+	if (qa_loading_spinner) qa_loading_spinner.classList.add('qa-spinning');
 
 	qa_worker.onerror = (error) => {
 		qa_worker.terminate();
 		qa_worker = null;
 		clearTimeout(timeout_id);
+		if (qa_loading_spinner) qa_loading_spinner.classList.remove('qa-spinning');
 		qa_computation_status.textContent = `❌ Error during computation: ${error.message}`;
+		if (qa_pending_update) { qa_pending_update = false; updateArrays(); }
 	};
 	qa_worker.postMessage([ds_text, enabled_flag]);
 
@@ -559,9 +573,11 @@ function updateArrays() {
 		qa_worker.terminate();
 		qa_worker = null;
 		clearTimeout(timeout_id);
+		if (qa_loading_spinner) qa_loading_spinner.classList.remove('qa-spinning');
 		qa_computation_status.textContent = `✅ Computation finished in ${((Date.now() - time_now)/1000).toFixed(2)}s`;
 
 		fill_updates(DS);
+		if (qa_pending_update) { qa_pending_update = false; updateArrays(); }
 	};
 
 }
@@ -718,6 +734,7 @@ window.onload = function () {
 	qa_generate_string_rank = document.getElementById('qa-generate-string-rank');
 	qa_generate_string_order = document.getElementById('qa-generate-string-order');
 	qa_generate_string_span = document.getElementById('qa-generate-string-span');
+	qa_loading_spinner = document.getElementById('qa-loading-spinner');
 
 	timeout_default = qa_timeout_range.value;
 	qa_separator_input.value = encodeWhitespaces(separator_default);
