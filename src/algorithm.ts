@@ -664,7 +664,7 @@ export function test_delta_argmax() {
 /**
  * @name SC
  * @kind disable
- * @type length
+ * @type other
  * @description Substring Complexity Array
  * @tutorial The substring complexity array quantifies the number of distinct substrings of various lengths within a string. Given the Longest Common Prefix (LCP) array of a string, the substring complexity array \(\mathsf{SC}[1..n]\) is defined such that for each length \(k \in [1..n]\), \(\mathsf{SC}[k]\) represents the count of distinct substrings of length \(k\). The computation leverages the LCP values to efficiently determine the number of new substrings introduced at each length.
  * @cite raskhodnikova13sublinear
@@ -857,7 +857,7 @@ export function test_lf_array() {
 /**
  * @name S/L
  * @kind disable
- * @type length
+ * @type other
  * @description S/L SAIS type string
  * @tutorial The S/L type string classifies each character in a string as either S-type or L-type based on the lexicographic order of the suffixes starting at those characters. A character at position \(i\) is classified as S-type if the suffix starting at \(i\) is lexicographically smaller than the suffix starting at \(i+1\), and L-type if it is larger. If the suffixes are equal, the type is determined by the type of the suffix starting at \(i+1\). Additionally, an S-type character that is the first character or immediately preceded by an L-type character is marked as S*-type.
  * @cite nong11sais
@@ -1162,7 +1162,7 @@ export function test_lexparse_factorization() {
 /**
  * @name NSS
  * @kind disable
- * @type index
+ * @type other
  * @description Next Smaller Suffix Array
  * @tutorial The Next Smaller Suffix (NSS) array identifies the subsequent suffix in text order that is lexicographically smaller than the current suffix. Given the inverse suffix array \(\mathsf{ISA}\) of a text \(T[1..n]\), the NSS array \(\mathsf{NSS}[1..n]\) is defined such that \(\mathsf{NSS}[i] = \min \{ j > i \mid \mathsf{ISA}[j] < \mathsf{ISA}[i] \}\) if such a \(j\) exists, and \(\mathsf{NSS}[i] = \bot \) otherwise, for each \(i \in [1..n]\).
  */
@@ -1195,7 +1195,7 @@ export function test_nss_array() {
 /**
  * @name PSS
  * @kind disable
- * @type index
+ * @type other
  * @description Previous Smaller Suffix Array
  * @tutorial The Previous Smaller Suffix (PSS) array identifies the preceding suffix in text order that is lexicographically smaller than the current suffix. Given the inverse suffix array \(\mathsf{ISA}\) of a text \(T[1..n]\), the PSS array \(\mathsf{PSS}[1..n]\) is defined such that \(\mathsf{PSS}[i] = \max \{ j < i \mid \mathsf{ISA}[j] < \mathsf{ISA}[i] \}\) if such a \(j\) exists, and \(\mathsf{PSS}[i] = \bot \) otherwise, for each \(i \in [1..n]\).
  */
