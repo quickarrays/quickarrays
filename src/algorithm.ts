@@ -33,6 +33,11 @@ function count_n(text: string): number {
     return text.length;
 }
 
+export function test_n() {
+    assert_eq(count_n(""), 0, "Length of empty string");
+    assert_eq(count_n("four"), 4, "Length of 'four'");
+}
+
 /**
  * @name &sigma;
  * @description Effective alphabet size
