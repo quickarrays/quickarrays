@@ -305,7 +305,7 @@ def generate_transform(code : str):
 		if "name" not in ann or "type" not in ann or ann["type"] != "string":
 			continue
 		short = fname[len("construct_"):]  # remove prefix
-		display = ann["name"]
+		display = ann.get("transform_name", ann["name"])
 		if "description" in ann:
 			description = ann["description"]
 			line = f'<option value="{short}" title="{description}">{display}</option>'

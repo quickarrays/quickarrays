@@ -1267,7 +1267,8 @@ export function test_lyndon_array() {
 
 
 /**
- * @name Necklace
+ * @name min-rot(T)
+ * @transform_name Necklace (lex. minimal rotation)
  * @kind disable
  * @type string
  * @description Lexicographically smallest conjugate of a given string.
@@ -1299,7 +1300,8 @@ export function test_necklace_conjugate_transform() {
 }
 
 /**
- * @name Invert
+ * @name inv(T)
+ * @transform_name Invert
  * @kind disable
  * @type string
  * @description Inverts a string by mapping each character to its complementary character
@@ -1332,7 +1334,8 @@ export function test_invert_transform() {
 }
 
 /**
- * @name Revert
+ * @name rev(T)
+ * @transform_name Revert
  * @kind disable
  * @type string
  * @description Reverts a string by reading it backwards

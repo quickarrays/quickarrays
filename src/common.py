@@ -95,6 +95,8 @@ def parse_annotation(block):
 			ann["wikipedia"] = line[len("@wikipedia "):].strip()
 		elif line.startswith("@structures "):
 			ann["structures"] = line[len("@structures "):].strip()
+		elif line.startswith("@transform_name "):
+			ann["transform_name"] = line[len("@transform_name "):].strip()
 	return ann
 
 def short_prop(fname):
