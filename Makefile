@@ -9,7 +9,7 @@ BUILD_DIR := ./build
 STANDALONE_HTML := ./build/index.html
 DIST_PACKED_HTML := ./dist/index.html
 ASSET_CSS := ./assets/qa.css
-ASSET_JS := ./assets/worker.js ./assets/counter_list.js ./assets/text_opt_element.js ./assets/ds_list.js ./assets/prepare_text.js ./assets/webpage.js
+ASSET_JS := ./assets/worker.js ./assets/counter_list.js ./assets/text_opt_element.js ./assets/ds_list.js ./assets/prepare_text.js ./assets/item_list.js ./assets/webpage.js
 BUILD_DIR_ASSET_CSS := $(subst $(ASSETS_DIR),$(BUILD_DIR)/css,$(ASSET_CSS))
 BUILD_DIR_ASSET_JS := $(subst $(ASSETS_DIR),$(BUILD_DIR)/js,$(ASSET_JS))
 .PHONY: all check test clean
@@ -32,6 +32,9 @@ all: $(BUILD_HTML) $(STANDALONE_HTML) $(DIST_PACKED_HTML)
 ./build/js/prepare_text.js: ./assets/prepare_text.js
 	@mkdir -p ./build/js
 	ln -sr ./assets/prepare_text.js ./build/js/prepare_text.js
+./build/js/item_list.js: ./assets/item_list.js
+	@mkdir -p ./build/js
+	ln -sr ./assets/item_list.js ./build/js/item_list.js
 ./build/js/webpage.js: ./assets/webpage.js
 	@mkdir -p ./build/js
 	ln -sr ./assets/webpage.js ./build/js/webpage.js
