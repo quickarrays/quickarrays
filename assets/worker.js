@@ -10,5 +10,6 @@ self.onmessage = function (e) {
     const result = build_ds(prepared.text, p.enabled_flag);
     result['text'] = prepared.text;
     result['__generator_order'] = prepared.generator_order;
+    if (prepared.transformError) result['__transformError'] = prepared.transformError;
     self.postMessage(result);
 };

@@ -504,6 +504,10 @@ function updateArrays() {
 		qa_computation_status.textContent = `⚠️ Warning: No worker scripts found!`;
 		qa_timeout_range.disabled = true;
 		const prepared = prepare_text(workerParams);
+		if (prepared.transformError) {
+			alert("Error in transformation: " + prepared.transformError);
+			setTransformActive(false);
+		}
 		if (qa_generate_string_order) {
 			qa_generate_string_order.textContent = prepared.generator_order !== null ? '(order ' + prepared.generator_order + ')' : '';
 		}
@@ -555,6 +559,10 @@ function updateArrays() {
 		if (qa_loading_spinner) qa_loading_spinner.classList.remove('qa-spinning');
 		qa_computation_status.textContent = `✅ Computation finished in ${((Date.now() - time_now) / 1000).toFixed(2)}s`;
 
+		if (DS['__transformError']) {
+			alert("Error in transformation: " + DS['__transformError']);
+			setTransformActive(false);
+		}
 		if (qa_generate_string_order) {
 			const order = DS['__generator_order'];
 			qa_generate_string_order.textContent = order !== null ? '(order ' + order + ')' : '';
@@ -829,7 +837,7 @@ window.onload = function () {
 	});
 
 
-	const triggering = [qa_prepend_input, qa_append_input, qa_transform_list, qa_transform_input, qa_generate_string_list, qa_output_select];
+	const triggering = [qa_prepend_input, qa_append_input, qa_transform_list, qa_generate_string_list, qa_output_select];
 	for (const idx in triggering) {
 		triggering[idx].addEventListener('change', function () {
 			updateArrays();
@@ -879,6 +887,11 @@ window.onload = function () {
 	});
 	qa_transform_input.addEventListener('input', function () {
 		setTransformActive(false);
+		updateArrays();
+	});
+	qa_transform_input.addEventListener('change', function () {
+		setTransformActive(false);
+		updateArrays();
 	});
 
 	setupShowHide('qa-structures-enabled');

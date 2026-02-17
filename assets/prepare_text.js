@@ -79,8 +79,7 @@ function prepare_text(p) {
 				var newchar = eval('with(ctx) { ' + p.customFnSource + ' }');
 				ret += newchar !== undefined ? newchar : text[i];
 			} catch (err) {
-				ret = text;
-				break;
+				return { text: text, generator_order: generator_order, transformError: err.message };
 			}
 		}
 		text = ret;
