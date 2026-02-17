@@ -738,6 +738,7 @@ function update_tutorial(id, name) {
 		qa_tutorial_cite.href = tutorial.cite;
 		if (typeof citations !== 'undefined' && citations[tutorial.cite] !== 'undefined') {
 			qa_tutorial_cite.innerHTML = citations[tutorial.cite];
+			qa_tutorial_cite.querySelectorAll('a').forEach(a => a.target = '_blank');
 		}
 	}
 	else {
