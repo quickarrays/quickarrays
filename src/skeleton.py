@@ -8,22 +8,25 @@ from pathlib import Path
 import common as C
 
 def replace(match):
-    filename = match.group(1)
+    indent = match.group(1)
+    filename = match.group(2)
     # Ensure filename is relative and doesn't escape
     if '..' in filename or filename.startswith('/'):
         raise ValueError(f"Invalid filename: {filename}")
-    
+
     path = (Path(C.BUILD_DIR) / filename).resolve()
-    
+
     if not path.is_file():
         raise FileNotFoundError(f"Referenced file not found: {filename}")
-    
-    return path.read_text(encoding='utf-8')
+
+    content = path.read_text(encoding='utf-8').rstrip('\n')
+    lines = content.split('\n')
+    return indent + ('\n' + indent).join(lines)
 
 
 def inline_files(html_path):
 	html = Path(html_path).read_text(encoding='utf-8')
-	pattern = re.compile(r"\{\{([^}]+)\}\}")
+	pattern = re.compile(r"([ \t]*)\{\{([^}]+)\}\}")
 	return pattern.sub(replace, html)
 
 

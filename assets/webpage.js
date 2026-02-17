@@ -424,8 +424,6 @@ function fill_updates(DS) {
 		qa_ds_output.value = export_csv(rows);
 	}
 
-	enabled_counters = qa_counter_automatic.checked ? structures_list : counters_list;
-
 	const result = [];
 
 	if (qa_counter_automatic.checked) {
@@ -434,28 +432,37 @@ function fill_updates(DS) {
 			const sigma_html = counter_name2html["sigma"] || "&sigma;";
 			result.push(sigma_html + ": " + DS["counter_sigma"]);
 		}
-		// Show counters whose associated structures are currently enabled
-		for (const dsName in counter_structures) {
-			const associated = counter_structures[dsName];
-			if (!associated.some(s => structures_list.enabled(s))) continue;
-			const varDs = DS["counter_" + dsName];
-			if (varDs === undefined) continue;
-			result.push((counter_name2html[dsName] || dsName) + ": " + varDs);
-		}
-	}
-
-	enabled_counters.forEachEnabled(function(dsName) {
-		let varDs = DS["counter_" + dsName];
-		const ds_htmlname = counter_name2html[dsName] ? counter_name2html[dsName] : dsName;
-		if(varDs === undefined) {
-			if(qa_counter_automatic.checked) {
-				return;
+		// Single pass in structure order: emit associated counters and runs/size counters
+		const shownCounters = new Set();
+		structures_list.forEachEnabled(function(dsName) {
+			for (const cName in counter_structures) {
+				if (shownCounters.has(cName)) continue;
+				if (!counter_structures[cName].includes(dsName)) continue;
+				const varDs = DS["counter_" + cName];
+				if (varDs === undefined) continue;
+				result.push((counter_name2html[cName] || cName) + ": " + varDs);
+				shownCounters.add(cName);
 			}
-			result.push(dsName + ": not defined");
-		} else {
-			result.push(ds_htmlname + ": " + varDs);
-		}
-	});
+			if (!shownCounters.has(dsName)) {
+				const varDs = DS["counter_" + dsName];
+				if (varDs !== undefined) {
+					const ds_htmlname = counter_name2html[dsName] ? counter_name2html[dsName] : dsName;
+					result.push(ds_htmlname + ": " + varDs);
+					shownCounters.add(dsName);
+				}
+			}
+		});
+	} else {
+		counters_list.forEachEnabled(function(dsName) {
+			let varDs = DS["counter_" + dsName];
+			const ds_htmlname = counter_name2html[dsName] ? counter_name2html[dsName] : dsName;
+			if(varDs === undefined) {
+				result.push(dsName + ": not defined");
+			} else {
+				result.push(ds_htmlname + ": " + varDs);
+			}
+		});
+	}
 	qa_counter_output.innerHTML = [...result].map((el) => '<span class="qa-item">' + el + '</span>').join('&nbsp;');
 
 	updateTextAreas();
