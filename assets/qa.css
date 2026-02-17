@@ -1,3 +1,16 @@
+button,
+select,
+input,
+textarea {
+    font: inherit;
+    letter-spacing: inherit;
+}
+
+.qa-itemlist-title,
+.qa-itemlist-colon {
+    font-weight: 700;
+}
+
 html,body {
   text-size-adjust: none;
   -webkit-text-size-adjust: none;
@@ -13,6 +26,22 @@ html {
 
 @media (max-width: 640px) {
     html { font-size: 12px; font-size: 2.5vw; }
+
+    .qa-item {
+        font-size: 4vw;
+    }
+
+    .qa-itemlist-enabled .qa-itemlist-header,
+    .qa-itemlist-disabled .qa-itemlist-header {
+        flex: 0 0 100%;
+        width: 100%;
+    }
+
+    .qa-itemlist-disabled > .qa-itemlist-header {
+        border-top: 1px solid #ddd;
+        margin-top: 12px;
+        padding-top: 12px;
+    }
 }
 
 @media (min-width: 641px) {
@@ -61,43 +90,27 @@ body {
     display: block;
 }
 
-@media (max-width: 720px) {    
-    .qa-main {
-        margin: 0;
-        padding: 1em;
-    }
-}
-
-@media (min-width: 721px) and (max-width: 1280px), (min-width: 721px) and (max-height: 720px) {
-    .qa-main {
-        margin: 1em;
-        padding: 1em;
-    }
-}
-
-@media (min-width: 1281px) and (max-width: 1920px) and (min-height: 721px) {
-    .qa-main {
-        margin: 2em;
-        padding: 2em;
-    }
-}
-
-@media (min-width: 1921px) and (min-height: 721px) {
-    .qa-main {
-        min-width: 1856px;
-        max-width: 1856px;
-        margin: 2em auto 2em auto;
-        padding: 2em;
-    }
-}
-
 .qa-main {
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
+    padding: 1em;
     border: 2px solid #9B9;
     border-radius: 0.5em;
     background-color: #CFC;
+    width: 1680px;
+    margin: 1em auto;
+}
+
+@media (max-width: 1680px) {
+    .qa-main {
+        width: 100%;
+        margin: 0em;
+    }
+
+    body {
+        background-color: #DDD;
+    }
 }
 
 .qa-main > * {
@@ -106,7 +119,7 @@ body {
 }
 
 .qa-description {
-    margin-left: .5em;
+    margin-left: .25em;
     margin-top: 1em;
     font-weight: bold;
 }
@@ -139,9 +152,13 @@ body {
 .qa-item {
     flex-shrink: 0;
     box-sizing: border-box;
-    padding:.2em;
-    margin:.25em;
-    border: 1px solid #9B9;
+    padding: .25em;
+    padding-inline: .5em;
+    margin: .25em;
+    border: 1px solid #000;
+    border-radius: .25em;
+    min-width: 3em;
+    text-align: center;
     cursor: move;
     cursor: -webkit-grabbing;
 }
@@ -192,8 +209,8 @@ body {
 }
 
 .qa-toggle-btn {
-    margin-left: 0.4em;
-    padding: 0;
+    margin-left: 0em;
+    padding: 0em;
     border: none;
     background: none;
     font: inherit;
@@ -222,30 +239,25 @@ body {
     margin-right: .75em;
 }
 
-/* Tooltip text */
 .qa-tooltiptext {
-    visibility: hidden;
+    display: none;
     width: 300px;
     background-color: black;
     color: #fff;
     text-align: left;
     padding: 1em;
     border-radius: 6px;
-    margin : 1em;
-
-    /* Position the tooltip text - see examples below! */
+    margin: 1em;
     position: absolute;
     z-index: 1;
 }
 
-/* Hide the tooltip text during drag&drop */
 .qa-item:active .qa-tooltiptext {
     display: none !important;
 }
 
-/* Show the tooltip text when you mouse over the tooltip container */
 .qa-item:hover .qa-tooltiptext {
-    visibility: visible;
+    display: block;
 }
 
 .qa-visible, .qa-visible * {
@@ -265,15 +277,29 @@ body {
   height: 100%;
 }
 
-/* The actual pop-up box */
 #qa-tutorial-box {
+  box-sizing: border-box;
   background-color: #fff;
-  margin: 15% auto; /* 15% from top and centered */
-  padding: 20px;
   border: 1px solid #888;
-  width: 50%; /* Could be more or less */
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  width: calc(1680px - 2em);
+  margin: 5em auto;
+  padding: 1em;
   position: relative;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+@media (max-width: 1680px) {
+  #qa-tutorial-box {
+    width: calc(100% - 2em);
+    margin: 4em auto;
+  }
+}
+
+@media (max-width: 640px) {
+  #qa-tutorial-box {
+    width: 100%;
+    margin: 0em;
+  }
 }
 
 /* Close button style */
