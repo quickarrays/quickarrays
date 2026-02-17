@@ -539,20 +539,36 @@ function updateArrays() {
 
 }
 
-function initDragAndDrop(listEnabled, listDisabled) {
-	Sortable.create(listEnabled, {
-		group: 'qa-structs',
+// groupName: shared Sortable group name (string)
+// enabledEl: the enabled list DOM element
+// disabledMap: object mapping category keys to DOM elements, e.g. { string: el, index: el, ... }
+// categoryClassFn: function(cat) → CSS class that items in that category carry
+function initDragAndDropGrouped(groupName, enabledEl, disabledMap, categoryClassFn) {
+	Sortable.create(enabledEl, {
+		group: { name: groupName, pull: true, put: true },
+		sort: true,
 		draggable: '.qa-item',
 		ghostClass: 'qa-item-ghost',
 		dragClass: 'qa-item-drag',
 		onSort: updateArrays
 	});
-	Sortable.create(listDisabled, {
-		group: 'qa-structs',
-		draggable: '.qa-item',
-		ghostClass: 'qa-item-ghost',
-		dragClass: 'qa-item-drag'
-	});
+	for (const cat in disabledMap) {
+		const el = disabledMap[cat];
+		if (!el) continue;
+		const cls = categoryClassFn(cat);
+		Sortable.create(el, {
+			group: {
+				name: groupName,
+				put: function(to, from, dragEl) {
+					return from.el === enabledEl && dragEl.classList.contains(cls);
+				}
+			},
+			sort: false,
+			draggable: '.qa-item',
+			ghostClass: 'qa-item-ghost',
+			dragClass: 'qa-item-drag'
+		});
+	}
 }
 
 var qa_tutorial_open_button;
@@ -742,12 +758,8 @@ window.onload = function () {
 	document.querySelectorAll(".qa-option-cbx").forEach((elem) => { options_list.add(elem); });
 	options_default = options_list.getEnabled();
 
-	['string', 'index', 'length', 'factor', 'other'].forEach(cat => {
-		initDragAndDrop(ds_list_enabled, ds_list_disabled[cat]);
-	});
-	['rle', 'factor', 'other'].forEach(cat => {
-		initDragAndDrop(counter_list_enabled, counter_list_disabled[cat]);
-	});
+	initDragAndDropGrouped('qa-structs', ds_list_enabled, ds_list_disabled, cat => 'qa-structure-' + cat);
+	initDragAndDropGrouped('qa-counters', counter_list_enabled, counter_list_disabled, cat => 'qa-counter-' + cat);
 
 	load_history_internal();
 
