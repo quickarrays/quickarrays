@@ -3,6 +3,7 @@
 # pylint: disable=bad-indentation,line-too-long,invalid-name
 
 import re
+import html as html_module
 from pathlib import Path
 from collections import defaultdict, deque
 
@@ -83,6 +84,7 @@ def generate_counters_html(code : str):
 			continue
 
 	html_items = []
+	html_enable_items = []
 
 	def add_html(fname, counter_type):
 		if fname not in annotations:
@@ -93,7 +95,7 @@ def generate_counters_html(code : str):
 		name = ann.get("name", prop)
 		desc = ann.get("description")
 		kind = ann.get("kind")
-		if kind and kind == 'hidden':
+		if kind == 'hidden':
 			return
 
 		if counter_type == "rle":
@@ -112,7 +114,10 @@ def generate_counters_html(code : str):
 			block = f'<div class="qa-counter qa-item qa-counter-{counter_type}" data-ds="{prop}"{structures_attr}>{label}</div>'
 		datapair = (block, label)
 
-		html_items.append(datapair)
+		if kind == 'enable':
+			html_enable_items.append(datapair)
+		else:
+			html_items.append(datapair)
 
 	# HTML for all entries
 	for fname, _ in count_funcs:
@@ -122,8 +127,11 @@ def generate_counters_html(code : str):
 	for fname, _ in transform_funcs:
 		add_html(fname, "rle")
 
-	html_items.sort(key=lambda x: (x[1] is None, x[1].lower()) )
+	sort_key = lambda x: (x[1] is None, html_module.unescape(x[1]).lower())
+	html_items.sort(key=sort_key)
+	html_enable_items.sort(key=sort_key)
 	Path(C.COUNTERS_HTML).write_text("\n\n".join(map(lambda x: x[0], html_items)), encoding='utf-8')
+	Path(C.COUNTERS_ENABLE_HTML).write_text("\n".join(map(lambda x: x[0], html_enable_items)), encoding='utf-8')
 
 
 def generate_counters_js(code : str) -> typing.List[str]:

@@ -27,7 +27,7 @@ class AlgorithmError extends Error {
 /**
  * @name n
  * @description Length of the text
- * @kind hidden
+ * @kind enable
  */
 function count_n(text: string): number {
     return text.length;
@@ -35,9 +35,9 @@ function count_n(text: string): number {
 
 /**
  * @name &sigma;
- * @description Alphabet size
- * @tutorial The shortest period of a string is the smallest positive integer such that the string is a prefix of an infinite repetition of the prefix of that length. Concretely, the shortest period \(p\) of the text \(T\) is the length of the shortest prefix \(P\) of \(T\) such that \(T\) is a prefix of \(P^{k}\) for some integer \(k \geq 1\).
- * @wikipedia Alphabet_(formal_languages)
+ * @description Effective alphabet size
+ * @kind enable
+ * @tutorial The effective alphabet size of a string is the number of distinct symbols it contains.
  */
 function count_sigma(text: string): number {
     if (!text) { return 0; }
