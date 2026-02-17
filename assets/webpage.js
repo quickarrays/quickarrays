@@ -709,7 +709,23 @@ window.onload = function () {
 	})();
 
 	const counter_list_enabled = document.getElementById('qa-counter-enabled');
-	const counter_list_disabled = document.getElementById('qa-counter-disabled');
+	const counter_list_disabled = {
+		rle:    document.getElementById('qa-counter-disabled-rle'),
+		factor: document.getElementById('qa-counter-disabled-factor'),
+		other:  document.getElementById('qa-counter-disabled-other'),
+	};
+
+	// Distribute counter source items into category sections
+	(function() {
+		const src = document.getElementById('qa-counter-disabled-source');
+		if (!src) return;
+		Array.from(src.querySelectorAll('.qa-counter')).forEach(el => {
+			if (el.classList.contains('qa-counter-rle')) counter_list_disabled.rle.appendChild(el);
+			else if (el.classList.contains('qa-counter-factor')) counter_list_disabled.factor.appendChild(el);
+			else counter_list_disabled.other.appendChild(el);
+		});
+		src.remove();
+	})();
 
 	// initalize data structure settings container
 	structures_list = new DataStructureList(ds_list_enabled, ds_list_disabled, updateArrays, true);
@@ -729,7 +745,9 @@ window.onload = function () {
 	['string', 'index', 'length', 'factor', 'other'].forEach(cat => {
 		initDragAndDrop(ds_list_enabled, ds_list_disabled[cat]);
 	});
-	initDragAndDrop(counter_list_enabled, counter_list_disabled);
+	['rle', 'factor', 'other'].forEach(cat => {
+		initDragAndDrop(counter_list_enabled, counter_list_disabled[cat]);
+	});
 
 	load_history_internal();
 
@@ -817,7 +835,9 @@ window.onload = function () {
 	setupShowHide('qa-structures-disabled-factor');
 	setupShowHide('qa-structures-disabled-other');
 	setupShowHide('qa-counter-enabled');
-	setupShowHide('qa-counter-disabled');
+	setupShowHide('qa-counter-disabled-rle');
+	setupShowHide('qa-counter-disabled-factor');
+	setupShowHide('qa-counter-disabled-other');
 
 	// Compact view
 	(function() {

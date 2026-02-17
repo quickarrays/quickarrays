@@ -84,7 +84,7 @@ def generate_counters_html(code : str):
 
 	html_items = []
 
-	def add_html(fname):
+	def add_html(fname, counter_type):
 		if fname not in annotations:
 			return
 		ann = annotations[fname]
@@ -98,23 +98,23 @@ def generate_counters_html(code : str):
 
 		if desc:
 			block = (
-				f'<div class="qa-counter qa-item" data-ds="{prop}">{name}\n'
+				f'<div class="qa-counter qa-item qa-counter-{counter_type}" data-ds="{prop}">{name}\n'
 				f'\t<div class="qa-tooltiptext">{desc}</div>\n'
 				f'</div>'
 			)
 		else:
-			block = f'<div class="qa-counter qa-item" data-ds="{prop}">{name}</div>'
+			block = f'<div class="qa-counter qa-item qa-counter-{counter_type}" data-ds="{prop}">{name}</div>'
 		datapair = (block, name)
 
 		html_items.append(datapair)
 
 	# HTML for all entries
 	for fname, _ in count_funcs:
-		add_html(fname)
+		add_html(fname, "other")
 	for fname, _ in factor_funcs:
-		add_html(fname)
+		add_html(fname, "factor")
 	for fname, _ in transform_funcs:
-		add_html(fname)
+		add_html(fname, "rle")
 
 	html_items.sort(key=lambda x: (x[1] is None, x[1].lower()) )
 	Path(C.COUNTERS_HTML).write_text("\n\n".join(map(lambda x: x[0], html_items)), encoding='utf-8')

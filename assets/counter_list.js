@@ -2,9 +2,18 @@ class CounterList {
     constructor(enabledParent, disabledParent, onChange, enableDblClick) {
         this.dictionary = {};
         this.enParent = enabledParent;
+        // disabledParent can be a single element or a map { rle, factor, other }
         this.disParent = disabledParent;
         this.onChange = onChange;
         this.enableDblClick = enableDblClick;
+    }
+    _getDisabledParent(dsName) {
+        if (this.disParent && this.disParent.nodeType) return this.disParent;
+        const el = this.dictionary[dsName];
+        if (!el) return this.disParent && this.disParent.other || null;
+        if (el.classList.contains('qa-counter-rle')) return this.disParent.rle;
+        if (el.classList.contains('qa-counter-factor')) return this.disParent.factor;
+        return this.disParent.other;
     }
     add(domElement) {
         this.dictionary[domElement.dataset.ds] = domElement;
@@ -56,8 +65,9 @@ CounterList.prototype.enable = function(dsName) {
 
 CounterList.prototype.disable = function(dsName) {
     var el = this.dictionary[dsName];
-    if(el) {
-        this.disParent.appendChild(el);
+    var parent = this._getDisabledParent(dsName);
+    if(el && parent) {
+        parent.appendChild(el);
         this.onChange();
     }
 };
