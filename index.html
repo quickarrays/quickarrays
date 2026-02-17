@@ -165,7 +165,7 @@
 <div class="qa-hidden qa-itemlist" id=qa-counter-itemlists>
     <div id=qa-counter-enabled class=qa-itemlist-enabled>
         <div class=qa-itemlist-header><span class=qa-itemlist-title>Enabled<span class=qa-itemlist-colon>:</span></span><button type=button class=qa-toggle-btn aria-expanded=true>(hide)</button></div>
-        <div class="qa-counter qa-item" data-ds=text>T</div>
+        <div class="qa-counter qa-counter-rle qa-item" data-ds=text>runs(T)</div>
         <div class="qa-counter qa-item" data-ds=n>n</div>
     </div>
     <div id=qa-counter-disabled-rle class=qa-itemlist-disabled>
@@ -182,10 +182,6 @@
 	<div class=qa-tooltiptext>Substring Complexity Measure</div>
 </div>
 
-<div class="qa-counter qa-counter-factor qa-item" data-ds=gamma_factorization>Γ
-	<div class=qa-tooltiptext>Leftmost Smallest String Attractor</div>
-</div>
-
 <div class="qa-counter qa-counter-other qa-item" data-ds=sigma>σ
 	<div class=qa-tooltiptext>Alphabet size</div>
 </div>
@@ -194,60 +190,12 @@
 	<div class=qa-tooltiptext>Sum of LCP array values</div>
 </div>
 
-<div class="qa-counter qa-counter-rle qa-item" data-ds=bbw_transform>BBWT
-	<div class=qa-tooltiptext>Bijective Burrows-Wheeler Transform</div>
-</div>
-
-<div class="qa-counter qa-counter-rle qa-item" data-ds=inverse_bbw_transform>BBWT⁻¹
-	<div class=qa-tooltiptext>Inverse Bijective Burrows-Wheeler Transform</div>
-</div>
-
-<div class="qa-counter qa-counter-rle qa-item" data-ds=bw_transform>BWT
-	<div class=qa-tooltiptext>Burrows-Wheeler Transform</div>
-</div>
-
 <div class="qa-counter qa-counter-other qa-item" data-ds=exponent>e
 	<div class=qa-tooltiptext>Exponent</div>
 </div>
 
-<div class="qa-counter qa-counter-factor qa-item" data-ds=lexparse_factorization>LexParse
-	<div class=qa-tooltiptext>Lexicographic Parse Factorization</div>
-</div>
-
-<div class="qa-counter qa-counter-factor qa-item" data-ds=lyndon_factorization>LynF
-	<div class=qa-tooltiptext>Lyndon Factorization</div>
-</div>
-
-<div class="qa-counter qa-counter-factor qa-item" data-ds=lz77_factorization>LZ77
-	<div class=qa-tooltiptext>LZ77 Factorization</div>
-</div>
-
-<div class="qa-counter qa-counter-factor qa-item" data-ds=lz78_factorization>LZ78
-	<div class=qa-tooltiptext>LZ78 Factorization</div>
-</div>
-
-<div class="qa-counter qa-counter-factor qa-item" data-ds=lzend_factorization>LZend
-	<div class=qa-tooltiptext>LZ-end Factorization</div>
-</div>
-
-<div class="qa-counter qa-counter-factor qa-item" data-ds=lzss_factorization>LZSS
-	<div class=qa-tooltiptext>LZSS Factorization</div>
-</div>
-
-<div class="qa-counter qa-counter-factor qa-item" data-ds=lzssno_factorization>LZSSno
-	<div class=qa-tooltiptext>LZSS non-overlapping Factorization</div>
-</div>
-
-<div class="qa-counter qa-counter-factor qa-item" data-ds=lzw_factorization>LZW
-	<div class=qa-tooltiptext>LZW Factorization</div>
-</div>
-
 <div class="qa-counter qa-counter-other qa-item" data-ds=delta_argmax>max δ
 	<div class=qa-tooltiptext>Substring Complexity Measure Length</div>
-</div>
-
-<div class="qa-counter qa-counter-factor qa-item" data-ds=necklace_factorization>NeckF
-	<div class=qa-tooltiptext>Necklace Factorization</div>
 </div>
 
 <div class="qa-counter qa-counter-other qa-item" data-ds=period>p
@@ -258,7 +206,59 @@
 	<div class=qa-tooltiptext>Regularity Type</div>
 </div>
 
-<div class="qa-counter qa-counter-factor qa-item" data-ds=reverse_lzss_factorization>rLZSS
+<div class="qa-counter qa-counter-rle qa-item" data-ds=inverse_bbw_transform>runs(BBWT⁻¹)
+	<div class=qa-tooltiptext>Inverse Bijective Burrows-Wheeler Transform</div>
+</div>
+
+<div class="qa-counter qa-counter-rle qa-item" data-ds=bbw_transform>runs(BBWT)
+	<div class=qa-tooltiptext>Bijective Burrows-Wheeler Transform</div>
+</div>
+
+<div class="qa-counter qa-counter-rle qa-item" data-ds=bw_transform>runs(BWT)
+	<div class=qa-tooltiptext>Burrows-Wheeler Transform</div>
+</div>
+
+<div class="qa-counter qa-counter-factor qa-item" data-ds=gamma_factorization>size(Γ)
+	<div class=qa-tooltiptext>Leftmost Smallest String Attractor</div>
+</div>
+
+<div class="qa-counter qa-counter-factor qa-item" data-ds=lexparse_factorization>size(LexParse)
+	<div class=qa-tooltiptext>Lexicographic Parse Factorization</div>
+</div>
+
+<div class="qa-counter qa-counter-factor qa-item" data-ds=lyndon_factorization>size(LynF)
+	<div class=qa-tooltiptext>Lyndon Factorization</div>
+</div>
+
+<div class="qa-counter qa-counter-factor qa-item" data-ds=lz77_factorization>size(LZ77)
+	<div class=qa-tooltiptext>LZ77 Factorization</div>
+</div>
+
+<div class="qa-counter qa-counter-factor qa-item" data-ds=lz78_factorization>size(LZ78)
+	<div class=qa-tooltiptext>LZ78 Factorization</div>
+</div>
+
+<div class="qa-counter qa-counter-factor qa-item" data-ds=lzend_factorization>size(LZend)
+	<div class=qa-tooltiptext>LZ-end Factorization</div>
+</div>
+
+<div class="qa-counter qa-counter-factor qa-item" data-ds=lzss_factorization>size(LZSS)
+	<div class=qa-tooltiptext>LZSS Factorization</div>
+</div>
+
+<div class="qa-counter qa-counter-factor qa-item" data-ds=lzssno_factorization>size(LZSSno)
+	<div class=qa-tooltiptext>LZSS non-overlapping Factorization</div>
+</div>
+
+<div class="qa-counter qa-counter-factor qa-item" data-ds=lzw_factorization>size(LZW)
+	<div class=qa-tooltiptext>LZW Factorization</div>
+</div>
+
+<div class="qa-counter qa-counter-factor qa-item" data-ds=necklace_factorization>size(NeckF)
+	<div class=qa-tooltiptext>Necklace Factorization</div>
+</div>
+
+<div class="qa-counter qa-counter-factor qa-item" data-ds=reverse_lzss_factorization>size(rLZSS)
 	<div class=qa-tooltiptext>Reverse LZSS Factorization</div>
 </div>
     </div>
