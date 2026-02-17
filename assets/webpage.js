@@ -414,6 +414,15 @@ function fill_updates(DS) {
 	enabled_counters = qa_counter_automatic.checked ? structures_list : counters_list;
 
 	const result = [];
+
+	if (qa_counter_automatic.checked) {
+		if (DS["counter_n"] !== undefined) result.push("n: " + DS["counter_n"]);
+		if (DS["counter_sigma"] !== undefined) {
+			const sigma_html = counter_name2html["sigma"] || "&sigma;";
+			result.push(sigma_html + ": " + DS["counter_sigma"]);
+		}
+	}
+
 	enabled_counters.forEachEnabled(function(dsName) {
 		let varDs = DS["counter_" + dsName];
 		const ds_htmlname = counter_name2html[dsName] ? counter_name2html[dsName] : dsName;
@@ -455,6 +464,10 @@ function updateArrays() {
 			enabled_flag |= structure_flags[countername];
 		}
 	});
+
+	// Always compute n and sigma
+	if (structure_flags.counter_n) enabled_flag |= structure_flags.counter_n;
+	if (structure_flags.counter_sigma) enabled_flag |= structure_flags.counter_sigma;
 
 	const ds_text = construct_text();
 

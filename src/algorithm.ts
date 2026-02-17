@@ -25,6 +25,15 @@ class AlgorithmError extends Error {
 }
 
 /**
+ * @name n
+ * @description Length of the text
+ * @kind hidden
+ */
+function count_n(text: string): number {
+    return text.length;
+}
+
+/**
  * @name &sigma;
  * @description Alphabet size
  * @tutorial The shortest period of a string is the smallest positive integer such that the string is a prefix of an infinite repetition of the prefix of that length. Concretely, the shortest period \(p\) of the text \(T\) is the length of the shortest prefix \(P\) of \(T\) such that \(T\) is a prefix of \(P^{k}\) for some integer \(k \geq 1\).
