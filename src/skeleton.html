@@ -66,12 +66,12 @@
                 <option value="custom">Custom</option>
             </select>
             <span id='qa-transform-active-span' class='qa-hidden'>
-                <input type="checkbox" id="qa-transform-active" name="qa-transform-active" /> <label
-                    for="qa-transform-active">activate</label>
+                <button type="button" id="qa-transform-active">Enable</button>
             </span>
-            <textarea class="qa-textarea qa-hidden" id="qa-transform-input"
-                placeholder="text[i] == 'a' ? 'b' : 'a'"></textarea>
         </div>
+
+        <textarea class="qa-textarea qa-hidden" style="flex-grow:1;line-height:175%;" id="qa-transform-input"
+            placeholder="text[i] == 'a' ? 'b' : 'a'"></textarea>
 
         <div class="qa-description" id="qa-structures-description">Choose your data structures and factorizations (drag
             and drop or double-click):<br />

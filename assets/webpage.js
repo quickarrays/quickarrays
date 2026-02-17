@@ -81,10 +81,18 @@ var qa_generate_string_order;
 var qa_generate_string_span;
 var qa_loading_spinner;
 
-var qa_transform_active;
+var qa_transform_active; // button element
 var qa_transform_active_span;
 var qa_transform_list;
 var qa_transform_input;
+
+function setTransformActive(active) {
+	qa_transform_active.dataset.active = active ? '1' : '0';
+	qa_transform_active.textContent = active ? 'Disable' : 'Enable';
+}
+function isTransformActive() {
+	return qa_transform_active.dataset.active === '1';
+}
 
 var ds_name2html = {};
 var counter_name2html = {};
@@ -299,7 +307,7 @@ function custom_transform_text(text, eval_string) {
 		}
 		catch (error) {
 			alert("Error in transformation: " + error.message);
-			qa_transform_active.checked = false;
+			setTransformActive(false);
 			return text;
 		}
 	}
@@ -310,7 +318,7 @@ function transform_text(text) {
 	const selection = qa_transform_list.value;
 	if (selection == 'none') { return text; }
 	if (selection == 'custom') {
-		if (qa_transform_active.checked == false) { return text; }
+		if (!isTransformActive()) { return text; }
 		return custom_transform_text(text, qa_transform_input.value);
 	}
 	const DS = build_ds(text, structure_flags[selection]);
@@ -573,7 +581,7 @@ function updateArrays() {
 		};
 	}
 	workerParams.transformSelection = transformSelection;
-	workerParams.customTransformActive = (transformSelection === 'custom') && qa_transform_active.checked;
+	workerParams.customTransformActive = (transformSelection === 'custom') && isTransformActive();
 	workerParams.customFnSource = (transformSelection === 'custom') ? qa_transform_input.value : null;
 	workerParams.prepend = qa_prepend_input.value;
 	workerParams.append = qa_append_input.value;
@@ -895,7 +903,7 @@ window.onload = function () {
 	});
 
 
-	const triggering = [qa_transform_active, qa_prepend_input, qa_append_input, qa_transform_list, qa_transform_input, qa_generate_string_list, qa_output_select];
+	const triggering = [qa_prepend_input, qa_append_input, qa_transform_list, qa_transform_input, qa_generate_string_list, qa_output_select];
 	for (const idx in triggering) {
 		triggering[idx].addEventListener('change', function () {
 			updateArrays();
@@ -904,6 +912,10 @@ window.onload = function () {
 			updateArrays();
 		});
 	}
+	qa_transform_active.addEventListener('click', function () {
+		setTransformActive(!isTransformActive());
+		updateArrays();
+	});
 	qa_counter_automatic.addEventListener('change', function () {
 		changeVisibility(qa_counter_itemlists, !qa_counter_automatic.checked);
 		updateArrays();
@@ -916,7 +928,7 @@ window.onload = function () {
 	});
 
 	qa_transform_list.addEventListener('change', function () {
-		qa_transform_active.checked = false;
+		setTransformActive(false);
 		updateArrays();
 	});
 
@@ -940,7 +952,7 @@ window.onload = function () {
 		updateArrays();
 	});
 	qa_transform_input.addEventListener('input', function () {
-		qa_transform_active.checked = false;
+		setTransformActive(false);
 	});
 
 	setupShowHide('qa-structures-enabled');
