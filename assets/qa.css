@@ -288,3 +288,31 @@ body {
 #qa-tutorial-open-button {
     display: none;
 }
+
+.qa-tutorial-controls {
+    display: inline-flex;
+    align-items: center;
+    gap: .5em;
+}
+
+#qa-tutorial-select {
+    min-width: 14em;
+}
+
+.qa-description:has(#qa-tutorial-controls) {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: .5em;
+    margin-top: 0em;
+}
+
+.qa-description:has(#qa-tutorial-controls) #qa-tutorial-controls {
+    margin-left: auto;
+}
+
+.qa-description:has(#qa-tutorial-controls) #qa-enter-string-prompt {
+    margin-right: auto;
+    margin-top: 1.5em;
+}

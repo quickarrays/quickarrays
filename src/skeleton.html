@@ -31,17 +31,23 @@
     
     <div class="qa-main">
         <div class="qa-description">
-            <label for="qa-generate-string-list">Enter your text below or generate it:</label>
-            <select id="qa-generate-string-list" name="qa-generate-string-list">
-                <option value="custom" selected>Custom</option>
-                {{html/generator.html}}
-            </select>
-            <span id="qa-generate-string-span" class="qa-hidden">
-                <label for="qa-generate-string-range">Order:</label>
-                <input type="range" id="qa-generate-string-range" name="qa-generate-string-range" min="0" max="6" value="3" step="1">
-                <span id="qa-generate-string-rank">3</span>
+            <span id="qa-tutorial-controls" class="qa-tutorial-controls">
+                <label for="qa-tutorial-select">Tutorial:</label>
+                <select id="qa-tutorial-select"></select>
+                <button id="qa-tutorial-open-selected" type="button">Open</button>
             </span>
-            <button id="qa-tutorial-open-button"></button>
+            <div id="qa-enter-string-prompt">
+                <label for="qa-generate-string-list">Enter your text below or generate it:</label>
+                <select id="qa-generate-string-list" name="qa-generate-string-list">
+                    <option value="custom" selected>Custom</option>
+                    {{html/generator.html}}
+                </select>
+                <span id="qa-generate-string-span" class="qa-hidden">
+                    <label for="qa-generate-string-range">Order:</label>
+                    <input type="range" id="qa-generate-string-range" name="qa-generate-string-range" min="0" max="6" value="3" step="1">
+                    <span id="qa-generate-string-rank">3</span>
+                </span>
+            </div>
         </div>
         <textarea class="qa-textarea" id="qa-text" placeholder="MISSISSIPPI"></textarea>
 

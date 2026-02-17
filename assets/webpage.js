@@ -504,6 +504,8 @@ function initDragAndDrop(listEnabled, listDisabled) {
 }
 
 var qa_tutorial_open_button;
+var qa_tutorial_select;
+var qa_tutorial_open_selected_button;
 var qa_tutorial_close_button;
 var qa_tutorial_overlay;
 var qa_tutorial_title;
@@ -516,6 +518,32 @@ var qa_output_select;
 var qa_timeout_range;
 var qa_timeout_value;
 var qa_computation_status;
+
+function qa_html_to_text(html) {
+	const el = document.createElement('div');
+	el.innerHTML = html;
+	return (el.textContent || el.innerText || '').trim();
+}
+
+function qa_populate_tutorial_select() {
+	if (!qa_tutorial_select) return;
+	const ids = Object.keys(tutorials || {});
+	if (ids.length === 0) return;
+	ids.sort((a, b) => {
+		const ta = tutorials[a] && tutorials[a].title ? qa_html_to_text(tutorials[a].title) : a;
+		const tb = tutorials[b] && tutorials[b].title ? qa_html_to_text(tutorials[b].title) : b;
+		return ta.localeCompare(tb);
+	});
+	const prev = qa_tutorial_select.value;
+	qa_tutorial_select.innerHTML = '';
+	for (const id of ids) {
+		const opt = document.createElement('option');
+		opt.value = id;
+		opt.textContent = tutorials[id] && tutorials[id].title ? qa_html_to_text(tutorials[id].title) : id;
+		qa_tutorial_select.appendChild(opt);
+	}
+	if (prev) qa_tutorial_select.value = prev;
+}
 
 function update_tutorial(id, name) {
 		if(tutorials[id] === undefined) { return; }
@@ -550,12 +578,14 @@ function update_tutorial(id, name) {
 			} else {
 				qa_tutorial_wikipedia.style.display = "none";
 			}
-			qa_tutorial_open_button.innerHTML = "Tell me more about <b>" + name + "</b>!";
-			qa_tutorial_open_button.style.display = "inline-block";
+			qa_populate_tutorial_select();
+			if (qa_tutorial_select) qa_tutorial_select.value = id;
 }
 
 window.onload = function () {
 	qa_tutorial_open_button = document.getElementById('qa-tutorial-open-button');
+	qa_tutorial_select = document.getElementById('qa-tutorial-select');
+	qa_tutorial_open_selected_button = document.getElementById('qa-tutorial-open-selected');
 	qa_tutorial_close_button = document.getElementById('qa-tutorial-close-button');
 	qa_tutorial_overlay = document.getElementById('qa-tutorial-overlay');
 	qa_tutorial_title = document.getElementById('qa-tutorial-title');
@@ -628,7 +658,18 @@ window.onload = function () {
 	load_history_internal();
 
 	//tutorial
-	qa_tutorial_open_button.onclick = function() { qa_tutorial_overlay.style.display = "block"; }
+	qa_populate_tutorial_select();
+	if (qa_tutorial_open_selected_button) {
+		qa_tutorial_open_selected_button.onclick = function() {
+			if (qa_tutorial_select && qa_tutorial_select.selectedIndex >= 0) {
+				update_tutorial(
+					qa_tutorial_select.value,
+					qa_tutorial_select.options[qa_tutorial_select.selectedIndex].textContent
+				);
+			}
+			qa_tutorial_overlay.style.display = "block";
+		};
+	}
 	qa_tutorial_close_button.onclick = function() { qa_tutorial_overlay.style.display = "none"; }
 	// Close the pop-up when clicking anywhere outside the box
 	window.onclick = function(event) {
