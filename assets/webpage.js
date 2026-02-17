@@ -32,7 +32,7 @@ function setupShowHide(containerId) {
 }
 
 function changeVisibility(element, is_visible) {
-	const addClass = is_visible ? 'qa-visible': 'qa-hidden';
+	const addClass = is_visible ? 'qa-visible' : 'qa-hidden';
 	const remClass = is_visible ? 'qa-hidden' : 'qa-visible';
 	element.classList.remove(remClass);
 	element.classList.add(addClass);
@@ -88,13 +88,13 @@ const separator_default = ' ';
 var is_update_requested = true;
 var is_update_ready = true;
 function update_history() {
-	if(!is_update_ready) { is_update_requested = true; }
+	if (!is_update_ready) { is_update_requested = true; }
 	else {
 		is_update_ready = false;
 		update_history_internal();
 		setTimeout(() => {
 			is_update_ready = true;
-			if(is_update_requested) {
+			if (is_update_requested) {
 				is_update_requested = false;
 				update_history();
 			}
@@ -114,46 +114,47 @@ function update_history_internal() {
 	var newQuery = $.query.empty();
 
 	const text_query = options_list.enabled("whitespace") ? decodeWhitespaces(qa_text.value) : qa_text.value;
-	if(text_query) { newQuery = newQuery.set("text", text_query); }
+	if (text_query) { newQuery = newQuery.set("text", text_query); }
 
 	const structures_query = structures_list.getEnabled();
-	if(structures_query != structures_default) { newQuery = newQuery.set("structures", structures_query); }
+	if (structures_query != structures_default) { newQuery = newQuery.set("structures", structures_query); }
 
 	const options_query = options_list.getEnabled();
-	if(options_query != options_default) { newQuery = newQuery.set("options_list", options_query); }
+	if (options_query != options_default) { newQuery = newQuery.set("options_list", options_query); }
 
 	const separator_query = decodeWhitespaces(qa_separator_input.value);
-	if(separator_query != separator_default) { newQuery = newQuery.set("sep", separator_query); }
+	if (separator_query != separator_default) { newQuery = newQuery.set("sep", separator_query); }
 
 	const counters_query = counters_list.getEnabled();
-	if(counters_query != counters_default) { newQuery = newQuery.set("counters", counters_query); }
+	if (counters_query != counters_default) { newQuery = newQuery.set("counters", counters_query); }
 
 	const generate_string_query = qa_generate_string_list.value;
-	if(generate_string_query != generate_string_default) { newQuery = newQuery.set("generate_string", generate_string_query); }
+	if (generate_string_query != generate_string_default) { newQuery = newQuery.set("generate_string", generate_string_query); }
 
 	const generate_string_range_query = adjustedLimit(qa_generate_string_range.value);
-	if(generate_string_range_query != generate_string_range_default) { newQuery = newQuery.set("generate_string_range", generate_string_range_query); }
+	if (generate_string_range_query != generate_string_range_default) { newQuery = newQuery.set("generate_string_range", generate_string_range_query); }
 
 	const transform_query = qa_transform_list.value;
-	if(transform_query != transform_default) { newQuery = newQuery.set("transform", transform_query); }
+	if (transform_query != transform_default) { newQuery = newQuery.set("transform", transform_query); }
 
 	const transform_input_query = qa_transform_input.value;
-	if(transform_input_query != '') { 
-		newQuery = newQuery.set("transform_input", transform_input_query); }
+	if (transform_input_query != '') {
+		newQuery = newQuery.set("transform_input", transform_input_query);
+	}
 
 	const timeout_query = qa_timeout_range.value;
-	if(timeout_query != timeout_default) {
+	if (timeout_query != timeout_default) {
 		newQuery = newQuery.set("timeout", timeout_query);
 	}
 
 	const prepend_query = qa_prepend_input.value;
-	if(prepend_query != prepend_default) { newQuery = newQuery.set("prepend", prepend_query); }
+	if (prepend_query != prepend_default) { newQuery = newQuery.set("prepend", prepend_query); }
 
 	const append_query = qa_append_input.value;
-	if(append_query != append_default) { newQuery = newQuery.set("append", append_query); }
+	if (append_query != append_default) { newQuery = newQuery.set("append", append_query); }
 
 	const counter_automatic_query = qa_counter_automatic.checked;
-	if(counter_automatic_query != counter_automatic_default) { newQuery = newQuery.set("counter_automatic", counter_automatic_query ? '1' : '0'); }
+	if (counter_automatic_query != counter_automatic_default) { newQuery = newQuery.set("counter_automatic", counter_automatic_query ? '1' : '0'); }
 
 	const cvCbx = document.getElementById('qa-compact-view');
 	if (cvCbx) {
@@ -172,23 +173,23 @@ function update_history_internal() {
 function load_history_internal() {
 	// parse configuration from GET url parameters
 	const text_query = $.query.get("text").toString();
-	if(text_query) { qa_text.value = text_query; }
+	if (text_query) { qa_text.value = text_query; }
 
 	const counters_query = $.query.get("counters").toString();
-	if(counters_query) { counters_list.setEnabled(counters_query); }
+	if (counters_query) { counters_list.setEnabled(counters_query); }
 
 	const structures_query = $.query.get("structures").toString();
-	if(structures_query) { structures_list.setEnabled(structures_query); }
+	if (structures_query) { structures_list.setEnabled(structures_query); }
 
 	const options_query = $.query.get("options_list").toString();
-	if(options_query) { options_list.setEnabled(options_query); }
+	if (options_query) { options_list.setEnabled(options_query); }
 
 	const sepfrom_query = $.query.get("sep").toString();
-	if(sepfrom_query) { qa_separator_input.value = encodeWhitespaces(sepfrom_query); }
+	if (sepfrom_query) { qa_separator_input.value = encodeWhitespaces(sepfrom_query); }
 
 	const generate_string_query = $.query.get("generate_string").toString();
-	if(generate_string_query) { qa_generate_string_list.value = generate_string_query; }
-	if(generate_string_query && generate_string_query != 'custom') {
+	if (generate_string_query) { qa_generate_string_list.value = generate_string_query; }
+	if (generate_string_query && generate_string_query != 'custom') {
 		changeVisibility(qa_generate_string_span, true);
 		changeVisibility(qa_text, false);
 	} else {
@@ -197,15 +198,15 @@ function load_history_internal() {
 	}
 
 	const generate_string_range_query = $.query.get("generate_string_range").toString();
-	if(generate_string_range_query) {
+	if (generate_string_range_query) {
 		qa_generate_string_range.value = unadjustedLimit(generate_string_range_query);
 		qa_generate_string_rank.innerHTML = adjustedLimit(qa_generate_string_range.value);
 	}
 
 
 	const transform_query = $.query.get("transform").toString();
-	if(transform_query) { qa_transform_list.value = transform_query; }
-	if(transform_query == 'custom') {
+	if (transform_query) { qa_transform_list.value = transform_query; }
+	if (transform_query == 'custom') {
 		changeVisibility(qa_transform_input, true);
 		changeVisibility(qa_transform_active_span, true);
 	} else {
@@ -214,20 +215,20 @@ function load_history_internal() {
 	}
 
 	const transform_input_query = $.query.get("transform_input").toString();
-	if(transform_input_query) { qa_transform_input.value = transform_input_query; }
+	if (transform_input_query) { qa_transform_input.value = transform_input_query; }
 
 	const timeout_query = $.query.get("timeout").toString();
-	if(timeout_query) { qa_timeout_range.value = timeout_query; qa_timeout_value.textContent = timeout_query; }
+	if (timeout_query) { qa_timeout_range.value = timeout_query; qa_timeout_value.textContent = timeout_query; }
 
 	const prepend_query = $.query.get("prepend").toString();
-	if(prepend_query) { qa_prepend_input.value = prepend_query; }
+	if (prepend_query) { qa_prepend_input.value = prepend_query; }
 
 	const append_query = $.query.get("append").toString();
-	if(append_query) { qa_append_input.value = append_query; }
+	if (append_query) { qa_append_input.value = append_query; }
 
 	const counter_automatic_query = $.query.get("counter_automatic").toString();
-	if(counter_automatic_query) { qa_counter_automatic.checked = counter_automatic_query == '1'; }
-	if(qa_counter_automatic.checked) {
+	if (counter_automatic_query) { qa_counter_automatic.checked = counter_automatic_query == '1'; }
+	if (qa_counter_automatic.checked) {
 		changeVisibility(qa_counter_itemlists, false);
 	} else {
 		changeVisibility(qa_counter_itemlists, true);
@@ -242,13 +243,13 @@ function updateTextAreas() {
 }
 
 function updateTextArea(area) {
-	area.style.height = ""; 
+	area.style.height = "";
 	area.style.height = (10 + area.scrollHeight) + 'px';
 }
 
 var wasWhitespace = false;
 function updateWhitespaces() {
-	if(options_list.enabled("whitespace")) {
+	if (options_list.enabled("whitespace")) {
 		const selStart = qa_text.selectionStart;
 		const selEnd = qa_text.selectionEnd;
 		qa_text.value = encodeWhitespaces(qa_text.value);
@@ -256,7 +257,7 @@ function updateWhitespaces() {
 		qa_text.selectionEnd = selEnd;
 		wasWhitespace = true;
 	}
-	else if(wasWhitespace) {
+	else if (wasWhitespace) {
 		const selStart = qa_text.selectionStart;
 		const selEnd = qa_text.selectionEnd;
 		qa_text.value = decodeWhitespaces(qa_text.value);
@@ -272,9 +273,9 @@ function eval_with_context(context, js_code) {
 
 function custom_transform_text(text, eval_string) {
 	var ret = '';
-	for(var i = 0; i < text.length; i++) {
+	for (var i = 0; i < text.length; i++) {
 		try {
-			const newchar = eval_with_context({'i': i, 'text': text}, eval_string);
+			const newchar = eval_with_context({ 'i': i, 'text': text }, eval_string);
 			ret += newchar !== undefined ? newchar : text[i];
 		}
 		catch (error) {
@@ -288,9 +289,9 @@ function custom_transform_text(text, eval_string) {
 
 function transform_text(text) {
 	const selection = qa_transform_list.value;
-	if(selection == 'none') { return text; }
-	if(selection == 'custom') {
-		if(qa_transform_active.checked == false) { return text; }
+	if (selection == 'none') { return text; }
+	if (selection == 'custom') {
+		if (qa_transform_active.checked == false) { return text; }
 		return custom_transform_text(text, qa_transform_input.value);
 	}
 	const DS = build_ds(text, structure_flags[selection]);
@@ -315,11 +316,11 @@ function unadjustedLimit(limit) {
 }
 
 function generate_text() {
-	if(qa_generate_string_list.value == 'custom') {
+	if (qa_generate_string_list.value == 'custom') {
 		if (qa_generate_string_order) qa_generate_string_order.textContent = '';
 		return qa_text.value;
 	}
-	if(!(qa_generate_string_list.value in string_generators)) {
+	if (!(qa_generate_string_list.value in string_generators)) {
 		if (qa_generate_string_order) qa_generate_string_order.textContent = '';
 		return 'Unknown string generator: ' + qa_generate_string_list.value;
 	}
@@ -337,85 +338,85 @@ function generate_text() {
 
 
 function construct_text() {
-	if(qa_generate_string_range.value == 'custom') {
+	if (qa_generate_string_range.value == 'custom') {
 	}
 
 	let ds_text = generate_text();
-	if(options_list.enabled("whitespace")) {
+	if (options_list.enabled("whitespace")) {
 		ds_text = decodeWhitespaces(ds_text);
-	} 
+	}
 
-	if(!ds_text) { ds_text = qa_text.placeholder; }
+	if (!ds_text) { ds_text = qa_text.placeholder; }
 	ds_text = transform_text(ds_text);
 
-	if(ds_text.length == 0) {
+	if (ds_text.length == 0) {
 		qa_ds_output.value = '';
 		qa_counter_output.value = '';
 		return;
 	}
-	if(qa_prepend_input.value) {
+	if (qa_prepend_input.value) {
 		ds_text = qa_prepend_input.value + ds_text;
 	}
-	if(qa_append_input.value) {
+	if (qa_append_input.value) {
 		ds_text = ds_text + qa_append_input.value;
 	}
-	if(options_list.enabled("dollar")) ds_text += '\0';
+	if (options_list.enabled("dollar")) ds_text += '\0';
 	return ds_text;
 }
 
 function prettify_row(ds_text, dsName, varDs, varSep, varBase, do_padding) {
-	if(structures_list.isIndex(dsName)) {
-		if(varBase != 0) {
+	if (structures_list.isIndex(dsName)) {
+		if (varBase != 0) {
 			varDs = increment_array(varDs);
 		}
-		varDs = replace_invalid_position(varDs, varBase+ds_text.length);
+		varDs = replace_invalid_position(varDs, varBase + ds_text.length);
 	}
 	const ds_htmlname = ds_name2html[dsName] ? ds_name2html[dsName] : dsName;
-	if(structures_list.isString(dsName)) {
+	if (structures_list.isString(dsName)) {
 		varDs = varDs.split('\0').join("$");
 	}
-	if(!do_padding) { return {'name' : ds_htmlname, 'data' : varDs}; }
+	if (!do_padding) { return { 'name': ds_htmlname, 'data': varDs }; }
 
-	if(structures_list.isString(dsName)) {
-		if(options_list.enabled("whitespace")) {
+	if (structures_list.isString(dsName)) {
+		if (options_list.enabled("whitespace")) {
 			varDs = encodeWhitespaces(varDs);
 		}
 		varDs = prettify_string(varDs, varSep, varBase, options_list.enabled("tabularize"));
-	} else if(structures_list.isFactorization(dsName)) {
-		if(options_list.enabled("facttext")) {
+	} else if (structures_list.isFactorization(dsName)) {
+		if (options_list.enabled("facttext")) {
 			varDs = prettify_factorization(options_list.enabled("whitespace") ? encodeWhitespaces(ds_text) : ds_text, varDs, varSep, varBase);
-		} else { 
-			varDs = prettify_array(varDs.map((b) => b ? 1 : 0), varSep, varBase); 
+		} else {
+			varDs = prettify_array(varDs.map((b) => b ? 1 : 0), varSep, varBase);
 		}
-	} else { 
-		varDs = prettify_array(varDs, varSep, varBase); 
+	} else {
+		varDs = prettify_array(varDs, varSep, varBase);
 	}
-	return {'name' : ds_htmlname, 'data' : varDs};
+	return { 'name': ds_htmlname, 'data': varDs };
 }
 
 function fill_updates(DS) {
 	const varSep = decodeWhitespaces(qa_separator_input.value);
 
 	let pad = 0;
-	structures_list.forEachEnabled(function(dsName) {
+	structures_list.forEachEnabled(function (dsName) {
 		const ds_htmlname = ds_name2html[dsName] ? ds_name2html[dsName] : dsName;
-		if(ds_htmlname.length > pad) pad = ds_htmlname.length;
+		if (ds_htmlname.length > pad) pad = ds_htmlname.length;
 	});
 
 	const varBase = options_list.enabled("baseone") ? 1 : 0;
 
 	const rows = [];
-	structures_list.forEachEnabled(function(dsName) {
+	structures_list.forEachEnabled(function (dsName) {
 		let varDs = DS[dsName];
-		if(!varDs) {
+		if (!varDs) {
 			rows.push("Function " + dsName + ": not defined");
 			return;
 		}
 		rows.push(prettify_row(DS['text'], dsName, varDs, varSep, varBase, qa_output_select.value == 'plain'));
 	});
 
-	if(qa_output_select.value == 'plain') { 
-		const result = rows.map((row) => { return pad_right(row.name + ":", ' ', pad + 2) + row.data; } );
+	if (qa_output_select.value == 'plain') {
+		const result = rows.map((row) => { return pad_right(row.name + ":", ' ', pad + 2) + row.data; });
 		qa_ds_output.value = result.join('\n');
 	} else if (qa_output_select.value == 'latex') {
 		qa_ds_output.value = export_latex(rows);
@@ -435,7 +436,7 @@ function fill_updates(DS) {
 		}
 		// Single pass in structure order: emit associated counters and runs/size counters
 		const shownCounters = new Set();
-		structures_list.forEachEnabled(function(dsName) {
+		structures_list.forEachEnabled(function (dsName) {
 			for (const cName in counter_structures) {
 				if (shownCounters.has(cName)) continue;
 				if (!counter_structures[cName].includes(dsName)) continue;
@@ -454,10 +455,10 @@ function fill_updates(DS) {
 			}
 		});
 	} else {
-		counters_list.forEachEnabled(function(dsName) {
+		counters_list.forEachEnabled(function (dsName) {
 			let varDs = DS["counter_" + dsName];
 			const ds_htmlname = counter_name2html[dsName] ? counter_name2html[dsName] : dsName;
-			if(varDs === undefined) {
+			if (varDs === undefined) {
 				result.push(dsName + ": not defined");
 			} else {
 				result.push(ds_htmlname + ": " + varDs);
@@ -472,32 +473,36 @@ function fill_updates(DS) {
 
 var qa_worker = null;
 var qa_is_loaded = false;
-var qa_pending_update = false;
+var qa_timeout_id = null;
 
 function updateArrays() {
 	if (!qa_is_loaded) {
 		return;
 	}
+	if (qa_generate_string_order && qa_generate_string_list.value !== 'custom') {
+		qa_generate_string_order.textContent = '(computing...)';
+	}
 	if (qa_worker !== null) {
-		qa_pending_update = true;
-		if (qa_generate_string_order && qa_generate_string_list.value !== 'custom') {
-			qa_generate_string_order.textContent = '(order ??)';
-		}
-		return;
+		clearTimeout(qa_timeout_id);
+		qa_timeout_id = null;
+		qa_worker.terminate()
+		qa_worker = null;
+		if (qa_loading_spinner) qa_loading_spinner.classList.remove('qa-spinning');
+		qa_computation_status.textContent = `Killed due to more recent request.`
 	}
 	qa_separator_input.value = encodeWhitespaces(qa_separator_input.value);
 	updateWhitespaces();
 
 	let enabled_flag = 0;
-	structures_list.forEachEnabled(function(dsName) {
+	structures_list.forEachEnabled(function (dsName) {
 		enabled_flag |= structure_flags[dsName];
 	});
-	counters_list.forEachEnabled(function(dsName) {
-		if(structure_flags[dsName]) {
+	counters_list.forEachEnabled(function (dsName) {
+		if (structure_flags[dsName]) {
 			enabled_flag |= structure_flags[dsName];
 		}
 		const countername = "counter_" + dsName;
-		if(structure_flags[countername]) {
+		if (structure_flags[countername]) {
 			enabled_flag |= structure_flags[countername];
 		}
 	});
@@ -516,17 +521,45 @@ function updateArrays() {
 		}
 	}
 
-	const ds_text = construct_text();
-
 	const script_elements = document.querySelectorAll('script[type="text/js-worker"]');
-	if(!script_elements || !script_elements[0].innerHTML) {
-		qa_computation_status.textContent =  `⚠️ Warning: No worker scripts found!`;
+	if (!script_elements || !script_elements[0].innerHTML) {
+		qa_computation_status.textContent = `⚠️ Warning: No worker scripts found!`;
 		qa_timeout_range.disabled = true;
+		const ds_text = construct_text();
 		const DS = build_ds(ds_text, enabled_flag);
 		DS['text'] = ds_text;
 		fill_updates(DS);
 		return;
 	}
+
+	// Build worker params — all expensive work happens in the worker
+	const transformSelection = qa_transform_list.value;
+	let workerParams;
+	if (qa_generate_string_list.value !== 'custom') {
+		workerParams = {
+			generatorName: qa_generate_string_list.value,
+			limit: adjustedLimit(qa_generate_string_range.value),
+			customText: null,
+			placeholder: qa_text.placeholder,
+		};
+	} else {
+		const rawText = options_list.enabled("whitespace")
+			? decodeWhitespaces(qa_text.value)
+			: qa_text.value;
+		workerParams = {
+			generatorName: null,
+			limit: null,
+			customText: rawText || null,
+			placeholder: qa_text.placeholder,
+		};
+	}
+	workerParams.transformSelection = transformSelection;
+	workerParams.customTransformActive = (transformSelection === 'custom') && qa_transform_active.checked;
+	workerParams.customFnSource = (transformSelection === 'custom') ? qa_transform_input.value : null;
+	workerParams.prepend = qa_prepend_input.value;
+	workerParams.append = qa_append_input.value;
+	workerParams.dollar = options_list.enabled("dollar");
+	workerParams.enabled_flag = enabled_flag;
 
 	const blob = new Blob(
 		Array.prototype.map.call(
@@ -538,18 +571,16 @@ function updateArrays() {
 
 	// Creating a new global "worker" variable from all our "text/js-worker" scripts.
 	const blobURL = window.URL.createObjectURL(blob);
-
 	const timeout_seconds = Number(qa_timeout_range.value);
-	qa_computation_status.textContent = `⏳ Computing... (timeout: ${timeout_seconds}s)`;
+	qa_computation_status.textContent = `Computing... (timeout: ${timeout_seconds}s)`;
 
 	const time_now = Date.now();
-	const timeout_id = timeout_seconds > 0
+	qa_timeout_id = timeout_seconds > 0
 		? setTimeout(() => {
 			qa_worker.terminate()
 			qa_worker = null;
 			if (qa_loading_spinner) qa_loading_spinner.classList.remove('qa-spinning');
-			qa_computation_status.textContent =  `⚠️ Killed after ${timeout_seconds}s`
-			if (qa_pending_update) { qa_pending_update = false; updateArrays(); }
+			qa_computation_status.textContent = `Killed after ${timeout_seconds}s`
 		}, timeout_seconds * 1000)
 		: null
 
@@ -557,27 +588,26 @@ function updateArrays() {
 	if (qa_loading_spinner) qa_loading_spinner.classList.add('qa-spinning');
 
 	qa_worker.onerror = (error) => {
+		clearTimeout(qa_timeout_id);
 		qa_worker.terminate();
 		qa_worker = null;
-		clearTimeout(timeout_id);
 		if (qa_loading_spinner) qa_loading_spinner.classList.remove('qa-spinning');
-		qa_computation_status.textContent = `❌ Error during computation: ${error.message}`;
-		if (qa_pending_update) { qa_pending_update = false; updateArrays(); }
+		qa_computation_status.textContent = `Error during computation: ${error.message}`;
 	};
-	qa_worker.postMessage([ds_text, enabled_flag]);
-
+	qa_worker.postMessage(workerParams);
 	qa_worker.onmessage = (event) => {
+		clearTimeout(qa_timeout_id);
 		const DS = event.data;
-		DS['text'] = ds_text;
-
 		qa_worker.terminate();
 		qa_worker = null;
-		clearTimeout(timeout_id);
 		if (qa_loading_spinner) qa_loading_spinner.classList.remove('qa-spinning');
-		qa_computation_status.textContent = `✅ Computation finished in ${((Date.now() - time_now)/1000).toFixed(2)}s`;
+		qa_computation_status.textContent = `✅ Computation finished in ${((Date.now() - time_now) / 1000).toFixed(2)}s`;
 
+		if (qa_generate_string_order) {
+			const order = DS['__generator_order'];
+			qa_generate_string_order.textContent = order !== null ? '(order ' + order + ')' : '';
+		}
 		fill_updates(DS);
-		if (qa_pending_update) { qa_pending_update = false; updateArrays(); }
 	};
 
 }
@@ -602,7 +632,7 @@ function initDragAndDropGrouped(groupName, enabledEl, disabledMap, categoryClass
 		Sortable.create(el, {
 			group: {
 				name: groupName,
-				put: function(to, from, dragEl) {
+				put: function (to, from, dragEl) {
 					return from.el === enabledEl && dragEl.classList.contains(cls);
 				}
 			},
@@ -657,40 +687,40 @@ function qa_populate_tutorial_select() {
 }
 
 function update_tutorial(id, name) {
-		if(tutorials[id] === undefined) { return; }
-			const tutorial = tutorials[id];
-			qa_tutorial_title.innerHTML = tutorial.title;
-			qa_tutorial_content.innerHTML = tutorial.content;
-			if (typeof MathJax !== 'undefined') {
-				MathJax.typeset([qa_tutorial_content]);
-			}
-			if(tutorial.oeis !== undefined) {
-				qa_tutorial_oeis.style.display = "block";
-				qa_tutorial_oeis.innerHTML = "Converges to OEIS sequence " + tutorial.oeis;
-				qa_tutorial_oeis.href = "https://oeis.org/" + tutorial.oeis;
-			}
-			else {
-				qa_tutorial_oeis.style.display = "none";
-			}
-			if(tutorial.cite !== undefined) {
-				qa_tutorial_cite.style.display = "block";
-				qa_tutorial_cite.href = tutorial.cite;
-				if (typeof citations !== 'undefined' && citations[tutorial.cite] !== 'undefined') {
-					qa_tutorial_cite.innerHTML = citations[tutorial.cite];
-				}
-			}
-			else {
-				qa_tutorial_cite.style.display = "none";
-			}
-			if(tutorial.wikipedia !== undefined) {
-				qa_tutorial_wikipedia.style.display = "block";
-				qa_tutorial_wikipedia.innerHTML = "Wikipedia Article about " + name;
-				qa_tutorial_wikipedia.href = "https://en.wikipedia.org/wiki/" + tutorial.wikipedia;
-			} else {
-				qa_tutorial_wikipedia.style.display = "none";
-			}
-			qa_populate_tutorial_select();
-			if (qa_tutorial_select) qa_tutorial_select.value = id;
+	if (tutorials[id] === undefined) { return; }
+	const tutorial = tutorials[id];
+	qa_tutorial_title.innerHTML = tutorial.title;
+	qa_tutorial_content.innerHTML = tutorial.content;
+	if (typeof MathJax !== 'undefined') {
+		MathJax.typeset([qa_tutorial_content]);
+	}
+	if (tutorial.oeis !== undefined) {
+		qa_tutorial_oeis.style.display = "block";
+		qa_tutorial_oeis.innerHTML = "Converges to OEIS sequence " + tutorial.oeis;
+		qa_tutorial_oeis.href = "https://oeis.org/" + tutorial.oeis;
+	}
+	else {
+		qa_tutorial_oeis.style.display = "none";
+	}
+	if (tutorial.cite !== undefined) {
+		qa_tutorial_cite.style.display = "block";
+		qa_tutorial_cite.href = tutorial.cite;
+		if (typeof citations !== 'undefined' && citations[tutorial.cite] !== 'undefined') {
+			qa_tutorial_cite.innerHTML = citations[tutorial.cite];
+		}
+	}
+	else {
+		qa_tutorial_cite.style.display = "none";
+	}
+	if (tutorial.wikipedia !== undefined) {
+		qa_tutorial_wikipedia.style.display = "block";
+		qa_tutorial_wikipedia.innerHTML = "Wikipedia Article about " + name;
+		qa_tutorial_wikipedia.href = "https://en.wikipedia.org/wiki/" + tutorial.wikipedia;
+	} else {
+		qa_tutorial_wikipedia.style.display = "none";
+	}
+	qa_populate_tutorial_select();
+	if (qa_tutorial_select) qa_tutorial_select.value = id;
 }
 
 window.onload = function () {
@@ -748,14 +778,14 @@ window.onload = function () {
 	const ds_list_enabled = document.getElementById('qa-structures-enabled');
 	const ds_list_disabled = {
 		string: document.getElementById('qa-structures-disabled-string'),
-		index:  document.getElementById('qa-structures-disabled-index'),
+		index: document.getElementById('qa-structures-disabled-index'),
 		length: document.getElementById('qa-structures-disabled-length'),
 		factor: document.getElementById('qa-structures-disabled-factor'),
-		other:  document.getElementById('qa-structures-disabled-other'),
+		other: document.getElementById('qa-structures-disabled-other'),
 	};
 
 	// Distribute source items into category sections
-	(function() {
+	(function () {
 		const src = document.getElementById('qa-structures-disabled-source');
 		if (!src) return;
 		Array.from(src.querySelectorAll('.qa-structure')).forEach(el => {
@@ -770,13 +800,13 @@ window.onload = function () {
 
 	const counter_list_enabled = document.getElementById('qa-counter-enabled');
 	const counter_list_disabled = {
-		rle:    document.getElementById('qa-counter-disabled-rle'),
+		rle: document.getElementById('qa-counter-disabled-rle'),
 		factor: document.getElementById('qa-counter-disabled-factor'),
-		other:  document.getElementById('qa-counter-disabled-other'),
+		other: document.getElementById('qa-counter-disabled-other'),
 	};
 
 	// Distribute counter source items into category sections
-	(function() {
+	(function () {
 		const src = document.getElementById('qa-counter-disabled-source');
 		if (!src) return;
 		Array.from(src.querySelectorAll('.qa-counter')).forEach(el => {
@@ -810,7 +840,7 @@ window.onload = function () {
 	//tutorial
 	qa_populate_tutorial_select();
 	if (qa_tutorial_open_selected_button) {
-		qa_tutorial_open_selected_button.onclick = function() {
+		qa_tutorial_open_selected_button.onclick = function () {
 			if (qa_tutorial_select && qa_tutorial_select.selectedIndex >= 0) {
 				update_tutorial(
 					qa_tutorial_select.value,
@@ -820,48 +850,48 @@ window.onload = function () {
 			qa_tutorial_overlay.style.display = "block";
 		};
 	}
-	qa_tutorial_close_button.onclick = function() { qa_tutorial_overlay.style.display = "none"; }
+	qa_tutorial_close_button.onclick = function () { qa_tutorial_overlay.style.display = "none"; }
 	// Close the pop-up when clicking anywhere outside the box
-	window.onclick = function(event) {
+	window.onclick = function (event) {
 		if (event.target == qa_tutorial_overlay) {
 			qa_tutorial_overlay.style.display = "none";
 		}
 	}
 
 	document.querySelectorAll(".qa-item").forEach((elem) => {
-		if(tutorials[elem.dataset.ds] === undefined) { return; }
-		elem.onmouseover = function() { 
+		if (tutorials[elem.dataset.ds] === undefined) { return; }
+		elem.onmouseover = function () {
 			update_tutorial(elem.dataset.ds, elem.innerHTML);
 		};
 	});
 
 
 	const triggering = [qa_transform_active, qa_prepend_input, qa_append_input, qa_transform_list, qa_transform_input, qa_generate_string_list, qa_output_select];
-	for(const idx in triggering) {
-		triggering[idx].addEventListener('change', function() {
+	for (const idx in triggering) {
+		triggering[idx].addEventListener('change', function () {
 			updateArrays();
 		});
-		triggering[idx].addEventListener('input', function() {
+		triggering[idx].addEventListener('input', function () {
 			updateArrays();
 		});
 	}
-	qa_counter_automatic.addEventListener('change', function()  {
+	qa_counter_automatic.addEventListener('change', function () {
 		changeVisibility(qa_counter_itemlists, !qa_counter_automatic.checked);
 		updateArrays();
 	});
 
 
-	qa_generate_string_range.addEventListener('input', function() {
+	qa_generate_string_range.addEventListener('input', function () {
 		qa_generate_string_rank.innerHTML = adjustedLimit(qa_generate_string_range.value);
 		updateArrays();
 	});
 
-	qa_transform_list.addEventListener('change', function() {
+	qa_transform_list.addEventListener('change', function () {
 		qa_transform_active.checked = false;
 		updateArrays();
 	});
 
-	qa_generate_string_list.addEventListener('change', function() {
+	qa_generate_string_list.addEventListener('change', function () {
 		const is_visible = this.value != 'custom';
 		changeVisibility(qa_generate_string_span, is_visible);
 		changeVisibility(qa_text, !is_visible);
@@ -871,7 +901,7 @@ window.onload = function () {
 		updateArrays();
 	});
 
-	qa_transform_list.addEventListener('change', function() {
+	qa_transform_list.addEventListener('change', function () {
 		const is_visible = this.value == 'custom';
 		changeVisibility(qa_transform_input, is_visible);
 		changeVisibility(qa_transform_active_span, is_visible);
@@ -880,7 +910,7 @@ window.onload = function () {
 		update_tutorial(this.value, selectedInnerHTML);
 		updateArrays();
 	});
-	qa_transform_input.addEventListener('input', function() {
+	qa_transform_input.addEventListener('input', function () {
 		qa_transform_active.checked = false;
 	});
 
@@ -896,10 +926,10 @@ window.onload = function () {
 	setupShowHide('qa-counter-disabled-other');
 
 	// Compact view
-	(function() {
+	(function () {
 		const DESC_NORMAL = 'Choose your data structures and factorizations (drag and drop or double-click):<br />\n        You can use drag and drop to reorder your selection!';
 		const DESC_COMPACT = 'Choose your data structures and factorizations (use the dropdown to add; double-click to remove):<br />\n        You can use drag and drop to reorder your selection!';
-		const DISABLED_IDS = ['qa-structures-disabled-string','qa-structures-disabled-index','qa-structures-disabled-length','qa-structures-disabled-factor','qa-structures-disabled-other'];
+		const DISABLED_IDS = ['qa-structures-disabled-string', 'qa-structures-disabled-index', 'qa-structures-disabled-length', 'qa-structures-disabled-factor', 'qa-structures-disabled-other'];
 
 		function structureGroup(el) {
 			if (!el) return 'other';
@@ -932,7 +962,7 @@ window.onload = function () {
 				groups[structureGroup(el)].push(el);
 			}
 			for (const k in groups) groups[k].sort((a, b) => getLabel(a).localeCompare(getLabel(b)));
-			['string','index','length','factor','other'].forEach(key => {
+			['string', 'index', 'length', 'factor', 'other'].forEach(key => {
 				if (!groups[key].length) return;
 				const og = document.createElement('optgroup');
 				og.label = GROUP_TITLES[key] || key;
@@ -966,7 +996,7 @@ window.onload = function () {
 
 		// Keep dropdown in sync when structures change
 		const origUpdateArrays = window.updateArrays;
-		window.updateArrays = function() {
+		window.updateArrays = function () {
 			const r = origUpdateArrays.apply(this, arguments);
 			if (cbx.checked) rebuildDropdown();
 			return r;
@@ -1008,7 +1038,7 @@ window.onload = function () {
 	})();
 
 	// Show/hide advanced options
-	(function() {
+	(function () {
 		function applyAdvanced(on) {
 			document.querySelectorAll('.qa-advanced-option').forEach(el => {
 				el.classList.toggle('qa-hidden', !on);
