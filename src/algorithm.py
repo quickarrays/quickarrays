@@ -96,15 +96,22 @@ def generate_counters_html(code : str):
 		if kind and kind == 'hidden':
 			return
 
+		if counter_type == "rle":
+			label = f"runs({name})"
+		elif counter_type == "factor":
+			label = f"size({name})"
+		else:
+			label = name
+
 		if desc:
 			block = (
-				f'<div class="qa-counter qa-item qa-counter-{counter_type}" data-ds="{prop}">{name}\n'
+				f'<div class="qa-counter qa-item qa-counter-{counter_type}" data-ds="{prop}">{label}\n'
 				f'\t<div class="qa-tooltiptext">{desc}</div>\n'
 				f'</div>'
 			)
 		else:
-			block = f'<div class="qa-counter qa-item qa-counter-{counter_type}" data-ds="{prop}">{name}</div>'
-		datapair = (block, name)
+			block = f'<div class="qa-counter qa-item qa-counter-{counter_type}" data-ds="{prop}">{label}</div>'
+		datapair = (block, label)
 
 		html_items.append(datapair)
 
