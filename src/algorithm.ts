@@ -1268,7 +1268,7 @@ export function test_lyndon_array() {
 
 /**
  * @name min-rot(T)
- * @transform_name Necklace (lex. minimal rotation)
+ * @transform_name Necklace
  * @kind disable
  * @type string
  * @description Lexicographically smallest conjugate of a given string.
