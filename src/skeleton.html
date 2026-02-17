@@ -54,18 +54,16 @@
         </div>
         <textarea class="qa-textarea" id="qa-text" placeholder="MISSISSIPPI"></textarea>
 
-        <div class="qa-itemlist">
-            <div class="div">
+        <div class="qa-description">
             <label for="qa-transform-list">Apply transform:</label>
             <select id="qa-transform-list" name="qa-transform-list">
                 <option value="none">None</option>
                 {{html/transform.html}}
                 <option value="custom">Custom</option>
             </select>
-            <span id='qa-transform-active-span' class='qa-hidden'> 
-                    <input type="checkbox" id="qa-transform-active" name="qa-transform-active"/> <label for="qa-transform-active">activate</label>
+            <span id='qa-transform-active-span' class='qa-hidden'>
+                <input type="checkbox" id="qa-transform-active" name="qa-transform-active"/> <label for="qa-transform-active">activate</label>
             </span>
-            </div>
             <textarea class="qa-textarea qa-hidden" id="qa-transform-input" placeholder="text[i] == 'a' ? 'b' : 'a'"></textarea>
         </div>
 
@@ -123,7 +121,7 @@
         </div>
         <textarea class="qa-textarea" style="flex-grow:1;line-height:175%;" id="qa-ds-output" readonly></textarea>
 
-        <div id="qa-counter-output"></div>
+        <div id="qa-counter-output" class="qa-itemlist-enabled"></div>
 <div class="qa-description">Choose your counters
         <input type="checkbox" id="qa-counter-automatic" value="1" checked="checked"></input>
         <label for="qa-counter-automatic">automatically</label>.
