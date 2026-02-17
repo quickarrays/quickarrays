@@ -42,11 +42,14 @@
                     <option value="custom" selected>Custom</option>
                     {{html/generator.html}}
                 </select>
-                <span id="qa-generate-string-span" class="qa-hidden">
-                    <label for="qa-generate-string-range">Order:</label>
-                    <input type="range" id="qa-generate-string-range" name="qa-generate-string-range" min="0" max="6" value="3" step="1">
-                    <span id="qa-generate-string-rank">3</span>
-                </span>
+            </div>
+        </div>
+        <div class="qa-itemlist qa-hidden" id="qa-generate-string-span">
+            <div>
+                <label for="qa-generate-string-range">Length:</label>
+                <input type="range" id="qa-generate-string-range" name="qa-generate-string-range" min="1" max="1024" value="168" step="1">
+                <span id="qa-generate-string-rank">16</span>
+                <span id="qa-generate-string-order"></span>
             </div>
         </div>
         <textarea class="qa-textarea" id="qa-text" placeholder="MISSISSIPPI"></textarea>
