@@ -412,11 +412,12 @@ function fill_updates(DS) {
 
 	const result = [];
 
+	const wrapVal = (v) => '<span class="qa-counter-value">' + v + '</span>';
 	if (qa_counter_automatic.checked) {
-		if (DS["counter_n"] !== undefined) result.push("n: " + DS["counter_n"]);
+		if (DS["counter_n"] !== undefined) result.push("n: " + wrapVal(DS["counter_n"]));
 		if (DS["counter_sigma"] !== undefined) {
 			const sigma_html = counter_name2html["sigma"] || "&sigma;";
-			result.push(sigma_html + ": " + DS["counter_sigma"]);
+			result.push(sigma_html + ": " + wrapVal(DS["counter_sigma"]));
 		}
 		// Single pass in structure order: emit associated counters and runs/size counters
 		const shownCounters = new Set();
@@ -426,14 +427,14 @@ function fill_updates(DS) {
 				if (!counter_structures[cName].includes(dsName)) continue;
 				const varDs = DS["counter_" + cName];
 				if (varDs === undefined) continue;
-				result.push((counter_name2html[cName] || cName) + ": " + varDs);
+				result.push((counter_name2html[cName] || cName) + ": " + wrapVal(varDs));
 				shownCounters.add(cName);
 			}
 			if (!shownCounters.has(dsName)) {
 				const varDs = DS["counter_" + dsName];
 				if (varDs !== undefined) {
 					const ds_htmlname = counter_name2html[dsName] ? counter_name2html[dsName] : dsName;
-					result.push(ds_htmlname + ": " + varDs);
+					result.push(ds_htmlname + ": " + wrapVal(varDs));
 					shownCounters.add(dsName);
 				}
 			}
@@ -445,7 +446,7 @@ function fill_updates(DS) {
 			if (varDs === undefined) {
 				result.push(dsName + ": not defined");
 			} else {
-				result.push(ds_htmlname + ": " + varDs);
+				result.push(ds_htmlname + ": " + wrapVal(varDs));
 			}
 		});
 	}
@@ -572,6 +573,10 @@ function updateArrays() {
 			if (qa_loading_spinner) qa_loading_spinner.classList.remove('qa-spinning');
 			qa_computation_status.textContent = `Killed after ${timeout_seconds}s`
 			qa_ds_output.value = `Timeout: killed after ${timeout_seconds}s.\n(limit can be adjusted below)`;
+		updateTextArea(qa_ds_output);
+		qa_counter_output.querySelectorAll('.qa-counter-value').forEach(span => {
+			span.textContent = '?';
+		});
 		}, timeout_seconds * 1000)
 		: null
 
