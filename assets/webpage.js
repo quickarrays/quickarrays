@@ -325,6 +325,17 @@ function currentLimit() {
 	return lengths[sliderToOrder(parseInt(qa_generate_string_range.value), lengths)];
 }
 
+function updateOrderLabel() {
+	if (!qa_generate_string_order) return;
+	const lengths = currentGeneratorLengths();
+	if (!lengths) {
+		qa_generate_string_order.textContent = '';
+		return;
+	}
+	const order = sliderToOrder(parseInt(qa_generate_string_range.value), lengths);
+	qa_generate_string_order.textContent = '(order ' + order + ')';
+}
+
 function updateSliderForGenerator(targetLength) {
 	const lengths = currentGeneratorLengths();
 	if (!lengths) return;
@@ -333,6 +344,7 @@ function updateSliderForGenerator(targetLength) {
 	const order = orderForLength(lengths, targetLength);
 	qa_generate_string_range.value = orderToSlider(order, lengths);
 	qa_generate_string_rank.innerHTML = lengths[order];
+	updateOrderLabel();
 }
 
 
@@ -451,9 +463,7 @@ function updateArrays() {
 	if (!qa_is_loaded) {
 		return;
 	}
-	if (qa_generate_string_order && qa_generate_string_list.value !== 'custom') {
-		qa_generate_string_order.textContent = '(computing...)';
-	}
+
 	if (qa_worker !== null) {
 		clearTimeout(qa_timeout_id);
 		qa_timeout_id = null;
@@ -884,6 +894,7 @@ window.onload = function () {
 	qa_generate_string_range.addEventListener('input', function () {
 		const limit = currentLimit();
 		qa_generate_string_rank.innerHTML = limit !== null ? limit : '';
+		updateOrderLabel();
 		if (limit !== _lastLimit) {
 			_lastLimit = limit;
 			updateArrays();
