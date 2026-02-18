@@ -59,7 +59,7 @@ $(EXTERNAL_JS_FILES): ./src/external.url ./src/external.py
 ./build/js/gen/generator_pipeline.js: ./src/generator.ts ./src/generator.py
 	@mkdir -p ./build/js/gen
 	python3 ./src/generator.py
-./build/js/gen/generator_lengths.js: ./build/js/gen/generator.js ./build/js/gen/generator_pipeline.js ./src/generator_lengths.py ./src/generator_lengths_node.js
+./build/js/gen/generator_lengths.js: ./build/js/gen/generator.js ./build/js/gen/generator_pipeline.js ./src/generator_lengths.py
 	@mkdir -p ./build/js/gen
 	python3 ./src/generator_lengths.py
 ./build/js/gen/tutorial.js: ./src/generator.ts ./src/algorithm.ts  ./src/tutorial.py

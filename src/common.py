@@ -117,7 +117,6 @@ TS_CONFIG = REPOSITORY_DIR / 'tsconfig.json'
 ALGORITHM_PY = SOURCE_DIR / 'algorithm.py'
 GENERATOR_PY = SOURCE_DIR / 'generator.py'
 GENERATOR_LENGTHS_PY = SOURCE_DIR / 'generator_lengths.py'
-GENERATOR_LENGTHS_NODE_JS = SOURCE_DIR / 'generator_lengths_node.js'
 TUTORIAL_PY = SOURCE_DIR / 'tutorial.py'
 CITATION_PY = SOURCE_DIR / 'citation.py'
 SKELETON_PY = SOURCE_DIR / 'skeleton.py'
@@ -192,7 +191,7 @@ def generate_makefile() -> str:
 	buffer.append(f'\tpython3 {GENERATOR_PY}')
 
 	generator_js = JS_GEN_DIR / 'generator.js'
-	buffer.append(f'{GENERATOR_LENGTHS_JS}: {generator_js} {GENERATOR_PIPELINE_JS} {GENERATOR_LENGTHS_PY} {GENERATOR_LENGTHS_NODE_JS}')
+	buffer.append(f'{GENERATOR_LENGTHS_JS}: {generator_js} {GENERATOR_PIPELINE_JS} {GENERATOR_LENGTHS_PY}')
 	buffer.append(f'\t@mkdir -p {GENERATOR_LENGTHS_JS.parent}')
 	buffer.append(f'\tpython3 {GENERATOR_LENGTHS_PY}')
 
