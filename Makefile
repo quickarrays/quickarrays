@@ -16,31 +16,31 @@ BUILD_DIR_ASSET_JS := $(subst $(ASSETS_DIR),$(BUILD_DIR)/js,$(ASSET_JS))
 all: $(BUILD_HTML) $(STANDALONE_HTML) $(DIST_PACKED_HTML)
 ./build/css/qa.css: ./assets/qa.css
 	@mkdir -p ./build/css
-	ln -sr ./assets/qa.css ./build/css/qa.css
+	ln -s ../../assets/qa.css ./build/css/qa.css
 ./build/js/worker.js: ./assets/worker.js
 	@mkdir -p ./build/js
-	ln -sr ./assets/worker.js ./build/js/worker.js
+	ln -s ../../assets/worker.js ./build/js/worker.js
 ./build/js/legacy_redirects.js: ./assets/legacy_redirects.js
 	@mkdir -p ./build/js
-	ln -sr ./assets/legacy_redirects.js ./build/js/legacy_redirects.js
+	ln -s ../../assets/legacy_redirects.js ./build/js/legacy_redirects.js
 ./build/js/counter_list.js: ./assets/counter_list.js
 	@mkdir -p ./build/js
-	ln -sr ./assets/counter_list.js ./build/js/counter_list.js
+	ln -s ../../assets/counter_list.js ./build/js/counter_list.js
 ./build/js/text_opt_element.js: ./assets/text_opt_element.js
 	@mkdir -p ./build/js
-	ln -sr ./assets/text_opt_element.js ./build/js/text_opt_element.js
+	ln -s ../../assets/text_opt_element.js ./build/js/text_opt_element.js
 ./build/js/ds_list.js: ./assets/ds_list.js
 	@mkdir -p ./build/js
-	ln -sr ./assets/ds_list.js ./build/js/ds_list.js
+	ln -s ../../assets/ds_list.js ./build/js/ds_list.js
 ./build/js/prepare_text.js: ./assets/prepare_text.js
 	@mkdir -p ./build/js
-	ln -sr ./assets/prepare_text.js ./build/js/prepare_text.js
+	ln -s ../../assets/prepare_text.js ./build/js/prepare_text.js
 ./build/js/item_list.js: ./assets/item_list.js
 	@mkdir -p ./build/js
-	ln -sr ./assets/item_list.js ./build/js/item_list.js
+	ln -s ../../assets/item_list.js ./build/js/item_list.js
 ./build/js/webpage.js: ./assets/webpage.js
 	@mkdir -p ./build/js
-	ln -sr ./assets/webpage.js ./build/js/webpage.js
+	ln -s ../../assets/webpage.js ./build/js/webpage.js
 ./build/js/gen/algorithm.js: ./src/algorithm.ts $(TS_CONFIG)
 	@mkdir -p ./build/js/gen
 	npx babel ./src/algorithm.ts --out-file ./build/js/gen/algorithm.js --presets=@babel/preset-typescript
