@@ -158,8 +158,7 @@ function update_history_internal() {
 	const generate_string_query = qa_generate_string_list.value;
 	if (generate_string_query != generate_string_default) { newQuery = newQuery.set("generate_string", generate_string_query); }
 
-	const _genLengths = currentGeneratorLengths();
-	const generate_string_range_query = _genLengths ? _genLengths[qa_generate_string_range.value] : null;
+	const generate_string_range_query = currentLimit();
 	if (generate_string_range_query != null && generate_string_range_query != generate_string_range_default) { newQuery = newQuery.set("generate_string_range", generate_string_range_query); }
 
 	const transform_query = qa_transform_list.value;
@@ -296,6 +295,8 @@ function updateWhitespaces() {
 
 
 
+const SLIDER_MAX = 1000;
+
 function currentGeneratorLengths() {
 	return generator_lengths[qa_generate_string_list.value] || null;
 }
@@ -309,13 +310,28 @@ function orderForLength(lengths, target) {
 	return order;
 }
 
+function sliderToOrder(sliderVal, lengths) {
+	return Math.round(sliderVal / SLIDER_MAX * (lengths.length - 1));
+}
+
+function orderToSlider(order, lengths) {
+	if (lengths.length <= 1) return 0;
+	return Math.round(order / (lengths.length - 1) * SLIDER_MAX);
+}
+
+function currentLimit() {
+	const lengths = currentGeneratorLengths();
+	if (!lengths) return null;
+	return lengths[sliderToOrder(parseInt(qa_generate_string_range.value), lengths)];
+}
+
 function updateSliderForGenerator(targetLength) {
 	const lengths = currentGeneratorLengths();
 	if (!lengths) return;
 	qa_generate_string_range.min = 0;
-	qa_generate_string_range.max = lengths.length - 1;
+	qa_generate_string_range.max = SLIDER_MAX;
 	const order = orderForLength(lengths, targetLength);
-	qa_generate_string_range.value = order;
+	qa_generate_string_range.value = orderToSlider(order, lengths);
 	qa_generate_string_rank.innerHTML = lengths[order];
 }
 
@@ -483,7 +499,7 @@ function updateArrays() {
 	if (qa_generate_string_list.value !== 'custom') {
 		workerParams = {
 			generatorName: qa_generate_string_list.value,
-			limit: (currentGeneratorLengths() || [])[qa_generate_string_range.value],
+			limit: currentLimit(),
 			customText: null,
 			placeholder: qa_text.placeholder,
 		};
@@ -742,8 +758,7 @@ window.onload = function () {
 	qa_separator_input.value = encodeWhitespaces(separator_default);
 	generate_string_default = qa_generate_string_list.value;
 	updateSliderForGenerator(16);
-	const _initLengths = currentGeneratorLengths();
-	generate_string_range_default = _initLengths ? _initLengths[qa_generate_string_range.value] : null;
+	generate_string_range_default = currentLimit();
 	transform_default = qa_transform_list.value;
 	prepend_default = qa_prepend_input.value;
 	append_default = qa_append_input.value;
@@ -865,10 +880,14 @@ window.onload = function () {
 	});
 
 
+	let _lastLimit = null;
 	qa_generate_string_range.addEventListener('input', function () {
-		const _lengths = currentGeneratorLengths();
-		qa_generate_string_rank.innerHTML = _lengths ? _lengths[qa_generate_string_range.value] : '';
-		updateArrays();
+		const limit = currentLimit();
+		qa_generate_string_rank.innerHTML = limit !== null ? limit : '';
+		if (limit !== _lastLimit) {
+			_lastLimit = limit;
+			updateArrays();
+		}
 	});
 
 	qa_transform_list.addEventListener('change', function () {
