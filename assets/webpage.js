@@ -570,6 +570,7 @@ function updateArrays() {
 			qa_worker = null;
 			if (qa_loading_spinner) qa_loading_spinner.classList.remove('qa-spinning');
 			qa_computation_status.textContent = `Killed after ${timeout_seconds}s`
+			qa_ds_output.value = `Timeout: killed after ${timeout_seconds}s.\n(limit can be adjusted below)`;
 		}, timeout_seconds * 1000)
 		: null
 
