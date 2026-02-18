@@ -452,7 +452,6 @@ function fill_updates(DS) {
 	qa_counter_output.innerHTML = [...result].map((el) => '<span class="qa-item">' + el + '</span>').join('&nbsp;');
 
 	updateTextAreas();
-	update_history();
 }
 
 var qa_worker = null;
@@ -464,6 +463,7 @@ function updateArrays() {
 		return;
 	}
 
+	update_history();
 	if (qa_worker !== null) {
 		clearTimeout(qa_timeout_id);
 		qa_timeout_id = null;
@@ -474,6 +474,7 @@ function updateArrays() {
 	}
 	qa_separator_input.value = encodeWhitespaces(qa_separator_input.value);
 	updateWhitespaces();
+
 
 	let enabled_flag = 0;
 	structures_list.forEachEnabled(function (dsName) {
