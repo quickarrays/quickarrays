@@ -158,8 +158,9 @@ function update_history_internal() {
 	const generate_string_query = qa_generate_string_list.value;
 	if (generate_string_query != generate_string_default) { newQuery = newQuery.set("generate_string", generate_string_query); }
 
-	const generate_string_range_query = adjustedLimit(qa_generate_string_range.value);
-	if (generate_string_range_query != generate_string_range_default) { newQuery = newQuery.set("generate_string_range", generate_string_range_query); }
+	const _genLengths = currentGeneratorLengths();
+	const generate_string_range_query = _genLengths ? _genLengths[qa_generate_string_range.value] : null;
+	if (generate_string_range_query != null && generate_string_range_query != generate_string_range_default) { newQuery = newQuery.set("generate_string_range", generate_string_range_query); }
 
 	const transform_query = qa_transform_list.value;
 	if (transform_query != transform_default) { newQuery = newQuery.set("transform", transform_query); }
@@ -226,8 +227,7 @@ function load_history_internal() {
 
 	const generate_string_range_query = $.query.get("generate_string_range").toString();
 	if (generate_string_range_query) {
-		qa_generate_string_range.value = unadjustedLimit(generate_string_range_query);
-		qa_generate_string_rank.innerHTML = adjustedLimit(qa_generate_string_range.value);
+		updateSliderForGenerator(parseInt(generate_string_range_query));
 	}
 
 
@@ -296,20 +296,27 @@ function updateWhitespaces() {
 
 
 
-function adjustedLimit(limit) {
-	const v = Math.max(1, Math.min(1024, parseInt(limit) || 168));
-	return Math.ceil(v / 16 + Math.pow(2, v / 68.2794)) - 1;
+function currentGeneratorLengths() {
+	return generator_lengths[qa_generate_string_list.value] || null;
 }
 
-function unadjustedLimit(limit) {
-	const target = Math.max(1, Math.min(32768, parseInt(limit) || 16));
-	let lo = 1, hi = 1024;
-	while (lo < hi) {
-		const mid = (lo + hi) >> 1;
-		if (adjustedLimit(mid) >= target) hi = mid;
-		else lo = mid + 1;
+function orderForLength(lengths, target) {
+	let order = 0;
+	for (let i = 0; i < lengths.length; i++) {
+		if (lengths[i] <= target) order = i;
+		else break;
 	}
-	return lo;
+	return order;
+}
+
+function updateSliderForGenerator(targetLength) {
+	const lengths = currentGeneratorLengths();
+	if (!lengths) return;
+	qa_generate_string_range.min = 0;
+	qa_generate_string_range.max = lengths.length - 1;
+	const order = orderForLength(lengths, targetLength);
+	qa_generate_string_range.value = order;
+	qa_generate_string_rank.innerHTML = lengths[order];
 }
 
 
@@ -476,7 +483,7 @@ function updateArrays() {
 	if (qa_generate_string_list.value !== 'custom') {
 		workerParams = {
 			generatorName: qa_generate_string_list.value,
-			limit: adjustedLimit(qa_generate_string_range.value),
+			limit: (currentGeneratorLengths() || [])[qa_generate_string_range.value],
 			customText: null,
 			placeholder: qa_text.placeholder,
 		};
@@ -734,8 +741,9 @@ window.onload = function () {
 	timeout_default = qa_timeout_range.value;
 	qa_separator_input.value = encodeWhitespaces(separator_default);
 	generate_string_default = qa_generate_string_list.value;
-	generate_string_range_default = adjustedLimit(qa_generate_string_range.value);
-	qa_generate_string_rank.innerHTML = adjustedLimit(qa_generate_string_range.value);
+	updateSliderForGenerator(16);
+	const _initLengths = currentGeneratorLengths();
+	generate_string_range_default = _initLengths ? _initLengths[qa_generate_string_range.value] : null;
 	transform_default = qa_transform_list.value;
 	prepend_default = qa_prepend_input.value;
 	append_default = qa_append_input.value;
@@ -858,7 +866,8 @@ window.onload = function () {
 
 
 	qa_generate_string_range.addEventListener('input', function () {
-		qa_generate_string_rank.innerHTML = adjustedLimit(qa_generate_string_range.value);
+		const _lengths = currentGeneratorLengths();
+		qa_generate_string_rank.innerHTML = _lengths ? _lengths[qa_generate_string_range.value] : '';
 		updateArrays();
 	});
 
@@ -874,6 +883,8 @@ window.onload = function () {
 		const selectedIndex = this.selectedIndex;
 		const selectedInnerHTML = this.options[selectedIndex].innerHTML;
 		update_tutorial(this.value, selectedInnerHTML);
+		const currentLength = parseInt(qa_generate_string_rank.innerHTML) || 16;
+		updateSliderForGenerator(currentLength);
 		updateArrays();
 	});
 

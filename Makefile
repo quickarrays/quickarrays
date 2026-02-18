@@ -1,7 +1,7 @@
 EXTERNAL_JS_FILES := ./build/js/ext/jquery-3.7.1.slim.js ./build/js/ext/jquery.query-object.js ./build/js/ext/tex-mml-chtml.js ./build/js/ext/Sortable.js
 TS_CONFIG := ./tsconfig.json
 TS_FILES := ./src/algorithm.ts ./src/generator.ts ./src/utility.ts
-JS_GEN_FILES := ./build/js/gen/algorithm_pipeline.js ./build/js/gen/generator_pipeline.js ./build/js/gen/tutorial.js ./build/js/gen/citation.js ./build/js/gen/algorithm.js ./build/js/gen/generator.js ./build/js/gen/utility.js
+JS_GEN_FILES := ./build/js/gen/algorithm_pipeline.js ./build/js/gen/generator_pipeline.js ./build/js/gen/generator_lengths.js ./build/js/gen/tutorial.js ./build/js/gen/citation.js ./build/js/gen/algorithm.js ./build/js/gen/generator.js ./build/js/gen/utility.js
 GENERATED_JS := ./build/js/generated.js
 BUILD_HTML := ./build/uncompressed.html
 ASSETS_DIR := ./assets
@@ -59,6 +59,9 @@ $(EXTERNAL_JS_FILES): ./src/external.url ./src/external.py
 ./build/js/gen/generator_pipeline.js: ./src/generator.ts ./src/generator.py
 	@mkdir -p ./build/js/gen
 	python3 ./src/generator.py
+./build/js/gen/generator_lengths.js: ./build/js/gen/generator.js ./build/js/gen/generator_pipeline.js ./src/generator_lengths.py ./src/generator_lengths_node.js
+	@mkdir -p ./build/js/gen
+	python3 ./src/generator_lengths.py
 ./build/js/gen/tutorial.js: ./src/generator.ts ./src/algorithm.ts  ./src/tutorial.py
 	@mkdir -p ./build/js/gen
 	python3 ./src/tutorial.py ./src/generator.ts ./src/algorithm.ts

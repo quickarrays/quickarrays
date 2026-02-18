@@ -29,6 +29,7 @@ WORKER_JS = BUILD_DIR / 'worker.js'
 JS_GEN_DIR = JS_DIR / 'gen'
 ALGORITHM_PIPELINE_JS = JS_GEN_DIR / 'algorithm_pipeline.js'
 GENERATOR_PIPELINE_JS = JS_GEN_DIR / 'generator_pipeline.js'
+GENERATOR_LENGTHS_JS = JS_GEN_DIR / 'generator_lengths.js'
 TUTORIAL_JS = JS_GEN_DIR / 'tutorial.js'
 CITATION_JS = JS_GEN_DIR / 'citation.js'
 
@@ -115,11 +116,13 @@ TS_CONFIG = REPOSITORY_DIR / 'tsconfig.json'
 
 ALGORITHM_PY = SOURCE_DIR / 'algorithm.py'
 GENERATOR_PY = SOURCE_DIR / 'generator.py'
+GENERATOR_LENGTHS_PY = SOURCE_DIR / 'generator_lengths.py'
+GENERATOR_LENGTHS_NODE_JS = SOURCE_DIR / 'generator_lengths_node.js'
 TUTORIAL_PY = SOURCE_DIR / 'tutorial.py'
 CITATION_PY = SOURCE_DIR / 'citation.py'
 SKELETON_PY = SOURCE_DIR / 'skeleton.py'
 
-ALL_GEN_JS_FILES = [ALGORITHM_PIPELINE_JS, GENERATOR_PIPELINE_JS, TUTORIAL_JS, CITATION_JS] + list(map(lambda name: JS_GEN_DIR / (Path(name).stem + '.js'), [ALGORITHM_TS, GENERATOR_TS, UTILITY_TS]))
+ALL_GEN_JS_FILES = [ALGORITHM_PIPELINE_JS, GENERATOR_PIPELINE_JS, GENERATOR_LENGTHS_JS, TUTORIAL_JS, CITATION_JS] + list(map(lambda name: JS_GEN_DIR / (Path(name).stem + '.js'), [ALGORITHM_TS, GENERATOR_TS, UTILITY_TS]))
 
 EXTERNAL_URL = SOURCE_DIR / 'external.url'
 EXTERNAL_PY = SOURCE_DIR / 'external.py'
@@ -187,6 +190,11 @@ def generate_makefile() -> str:
 	buffer.append(f'{GENERATOR_PIPELINE_JS}: {GENERATOR_TS} {GENERATOR_PY}')
 	buffer.append(f'\t@mkdir -p {GENERATOR_PIPELINE_JS.parent}')
 	buffer.append(f'\tpython3 {GENERATOR_PY}')
+
+	generator_js = JS_GEN_DIR / 'generator.js'
+	buffer.append(f'{GENERATOR_LENGTHS_JS}: {generator_js} {GENERATOR_PIPELINE_JS} {GENERATOR_LENGTHS_PY} {GENERATOR_LENGTHS_NODE_JS}')
+	buffer.append(f'\t@mkdir -p {GENERATOR_LENGTHS_JS.parent}')
+	buffer.append(f'\tpython3 {GENERATOR_LENGTHS_PY}')
 
 	buffer.append(f'{TUTORIAL_JS}: {GENERATOR_TS} {ALGORITHM_TS}  {TUTORIAL_PY}')
 	buffer.append(f'\t@mkdir -p {TUTORIAL_JS.parent}')

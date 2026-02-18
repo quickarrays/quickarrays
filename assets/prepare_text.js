@@ -23,43 +23,16 @@ function prepare_text(p) {
 		if (!gen) {
 			return { text: '', generator_order: null };
 		}
-		let best = '';
-		let k = 0;
-
-		let cand0 = gen(0);
-		if (cand0.length <= p.limit) {
-			best = cand0;
-
-			// Exponential search to find an upper bound where it exceeds the limit
-			let hi = 1;
-			while (hi < 64) {
-				const cand = gen(hi);
-				if (cand.length > p.limit) break;
-				best = cand;
-				hi <<= 1;
+		const lengths = generator_lengths[p.generatorName];
+		let order = -1;
+		if (lengths) {
+			for (let i = 0; i < lengths.length; i++) {
+				if (lengths[i] <= p.limit) order = i;
+				else break;
 			}
-
-			// Binary search for the exact boundary
-			const firstBad = Math.min(hi, 64);
-			const lastGood = Math.min(hi >> 1, 63);
-
-			let lo = lastGood + 1;
-			let r = firstBad - 1;
-			while (lo <= r) {
-				const mid = (lo + r) >> 1;
-				const cand = gen(mid);
-				if (cand.length <= p.limit) {
-					best = cand;
-					k = mid;
-					lo = mid + 1;
-				} else {
-					r = mid - 1;
-				}
-			}
-			k = Math.min(lo, 64);
 		}
-		text = best;
-		generator_order = k - 1;
+		text = order >= 0 ? gen(order) : '';
+		generator_order = order;
 	} else {
 		text = p.customText || '';
 	}
