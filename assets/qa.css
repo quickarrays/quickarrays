@@ -31,7 +31,9 @@ html {
         font-size: 3.2vw;
     }
 
-    .qa-item {
+    .qa-item,
+    #qa-structures-add-select,
+    #qa-counter-add-select {
         font-size: 4vw;
     }
 
@@ -282,20 +284,12 @@ body {
     transform: translateY(1px);
 }
 
-/* Data-structures compact view */
-#qa-structures-compact-controls {
-    margin: .25em;
-    padding: .2em;
-    display: flex;
-    align-items: center;
-    gap: .5em;
-    flex-wrap: wrap;
+/* Compact view: controls wrapper is invisible to layout; select sits in the flex row */
+#qa-structures-compact-controls,
+#qa-counter-compact-controls {
+    display: contents;
 }
 
-#qa-structures-add-select.qa-drop-hover,
-#qa-counter-add-select.qa-drop-hover {
-    background-color: #F66;
-}
 
 #qa-structures-add-select,
 #qa-counter-add-select {
@@ -307,26 +301,27 @@ body {
     margin: .25em;
     border: 1px solid #000;
     border-radius: .25em;
-    min-width: 3em;
+    width: 3em;
+    flex-shrink: 0;
+    align-self: flex-start;
     text-align: center;
     background-color: #FCC;
     cursor: pointer;
-    font: inherit;
+    font-family: inherit;
+}
+
+#qa-structures-add-select:hover,
+#qa-counter-add-select:hover,
+#qa-structures-add-select:focus,
+#qa-counter-add-select:focus {
+    outline: none;
+    background-color: #FCC;
 }
 
 #qa-structures-box.qa-compact-on #qa-structures-enabled .qa-itemlist-header {
     display: none !important;
 }
 
-/* Counter compact view */
-#qa-counter-compact-controls {
-    margin: .25em;
-    padding: .2em;
-    display: flex;
-    align-items: center;
-    gap: .5em;
-    flex-wrap: wrap;
-}
 
 
 #qa-counter-itemlists.qa-compact-on #qa-counter-enabled .qa-itemlist-header {

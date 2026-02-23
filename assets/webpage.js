@@ -1162,29 +1162,29 @@ window.onload = function () {
 				over = val;
 				dropEl.classList.toggle('qa-drop-hover', over);
 			}
-			function updateFromPos(x, y) {
-				const r = dropEl.getBoundingClientRect();
-				setOver(x >= r.left && x <= r.right && y >= r.top && y <= r.bottom);
-			}
 
-			// Desktop: document dragover fires reliably during HTML5 DnD with clientX/Y
-			function onDragOver(e) { updateFromPos(e.clientX, e.clientY); }
-			// Mobile: SortableJS uses touch events
+			// Desktop: dragenter/dragleave fire directly on the element during HTML5 DnD,
+			// unaffected by SortableJS repositioning items around it.
+			dropEl.addEventListener('dragenter', () => setOver(true));
+			dropEl.addEventListener('dragleave', () => setOver(false));
+
+			// Mobile: SortableJS uses touch events, track position via document listener.
 			function onTouchMove(e) {
-				if (e.touches[0]) updateFromPos(e.touches[0].clientX, e.touches[0].clientY);
+				if (!e.touches[0]) return;
+				const r = dropEl.getBoundingClientRect();
+				const { clientX: x, clientY: y } = e.touches[0];
+				setOver(x >= r.left && x <= r.right && y >= r.top && y <= r.bottom);
 			}
 
 			const prevStart = sortable.option('onStart');
 			sortable.option('onStart', function(evt) {
 				if (prevStart) prevStart.call(this, evt);
-				document.addEventListener('dragover', onDragOver);
 				document.addEventListener('touchmove', onTouchMove, { passive: true });
 			});
 
 			const prevEnd = sortable.option('onEnd');
 			sortable.option('onEnd', function(evt) {
 				if (prevEnd) prevEnd.call(this, evt);
-				document.removeEventListener('dragover', onDragOver);
 				document.removeEventListener('touchmove', onTouchMove);
 				if (over) {
 					setOver(false);
