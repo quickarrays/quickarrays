@@ -964,6 +964,7 @@ window.onload = function () {
 				: 'Choose structures:<br /><span style="font-weight:normal">(' + action + ' to enable/disable, drag-and-drop to enable/disable/reorder)</span>';
 		}
 		const DISABLED_IDS = ['qa-structures-disabled-string', 'qa-structures-disabled-index', 'qa-structures-disabled-length', 'qa-structures-disabled-factor', 'qa-structures-disabled-other'];
+		const COUNTER_DISABLED_IDS = ['qa-counter-disabled-rle', 'qa-counter-disabled-factor', 'qa-counter-disabled-other'];
 
 		function structureGroup(el) {
 			if (!el) return 'other';
@@ -979,6 +980,15 @@ window.onload = function () {
 		function getLabel(el) {
 			const node = Array.from(el.childNodes).find(n => n.nodeType === Node.TEXT_NODE);
 			return (node ? node.textContent : el.textContent).trim();
+		}
+
+		const COUNTER_GROUP_TITLES = { rle: 'Size of run length encoding', factor: 'Number of factors', other: 'Other counters' };
+
+		function counterGroup(el) {
+			if (!el) return 'other';
+			if (el.classList.contains('qa-counter-rle')) return 'rle';
+			if (el.classList.contains('qa-counter-factor')) return 'factor';
+			return 'other';
 		}
 
 		function rebuildDropdown() {
@@ -1010,6 +1020,35 @@ window.onload = function () {
 			});
 		}
 
+		function rebuildCounterDropdown() {
+			const select = document.getElementById('qa-counter-add-select');
+			if (!select || !window.counters_list) return;
+			const placeholder = select.querySelector('option[value=""]');
+			select.innerHTML = '';
+			if (placeholder) select.appendChild(placeholder);
+			if (placeholder) placeholder.selected = true;
+			const groups = { rle: [], factor: [], other: [] };
+			for (const ds in counters_list.dictionary) {
+				if (!counters_list.dictionary.hasOwnProperty(ds)) continue;
+				if (counters_list.enabled(ds)) continue;
+				const el = counters_list.dictionary[ds];
+				groups[counterGroup(el)].push(el);
+			}
+			for (const k in groups) groups[k].sort((a, b) => getLabel(a).localeCompare(getLabel(b)));
+			['rle', 'factor', 'other'].forEach(key => {
+				if (!groups[key].length) return;
+				const og = document.createElement('optgroup');
+				og.label = COUNTER_GROUP_TITLES[key] || key;
+				groups[key].forEach(el => {
+					const opt = document.createElement('option');
+					opt.value = el.dataset.ds;
+					opt.textContent = getLabel(el);
+					og.appendChild(opt);
+				});
+				select.appendChild(og);
+			});
+		}
+
 		function setCompactView(on) {
 			const desc = document.getElementById('qa-structures-description');
 			const controls = document.getElementById('qa-structures-compact-controls');
@@ -1022,17 +1061,27 @@ window.onload = function () {
 				if (el) el.classList.toggle('qa-hidden', on);
 			});
 			if (on) rebuildDropdown();
+
+			const counterControls = document.getElementById('qa-counter-compact-controls');
+			const counterBox = document.getElementById('qa-counter-itemlists');
+			if (counterBox) counterBox.classList.toggle('qa-compact-on', on);
+			if (counterControls) counterControls.classList.toggle('qa-hidden', !on);
+			COUNTER_DISABLED_IDS.forEach(id => {
+				const el = document.getElementById(id);
+				if (el) el.classList.toggle('qa-hidden', on);
+			});
+			if (on) rebuildCounterDropdown();
 		}
 
 		const cbx = document.getElementById('qa-compact-view');
 		const select = document.getElementById('qa-structures-add-select');
 		if (!cbx || !select) return;
 
-		// Keep dropdown in sync when structures change
+		// Keep dropdowns in sync when structures/counters change
 		const origUpdateArrays = window.updateArrays;
 		window.updateArrays = function () {
 			const r = origUpdateArrays.apply(this, arguments);
-			if (cbx.checked) rebuildDropdown();
+			if (cbx.checked) { rebuildDropdown(); rebuildCounterDropdown(); }
 			return r;
 		};
 
@@ -1048,6 +1097,20 @@ window.onload = function () {
 		watchEls.forEach(el => obs.observe(el, { childList: true }));
 		const structuresBox = document.getElementById('qa-structures-box');
 		if (structuresBox) structuresBox.addEventListener('dblclick', scheduleRebuild, true);
+
+		let counterRebuildPending = false;
+		const scheduleCounterRebuild = () => {
+			if (!cbx.checked) return;
+			if (counterRebuildPending) return;
+			counterRebuildPending = true;
+			requestAnimationFrame(() => { counterRebuildPending = false; rebuildCounterDropdown(); });
+		};
+		const counterEnabledEl = document.getElementById('qa-counter-enabled');
+		const counterWatchEls = [counterEnabledEl, ...COUNTER_DISABLED_IDS.map(id => document.getElementById(id))].filter(Boolean);
+		const counterObs = new MutationObserver(scheduleCounterRebuild);
+		counterWatchEls.forEach(el => counterObs.observe(el, { childList: true }));
+		const counterBox = document.getElementById('qa-counter-itemlists');
+		if (counterBox) counterBox.addEventListener('dblclick', scheduleCounterRebuild, true);
 
 		cbx.addEventListener('change', () => {
 			setCompactView(cbx.checked);
@@ -1068,6 +1131,16 @@ window.onload = function () {
 			const placeholder = select.querySelector('option[value=""]');
 			if (placeholder) placeholder.selected = true;
 			rebuildDropdown();
+		});
+
+		const counterSelect = document.getElementById('qa-counter-add-select');
+		if (counterSelect) counterSelect.addEventListener('change', () => {
+			const ds = counterSelect.value;
+			if (!ds || !window.counters_list) return;
+			counters_list.enable(ds);
+			const placeholder = counterSelect.querySelector('option[value=""]');
+			if (placeholder) placeholder.selected = true;
+			rebuildCounterDropdown();
 		});
 
 		// Initial state from URL or screen width

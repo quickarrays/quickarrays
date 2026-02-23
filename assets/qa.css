@@ -276,6 +276,24 @@ body {
     display: none !important;
 }
 
+/* Counter compact view */
+#qa-counter-compact-controls {
+    margin: .25em;
+    padding: .2em;
+    display: flex;
+    align-items: center;
+    gap: .5em;
+    flex-wrap: wrap;
+}
+
+#qa-counter-add-select {
+    min-width: 14em;
+}
+
+#qa-counter-itemlists.qa-compact-on #qa-counter-enabled .qa-itemlist-header {
+    display: none !important;
+}
+
 .qa-options {
     display: flex;
     flex-wrap: wrap;
