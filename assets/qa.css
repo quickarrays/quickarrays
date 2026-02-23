@@ -292,8 +292,26 @@ body {
     flex-wrap: wrap;
 }
 
-#qa-structures-add-select {
-    min-width: 14em;
+#qa-structures-add-select.qa-drop-hover,
+#qa-counter-add-select.qa-drop-hover {
+    background-color: #F66;
+}
+
+#qa-structures-add-select,
+#qa-counter-add-select {
+    appearance: none;
+    -webkit-appearance: none;
+    box-sizing: border-box;
+    padding: .25em;
+    padding-inline: .5em;
+    margin: .25em;
+    border: 1px solid #000;
+    border-radius: .25em;
+    min-width: 3em;
+    text-align: center;
+    background-color: #FCC;
+    cursor: pointer;
+    font: inherit;
 }
 
 #qa-structures-box.qa-compact-on #qa-structures-enabled .qa-itemlist-header {
@@ -310,9 +328,6 @@ body {
     flex-wrap: wrap;
 }
 
-#qa-counter-add-select {
-    min-width: 14em;
-}
 
 #qa-counter-itemlists.qa-compact-on #qa-counter-enabled .qa-itemlist-header {
     display: none !important;

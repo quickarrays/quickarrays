@@ -625,7 +625,7 @@ function updateArrays() {
 // disabledMap: object mapping category keys to DOM elements, e.g. { string: el, index: el, ... }
 // categoryClassFn: function(cat) → CSS class that items in that category carry
 function initDragAndDropGrouped(groupName, enabledEl, disabledMap, categoryClassFn, itemClass) {
-	Sortable.create(enabledEl, {
+	const enabledSortable = Sortable.create(enabledEl, {
 		group: { name: groupName, pull: true, put: true },
 		sort: true,
 		draggable: '.qa-item',
@@ -640,7 +640,7 @@ function initDragAndDropGrouped(groupName, enabledEl, disabledMap, categoryClass
 		Sortable.create(el, {
 			group: {
 				name: groupName,
-				put: function (to, from, dragEl) {
+				put: function (_to, from, dragEl) {
 					return from.el === enabledEl && dragEl.classList.contains(cls);
 				}
 			},
@@ -654,6 +654,7 @@ function initDragAndDropGrouped(groupName, enabledEl, disabledMap, categoryClass
 			}
 		});
 	}
+	return enabledSortable;
 }
 
 var qa_tutorial_open_button;
@@ -851,8 +852,8 @@ window.onload = function () {
 	document.querySelectorAll(".qa-option-cbx").forEach((elem) => { options_list.add(elem); });
 	options_default = options_list.getEnabled();
 
-	initDragAndDropGrouped('qa-structs', ds_list_enabled, ds_list_disabled, cat => 'qa-structure-' + cat, 'qa-structure');
-	initDragAndDropGrouped('qa-counters', counter_list_enabled, counter_list_disabled, cat => 'qa-counter-' + cat, 'qa-counter');
+	const structsSortable = initDragAndDropGrouped('qa-structs', ds_list_enabled, ds_list_disabled, cat => 'qa-structure-' + cat, 'qa-structure');
+	const countersSortable = initDragAndDropGrouped('qa-counters', counter_list_enabled, counter_list_disabled, cat => 'qa-counter-' + cat, 'qa-counter');
 
 	applyLegacyRedirects();
 	load_history_internal();
@@ -1151,6 +1152,49 @@ window.onload = function () {
 			if (placeholder) placeholder.selected = true;
 			rebuildCounterDropdown();
 		});
+
+		// Allow dragging enabled items onto the dropdown to disable them.
+		function setupDropToDisable(dropEl, list, sortable) {
+			let over = false;
+
+			function setOver(val) {
+				if (val === over) return;
+				over = val;
+				dropEl.classList.toggle('qa-drop-hover', over);
+			}
+			function updateFromPos(x, y) {
+				const r = dropEl.getBoundingClientRect();
+				setOver(x >= r.left && x <= r.right && y >= r.top && y <= r.bottom);
+			}
+
+			// Desktop: document dragover fires reliably during HTML5 DnD with clientX/Y
+			function onDragOver(e) { updateFromPos(e.clientX, e.clientY); }
+			// Mobile: SortableJS uses touch events
+			function onTouchMove(e) {
+				if (e.touches[0]) updateFromPos(e.touches[0].clientX, e.touches[0].clientY);
+			}
+
+			const prevStart = sortable.option('onStart');
+			sortable.option('onStart', function(evt) {
+				if (prevStart) prevStart.call(this, evt);
+				document.addEventListener('dragover', onDragOver);
+				document.addEventListener('touchmove', onTouchMove, { passive: true });
+			});
+
+			const prevEnd = sortable.option('onEnd');
+			sortable.option('onEnd', function(evt) {
+				if (prevEnd) prevEnd.call(this, evt);
+				document.removeEventListener('dragover', onDragOver);
+				document.removeEventListener('touchmove', onTouchMove);
+				if (over) {
+					setOver(false);
+					const ds = evt.item.dataset.ds;
+					setTimeout(() => { list.disable(ds); }, 0);
+				}
+			});
+		}
+		setupDropToDisable(select, structures_list, structsSortable);
+		if (counterSelect) setupDropToDisable(counterSelect, counters_list, countersSortable);
 
 		// Initial state from URL or screen width
 		const urlCompact = $.query.get('compact').toString();
