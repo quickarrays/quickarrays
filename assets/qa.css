@@ -245,26 +245,16 @@ body {
     background-color: #FCC;
 }
 
-.qa-itemlist-enabled .qa-item-ghost {
-    background-color: #EFE !important;
-    border-color: #000 !important;
-}
-
-.qa-itemlist-disabled .qa-item-ghost {
-    background-color: #FEE !important;
-    border-color: #000 !important;
-}
-
-.qa-item-drag {
-    border-color: #000 !important;
-    background-color: #FFF !important;
-}
-
 .qa-itemlist-header {
     box-sizing: border-box;
     padding: .2em;
     margin: .25em;
 }
+
+.qa-item-ghost {
+    opacity: .3;
+}
+
 
 #qa-transform-list,
 #qa-generate-string-list {
