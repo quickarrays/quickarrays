@@ -572,7 +572,7 @@ function updateArrays() {
 			qa_worker = null;
 			if (qa_loading_spinner) qa_loading_spinner.classList.remove('qa-spinning');
 			qa_computation_status.textContent = `Killed after ${timeout_seconds}s`
-			qa_ds_output.value = `Timeout: killed after ${timeout_seconds}s.\n(limit can be adjusted below)`;
+			qa_ds_output.value = `Timeout: killed after ${timeout_seconds}s.\n(limit can be adjusted in the advanced options)`;
 		updateTextArea(qa_ds_output);
 		qa_counter_output.querySelectorAll('.qa-counter-value').forEach(span => {
 			span.textContent = '?';

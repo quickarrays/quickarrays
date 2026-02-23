@@ -166,9 +166,10 @@
                 <option value="csv">CSV</option>
             </select>:
         </div>
-        <textarea class="qa-textarea" style="flex-grow:1;line-height:175%;" id="qa-ds-output" readonly></textarea>
-
-        <div id="qa-counter-output" class="qa-itemlist-enabled"></div>
+        <div class="qa-output-container" style="flex-grow:1">
+            <textarea class="qa-textarea" style="line-height:175%;" id="qa-ds-output" readonly></textarea>
+            <div id="qa-counter-output" class="qa-itemlist-enabled"></div>
+        </div>
 
         <div class="qa-options" style="margin-top:1em">
             <label class="qa-option"><input type="checkbox" id="qa-compact-view">Compact view</label>
