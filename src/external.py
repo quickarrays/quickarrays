@@ -2,14 +2,10 @@
 """   """
 # pylint: disable=bad-indentation,line-too-long,invalid-name
 
-from pathlib import Path
-from urllib.parse import urlparse
-from urllib.request import urlopen
-
 import common as C
 
 
-# Patches applied to downloaded files after download.
+# Patches applied to vendored files when copying to the build directory.
 # Each entry maps a filename to a list of (old, new) string replacements.
 PATCHES: dict[str, list[tuple[str, str]]] = {
 	"Sortable.js": [
@@ -56,40 +52,22 @@ PATCHES: dict[str, list[tuple[str, str]]] = {
 }
 
 
-def download(url: str) -> None:
-	parsed = urlparse(url)
-	filename = Path(parsed.path).name or "index.js"
-	out_path = C.EXTERNAL_JS_DIR / filename
-
-	with urlopen(url) as response:
-		data = response.read()
-
-	text = data.decode("utf-8")
-	for old, new in PATCHES.get(filename, []):
-		patched = text.replace(old, new)
-		if patched == text:
-			print(f"WARNING: patch for {filename} did not match — skipping")
-		else:
-			text = patched
-			print(f"Patched {filename}")
-	out_path.write_text(text, encoding="utf-8")
-	print(f"Downloaded {url} -> {out_path}")
-
-
 def main() -> None:
 	C.EXTERNAL_JS_DIR.mkdir(parents=True, exist_ok=True)
 
-	lines = C.EXTERNAL_FILELIST.read_text(encoding="utf-8").splitlines()
-	urls = [
-		line.strip()
-		for line in lines
-		if line.strip() and not line.lstrip().startswith("#")
-	]
-
-	for url in urls:
-		download(url)
+	for src in sorted(C.EXTERNAL_ASSETS_DIR.glob('*.js')):
+		text = src.read_text(encoding='utf-8')
+		for old, new in PATCHES.get(src.name, []):
+			patched = text.replace(old, new)
+			if patched == text:
+				print(f"WARNING: patch for {src.name} did not match — skipping")
+			else:
+				text = patched
+				print(f"Patched {src.name}")
+		dest = C.EXTERNAL_JS_DIR / src.name
+		dest.write_text(text, encoding='utf-8')
+		print(f"Copied {src} -> {dest}")
 
 
 if __name__ == "__main__":
 	main()
-

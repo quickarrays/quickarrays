@@ -1,4 +1,4 @@
-EXTERNAL_JS_FILES := ./build/js/ext/jquery-3.7.1.slim.js ./build/js/ext/jquery.query-object.js ./build/js/ext/tex-mml-chtml.js ./build/js/ext/Sortable.js
+EXTERNAL_JS_FILES := ./build/js/ext/Sortable.js ./build/js/ext/jquery-3.7.1.slim.js ./build/js/ext/jquery.query-object.js
 TS_CONFIG := ./tsconfig.json
 TS_FILES := ./src/algorithm.ts ./src/generator.ts ./src/utility.ts
 JS_GEN_FILES := ./build/js/gen/algorithm_pipeline.js ./build/js/gen/generator_pipeline.js ./build/js/gen/generator_lengths.js ./build/js/gen/tutorial.js ./build/js/gen/citation.js ./build/js/gen/algorithm.js ./build/js/gen/generator.js ./build/js/gen/utility.js
@@ -53,7 +53,7 @@ all: $(BUILD_HTML) $(STANDALONE_HTML) $(DIST_PACKED_HTML)
 ./build/js/gen/algorithm_pipeline.js: ./src/algorithm.ts ./src/algorithm.py
 	@mkdir -p ./build/js/gen
 	python3 ./src/algorithm.py
-$(EXTERNAL_JS_FILES): ./src/external.url ./src/external.py
+$(EXTERNAL_JS_FILES): ./assets/external/Sortable.js ./assets/external/jquery-3.7.1.slim.js ./assets/external/jquery.query-object.js ./src/external.py
 	@mkdir -p ./build/js/ext
 	python3 ./src/external.py
 ./build/js/gen/generator_pipeline.js: ./src/generator.ts ./src/generator.py

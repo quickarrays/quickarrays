@@ -2,6 +2,7 @@
 """Common constants for TypeScript file processing"""
 # pylint: disable=bad-indentation,line-too-long,invalid-name
 
+import os
 import re
 from pathlib import Path
 
@@ -33,7 +34,6 @@ GENERATOR_LENGTHS_JS = JS_GEN_DIR / 'generator_lengths.js'
 TUTORIAL_JS = JS_GEN_DIR / 'tutorial.js'
 CITATION_JS = JS_GEN_DIR / 'citation.js'
 
-EXTERNAL_FILELIST = SOURCE_DIR / 'external.url'
 EXTERNAL_JS_DIR = JS_DIR / 'ext'
 
 HTML_DIR = BUILD_DIR / 'html'
@@ -123,26 +123,23 @@ SKELETON_PY = SOURCE_DIR / 'skeleton.py'
 
 ALL_GEN_JS_FILES = [ALGORITHM_PIPELINE_JS, GENERATOR_PIPELINE_JS, GENERATOR_LENGTHS_JS, TUTORIAL_JS, CITATION_JS] + list(map(lambda name: JS_GEN_DIR / (Path(name).stem + '.js'), [ALGORITHM_TS, GENERATOR_TS, UTILITY_TS]))
 
-EXTERNAL_URL = SOURCE_DIR / 'external.url'
-EXTERNAL_PY = SOURCE_DIR / 'external.py'
 
 COMPILE_JAVASCRIPT_PY =  SOURCE_DIR / 'compile_javascript.py'
 
-from urllib.parse import urlparse
-
+EXTERNAL_PY = SOURCE_DIR / 'external.py'
 
 ASSET_DIR = SOURCE_DIR.parent / 'assets'
+EXTERNAL_ASSETS_DIR = ASSET_DIR / 'external'
 
 STANDALONE_PY = SOURCE_DIR / 'standalone.py'
 
 
 def generate_makefile() -> str:
-	with open(EXTERNAL_URL, 'r', encoding='utf-8') as f:
-		ext_basenames = map(lambda url: Path(urlparse(url).path).name, [line.strip() for line in f if line.strip() and not line.startswith('#')])
+	ext_vendored = sorted(EXTERNAL_ASSETS_DIR.glob('*.js'))
 	asset_css_files = list(Path.glob(ASSET_DIR, '*.css'))
 	asset_js_files  = list(Path.glob(ASSET_DIR, '*.js'))
 	buffer = []
-	buffer.append(f"EXTERNAL_JS_FILES := {' '.join(str(EXTERNAL_JS_DIR / name) for name in ext_basenames)}")
+	buffer.append(f"EXTERNAL_JS_FILES := {' '.join(str(EXTERNAL_JS_DIR / f.name) for f in ext_vendored)}")
 	buffer.append(f"TS_CONFIG := {TS_CONFIG}")
 	buffer.append(f"TS_FILES := {' '.join(str(f) for f in ALL_TS_FILES)}")
 	buffer.append(f"JS_GEN_FILES := {' '.join(str(f) for f in ALL_GEN_JS_FILES)}")
@@ -162,14 +159,16 @@ def generate_makefile() -> str:
 
 	for asset_file in asset_css_files:
 		dest_file = BUILD_DIR / 'css' / asset_file.name
+		rel = os.path.relpath(str(asset_file), str(dest_file.parent))
 		buffer.append(f'{dest_file}: {asset_file}')
 		buffer.append(f'\t@mkdir -p {dest_file.parent}')
-		buffer.append(f'\tln -sr {asset_file} {dest_file}')
+		buffer.append(f'\tln -s {rel} {dest_file}')
 	for asset_file in asset_js_files:
 		dest_file = BUILD_DIR / 'js' / asset_file.name
+		rel = os.path.relpath(str(asset_file), str(dest_file.parent))
 		buffer.append(f'{dest_file}: {asset_file}')
 		buffer.append(f'\t@mkdir -p {dest_file.parent}')
-		buffer.append(f'\tln -sr {asset_file} {dest_file}')
+		buffer.append(f'\tln -s {rel} {dest_file}')
 
 
 	for ts_file in ALL_TS_FILES:
@@ -182,7 +181,8 @@ def generate_makefile() -> str:
 	buffer.append(f'\t@mkdir -p {ALGORITHM_PIPELINE_JS.parent}')
 	buffer.append(f'\tpython3 {ALGORITHM_PY}')
 
-	buffer.append(f'$(EXTERNAL_JS_FILES): {EXTERNAL_FILELIST} {EXTERNAL_PY}')
+	ext_deps = ' '.join(str(f) for f in ext_vendored) + f' {EXTERNAL_PY}'
+	buffer.append(f'$(EXTERNAL_JS_FILES): {ext_deps}')
 	buffer.append(f'\t@mkdir -p {EXTERNAL_JS_DIR}')
 	buffer.append(f'\tpython3 {EXTERNAL_PY}')
 
