@@ -170,7 +170,7 @@ body {
 
 .qa-shorttext {
     padding-left: .5em;
-    width: 2em;
+    width: 3em;
     font-family: 'Source Code Pro', monospace;
 }
 
@@ -279,6 +279,7 @@ body {
 .qa-options {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     box-sizing: border-box;
     padding: .25em;
     border: 1px solid #9B9;
@@ -286,6 +287,8 @@ body {
 }
 
 .qa-option {
+    display: flex;
+    align-items: center;
     flex-shrink: 0;
     box-sizing: border-box;
     padding: .2em;
