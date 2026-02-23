@@ -584,9 +584,7 @@ function updateArrays() {
 			qa_computation_status.textContent = `Killed after ${timeout_seconds}s`
 			qa_ds_output.value = `Timeout: killed after ${timeout_seconds}s.\n(limit can be adjusted in the advanced options)`;
 		updateOutputArea(qa_ds_output);
-		qa_counter_output.querySelectorAll('.qa-counter-value').forEach(span => {
-			span.textContent = '?';
-		});
+		qa_counter_output.innerHTML = '';
 		}, timeout_seconds * 1000)
 		: null
 
