@@ -391,7 +391,8 @@ body {
     z-index: 1;
 }
 
-.qa-item:active .qa-tooltiptext {
+.qa-item:active .qa-tooltiptext,
+body.qa-dragging .qa-tooltiptext {
     display: none !important;
 }
 

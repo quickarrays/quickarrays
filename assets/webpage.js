@@ -631,6 +631,8 @@ function initDragAndDropGrouped(groupName, enabledEl, disabledMap, categoryClass
 		draggable: '.qa-item',
 		ghostClass: 'qa-item-ghost',
 		dragClass: 'qa-item-drag',
+		onStart: () => document.body.classList.add('qa-dragging'),
+		onEnd: () => document.body.classList.remove('qa-dragging'),
 		onSort: updateArrays
 	});
 	for (const cat in disabledMap) {
@@ -648,6 +650,8 @@ function initDragAndDropGrouped(groupName, enabledEl, disabledMap, categoryClass
 			draggable: '.qa-item',
 			ghostClass: 'qa-item-ghost',
 			dragClass: 'qa-item-drag',
+			onStart: () => document.body.classList.add('qa-dragging'),
+			onEnd: () => document.body.classList.remove('qa-dragging'),
 			onAdd: function (evt) {
 				sortChildrenLex(evt.to, '.' + itemClass);
 				updateArrays();
