@@ -168,6 +168,25 @@ body {
     font-size: 1em;
 }
 
+.qa-output-container {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    border: 1px solid #9B9;
+    background-color: #FFF;
+}
+
+.qa-output-container>.qa-textarea {
+    border: none;
+    flex-grow: 1;
+}
+
+
+#qa-counter-output .qa-item {
+    background-color: #DDD;
+    border: none;
+}
+
 .qa-shorttext {
     padding-left: .5em;
     width: 3em;
