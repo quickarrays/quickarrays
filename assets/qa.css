@@ -156,7 +156,6 @@ body {
 .qa-description {
     margin-left: .25em;
     margin-top: 1em;
-    font-weight: bold;
 }
 
 .qa-textarea {
@@ -190,7 +189,7 @@ body {
 
 .qa-shorttext {
     padding-left: .5em;
-    width: 3em;
+    width: 2em;
     font-family: 'Source Code Pro', monospace;
 }
 
@@ -264,6 +263,11 @@ body {
     margin: .25em;
 }
 
+#qa-transform-list,
+#qa-generate-string-list {
+    margin-left: .5em;
+}
+
 .qa-toggle-btn {
     margin-left: .25em;
     padding: 0em;
@@ -331,7 +335,7 @@ body {
     box-sizing: border-box;
     padding: .2em;
     margin: .25em;
-    margin-right: .75em;
+    /*margin-right: .75em;*/
 }
 
 .qa-tooltiptext {
