@@ -971,8 +971,8 @@ window.onload = function () {
 		function getDesc(compact) {
 			const action = isNarrow() ? 'double-tap' : 'double-click';
 			return compact
-				? 'Choose structures:<br /><span style="font-weight:normal">(' + action + ' to disable, drag-and-drop to reorder)</span>'
-				: 'Choose structures:<br /><span style="font-weight:normal">(' + action + ' to enable/disable, drag-and-drop to enable/disable/reorder)</span>';
+				? '<strong>Step 4:</strong> Choose structures:<br /><span>(' + action + ' to disable, drag-and-drop to reorder)</span>'
+				: '<strong>Step 4:</strong> Choose structures:<br /><span>(' + action + ' to enable/disable, drag-and-drop to enable/disable/reorder)</span>';
 		}
 		const DISABLED_IDS = ['qa-structures-disabled-string', 'qa-structures-disabled-index', 'qa-structures-disabled-length', 'qa-structures-disabled-factor', 'qa-structures-disabled-other'];
 		const COUNTER_DISABLED_IDS = ['qa-counter-disabled-rle', 'qa-counter-disabled-factor', 'qa-counter-disabled-other'];
