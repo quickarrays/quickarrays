@@ -7,7 +7,8 @@
     <title>QuickArrays</title>
     <link rel="stylesheet" type="text/css" href="css/qa.css" class="concatenate" />
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><circle cx='8' cy='8' r='8' fill='white'/><circle cx='8' cy='8' r='6' fill='none' stroke='black' stroke-width='2'/><polygon points='5 12 13 8 5 4' fill='black'/></svg>">
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><circle cx='8' cy='8' r='8' fill='white'/><circle cx='8' cy='8' r='6' fill='none' stroke='black' stroke-width='2'/><polygon points='5 12 13 8 5 4' fill='black'/></svg>">
 </head>
 
 <body>
@@ -66,9 +67,17 @@
         <textarea class="qa-textarea qa-hidden" style="flex-grow:1;line-height:175%;" id="qa-transform-input"
             placeholder="text[i] == 'a' ? 'b' : 'a'"></textarea>
 
-        <div class="qa-description" id="qa-structures-description">Choose your data structures and factorizations (drag
-            and drop or double-click):<br />
-            You can use drag and drop to reorder your selection!</div>
+        <div class="qa-options" style="margin-top:1em">
+            <label class="qa-option"><input type="checkbox" class="qa-option-cbx" name="qa-option-dollar"
+                    data-opt="dollar" checked>Append '$'</label>
+            <label class="qa-option">Prepend:&nbsp;<input type="text" id="qa-prepend-input" name="qa-prepend-input"
+                    type="text" class="qa-shorttext"></label>
+            <label class="qa-option">Append:&nbsp; <input type="text" id="qa-append-input" name="qa-append-input"
+                    type="text" class="qa-shorttext"></label>
+        </div>
+
+        <div class="qa-description" id="qa-structures-description">Choose structures:<br />
+            <span style="font-weight:normal">(double-click to enable/disable, drag-and-drop to enable/disable/reorder)</span></div>
         <div class="qa-itemlist" id="qa-structures-box">
             <div id="qa-structures-enabled" class="qa-itemlist-enabled">
                 <div class="qa-itemlist-header"><span class="qa-itemlist-title">Enabled<span
@@ -112,38 +121,7 @@
                 {{html/algorithm_disable.html}}
             </div>
         </div>
-        <div class="qa-options">
-            <label class="qa-option"><input type="checkbox" id="qa-compact-view">Compact view</label>
-            <label class="qa-option"><input type="checkbox" class="qa-option-cbx" name="qa-option-dollar"
-                    data-opt="dollar" checked>Append '$'</label>
-            <label class="qa-option"><input type="checkbox" id="qa-show-advanced-options">Show advanced options</label>
-            <label class="qa-option qa-advanced-option">Prepend:&nbsp;<input type="text" id="qa-prepend-input"
-                    name="qa-prepend-input" type="text" class="qa-shorttext"></label>
-            <label class="qa-option qa-advanced-option">Append:&nbsp; <input type="text" id="qa-append-input"
-                    name="qa-append-input" type="text" class="qa-shorttext"></label>
-            <label class="qa-option qa-advanced-option"><input type="checkbox" class="qa-option-cbx"
-                    name="qa-option-baseone" data-opt="baseone" checked>Base Indices on '1'</label>
-            <label class="qa-option qa-advanced-option"><input type="checkbox" class="qa-option-cbx"
-                    name="qa-option-whitespace" data-opt="whitespace" checked>Whitespaces as ⎵ and ↵</label>
-            <label class="qa-option qa-advanced-option"><input type="checkbox" class="qa-option-cbx"
-                    name="qa-option-facttext" data-opt="facttext" checked>Factorization as Bars</label>
-            <label class="qa-option qa-advanced-option"><input type="checkbox" class="qa-option-cbx"
-                    name="qa-option-tabularize" data-opt="tabularize" checked>Tabularize Text</label>
-            <label class="qa-option qa-advanced-option">Separator:&nbsp;&nbsp;<input id="qa-separator-input" type="text"
-                    class="qa-shorttext"></label>
-        </div>
-        <div class="qa-description">QuickArrays built the following data structures and factorizations for you in
-            <select id="qa-output-select" name="qa-output-select">
-                <option value="plain" selected>text form</option>
-                <option value="latex">LaTeX</option>
-                <option value="markdown">markdown</option>
-                <option value="csv">CSV</option>
-            </select>:
-        </div>
-        <textarea class="qa-textarea" style="flex-grow:1;line-height:175%;" id="qa-ds-output" readonly></textarea>
-
-        <div id="qa-counter-output" class="qa-itemlist-enabled"></div>
-        <div class="qa-description">Choose your counters
+        <div class="qa-description">Choose counters
             <input type="checkbox" id="qa-counter-automatic" value="1" checked="checked"></input>
             <label for="qa-counter-automatic">automatically</label>.
         </div>
@@ -175,11 +153,32 @@
                 {{html/counters.html}}
             </div>
         </div>
+        <div class="qa-description">Output in
+            <select id="qa-output-select" name="qa-output-select">
+                <option value="plain" selected>text form</option>
+                <option value="latex">LaTeX</option>
+                <option value="markdown">markdown</option>
+                <option value="csv">CSV</option>
+            </select>:
+        </div>
+        <textarea class="qa-textarea" style="flex-grow:1;line-height:175%;" id="qa-ds-output" readonly></textarea>
 
-        <div class="qa-description">
-            <label for="qa-timeout">Timeout:</label>
-            <input type="range" id="qa-timeout-range" min="1" max="30" value="3" step="1">
-            <span id="qa-timeout-value">3</span>
+        <div id="qa-counter-output" class="qa-itemlist-enabled"></div>
+
+        <div class="qa-options" style="margin-top:1em">
+            <label class="qa-option"><input type="checkbox" id="qa-compact-view">Compact view</label>
+            <label class="qa-option"><input type="checkbox" id="qa-show-advanced-options">Show advanced options</label>
+            <label class="qa-option qa-advanced-option"><input type="checkbox" class="qa-option-cbx"
+                    name="qa-option-baseone" data-opt="baseone" checked>Base Indices on '1'</label>
+            <label class="qa-option qa-advanced-option"><input type="checkbox" class="qa-option-cbx"
+                    name="qa-option-whitespace" data-opt="whitespace" checked>Whitespaces as ⎵ and ↵</label>
+            <label class="qa-option qa-advanced-option"><input type="checkbox" class="qa-option-cbx"
+                    name="qa-option-facttext" data-opt="facttext" checked>Factorization as Bars</label>
+            <label class="qa-option qa-advanced-option"><input type="checkbox" class="qa-option-cbx"
+                    name="qa-option-tabularize" data-opt="tabularize" checked>Tabularize Text</label>
+            <label class="qa-option qa-advanced-option">Separator:&nbsp;&nbsp;<input id="qa-separator-input" type="text"
+                    class="qa-shorttext"></label>
+            <label class="qa-option qa-advanced-option"><label for="qa-timeout-range">Timeout:&nbsp;</label><input type="range" id="qa-timeout-range" min="1" max="30" value="3" step="1"><span id="qa-timeout-value">3</span></label>
         </div>
         <div class="qa-description">
             <span id="qa-computation-status"></span>

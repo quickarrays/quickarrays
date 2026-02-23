@@ -956,8 +956,13 @@ window.onload = function () {
 
 	// Compact view
 	(function () {
-		const DESC_NORMAL = 'Choose your data structures and factorizations (drag and drop or double-click):<br />\n        You can use drag and drop to reorder your selection!';
-		const DESC_COMPACT = 'Choose your data structures and factorizations (use the dropdown to add; double-click to remove):<br />\n        You can use drag and drop to reorder your selection!';
+		const isNarrow = () => !!(window.matchMedia && window.matchMedia('(max-width: 640px)').matches);
+		function getDesc(compact) {
+			const action = isNarrow() ? 'double-tap' : 'double-click';
+			return compact
+				? 'Choose structures:<br /><span style="font-weight:normal">(' + action + ' to disable, drag-and-drop to reorder)</span>'
+				: 'Choose structures:<br /><span style="font-weight:normal">(' + action + ' to enable/disable, drag-and-drop to enable/disable/reorder)</span>';
+		}
 		const DISABLED_IDS = ['qa-structures-disabled-string', 'qa-structures-disabled-index', 'qa-structures-disabled-length', 'qa-structures-disabled-factor', 'qa-structures-disabled-other'];
 
 		function structureGroup(el) {
@@ -1010,7 +1015,7 @@ window.onload = function () {
 			const controls = document.getElementById('qa-structures-compact-controls');
 			const box = document.getElementById('qa-structures-box');
 			if (box) box.classList.toggle('qa-compact-on', on);
-			if (desc) desc.innerHTML = on ? DESC_COMPACT : DESC_NORMAL;
+			if (desc) desc.innerHTML = getDesc(on);
 			if (controls) controls.classList.toggle('qa-hidden', !on);
 			DISABLED_IDS.forEach(id => {
 				const el = document.getElementById(id);
@@ -1048,6 +1053,13 @@ window.onload = function () {
 			setCompactView(cbx.checked);
 			if (typeof update_history === 'function') update_history();
 		});
+
+		if (window.matchMedia) {
+			window.matchMedia('(max-width: 640px)').addEventListener('change', () => {
+				const desc = document.getElementById('qa-structures-description');
+				if (desc) desc.innerHTML = getDesc(cbx.checked);
+			});
+		}
 
 		select.addEventListener('change', () => {
 			const ds = select.value;
