@@ -187,6 +187,7 @@ body {
 #qa-counter-output .qa-item {
     background-color: #DDD;
     border: none;
+    font-size: 1em;
 }
 
 .qa-shorttext {
