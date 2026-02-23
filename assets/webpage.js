@@ -265,12 +265,22 @@ function load_history_internal() {
 
 function updateTextAreas() {
 	updateTextArea(qa_text);
-	updateTextArea(qa_ds_output);
+	updateOutputArea(qa_ds_output);
 }
 
 function updateTextArea(area) {
 	area.style.height = "";
 	area.style.height = (10 + area.scrollHeight) + 'px';
+}
+
+function updateOutputArea(area) {
+	if (area.value === "") {
+		area.style.display = 'none';
+	} else {
+		area.style.display = '';
+		area.style.height = "0";
+		area.style.height = area.scrollHeight + 'px';
+	}
 }
 
 var wasWhitespace = false;
@@ -573,7 +583,7 @@ function updateArrays() {
 			if (qa_loading_spinner) qa_loading_spinner.classList.remove('qa-spinning');
 			qa_computation_status.textContent = `Killed after ${timeout_seconds}s`
 			qa_ds_output.value = `Timeout: killed after ${timeout_seconds}s.\n(limit can be adjusted in the advanced options)`;
-		updateTextArea(qa_ds_output);
+		updateOutputArea(qa_ds_output);
 		qa_counter_output.querySelectorAll('.qa-counter-value').forEach(span => {
 			span.textContent = '?';
 		});
@@ -895,6 +905,7 @@ window.onload = function () {
 		changeVisibility(qa_counter_itemlists, !qa_counter_automatic.checked);
 		updateArrays();
 	});
+	window.addEventListener('resize', updateTextAreas);
 
 
 	let _lastLimit = null;

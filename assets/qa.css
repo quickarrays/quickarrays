@@ -179,6 +179,7 @@ body {
 .qa-output-container>.qa-textarea {
     border: none;
     flex-grow: 1;
+    min-height: 0;
 }
 
 
