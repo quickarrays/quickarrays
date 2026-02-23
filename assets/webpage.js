@@ -1165,9 +1165,8 @@ window.onload = function () {
 	// Show/hide advanced options
 	(function () {
 		function applyAdvanced(on) {
-			document.querySelectorAll('.qa-advanced-option').forEach(el => {
-				el.classList.toggle('qa-hidden', !on);
-			});
+			const panel = document.getElementById('qa-advanced-options');
+			if (panel) panel.classList.toggle('qa-hidden', !on);
 		}
 		const cbx = document.getElementById('qa-show-advanced-options');
 		if (!cbx) return;
