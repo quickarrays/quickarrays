@@ -284,6 +284,36 @@ body {
     transform: translateY(1px);
 }
 
+@keyframes qa-wiggle {
+
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    20% {
+        transform: rotate(-12deg);
+    }
+
+    40% {
+        transform: rotate(12deg);
+    }
+
+    60% {
+        transform: rotate(-9deg);
+    }
+
+    80% {
+        transform: rotate(9deg);
+    }
+}
+
+#qa-structures-add-select.qa-drag-active,
+#qa-counter-add-select.qa-drag-active {
+    animation: qa-wiggle .9s ease-in-out infinite;
+    transform-origin: 50% 80%;
+}
+
 /* Compact view: controls wrapper is invisible to layout; select sits in the flex row */
 #qa-structures-compact-controls,
 #qa-counter-compact-controls {
@@ -304,7 +334,7 @@ body {
     width: 3em;
     flex-shrink: 0;
     align-self: flex-start;
-    text-align: center;
+    text-align-last: center;
     background-color: #FCC;
     cursor: pointer;
     font-family: inherit;

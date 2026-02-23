@@ -1184,9 +1184,13 @@ window.onload = function () {
 				setOver(x >= r.left && x <= r.right && y >= r.top && y <= r.bottom);
 			}
 
+			const placeholder = dropEl.querySelector('option[value=""]');
+
 			const prevStart = sortable.option('onStart');
 			sortable.option('onStart', function(evt) {
 				if (prevStart) prevStart.call(this, evt);
+				if (placeholder) placeholder.textContent = '🗑';
+				dropEl.classList.add('qa-drag-active');
 				document.addEventListener('touchmove', onTouchMove, { passive: true });
 			});
 
@@ -1194,6 +1198,8 @@ window.onload = function () {
 			sortable.option('onEnd', function(evt) {
 				if (prevEnd) prevEnd.call(this, evt);
 				document.removeEventListener('touchmove', onTouchMove);
+				if (placeholder) placeholder.textContent = '+';
+				dropEl.classList.remove('qa-drag-active');
 				if (over) {
 					setOver(false);
 					const ds = evt.item.dataset.ds;
