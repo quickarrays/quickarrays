@@ -196,27 +196,37 @@ function update_history_internal() {
 
 	window.history.replaceState("", "", window.location.pathname + newQuery.toString());
 }
-
 function load_history_internal() {
 	// parse configuration from GET url parameters
-	const text_query = $.query.get("text").toString();
+	const getQueryString = (key) => {
+		const value = $.query.get(key);
+		// value === "" implies that the parameter is not present
+		if (value === "") return false;
+		// value === "<some string>" implies the parameter is present and non-empty
+		if (typeof value === "string") return value;
+		// value === true implies the parameter is present and empty
+		if (value === true) return "";
+		return false;
+	};
+
+	const text_query = getQueryString("text");
 	if (text_query) { qa_text.value = text_query; }
 
-	const counters_query = $.query.get("counters").toString();
-	if (counters_query) { counters_list.setEnabled(counters_query); }
+	const counters_query = getQueryString("counters");
+	if (typeof counters_query === "string") { counters_list.setEnabled(counters_query); }
 
-	const structures_query = $.query.get("structures").toString();
-	if (structures_query) { structures_list.setEnabled(structures_query); }
+	const structures_query = getQueryString("structures");
+	if (typeof structures_query === "string") { structures_list.setEnabled(structures_query); }
 
-	const options_query = $.query.get("options_list").toString();
+	const options_query = getQueryString("options_list");
 	if (options_query) { options_list.setEnabled(options_query); }
 
-	const sepfrom_query = $.query.get("sep").toString();
-	if (sepfrom_query) { qa_separator_input.value = encodeWhitespaces(sepfrom_query); }
+	const sepfrom_query = getQueryString("sep");
+	if (typeof sepfrom_query === "string") { qa_separator_input.value = encodeWhitespaces(sepfrom_query); }
 
-	const generate_string_query = $.query.get("generate_string").toString();
+	const generate_string_query = getQueryString("generate_string");
 	if (generate_string_query) { qa_generate_string_list.value = generate_string_query; }
-	if (generate_string_query && generate_string_query != 'custom') {
+	if (generate_string_query && generate_string_query !== 'custom') {
 		changeVisibility(qa_generate_string_span, true);
 		changeVisibility(qa_text, false);
 	} else {
@@ -224,15 +234,14 @@ function load_history_internal() {
 		changeVisibility(qa_text, true);
 	}
 
-	const generate_string_range_query = $.query.get("generate_string_range").toString();
+	const generate_string_range_query = getQueryString("generate_string_range");
 	if (generate_string_range_query) {
 		updateSliderForGenerator(parseInt(generate_string_range_query));
 	}
 
-
-	const transform_query = $.query.get("transform").toString();
+	const transform_query = getQueryString("transform");
 	if (transform_query) { qa_transform_list.value = transform_query; }
-	if (transform_query == 'custom') {
+	if (transform_query === 'custom') {
 		changeVisibility(qa_transform_input, true);
 		changeVisibility(qa_transform_active_span, true);
 	} else {
@@ -240,28 +249,43 @@ function load_history_internal() {
 		changeVisibility(qa_transform_active_span, false);
 	}
 
-	const transform_input_query = $.query.get("transform_input").toString();
+	const transform_input_query = getQueryString("transform_input");
 	if (transform_input_query) { qa_transform_input.value = transform_input_query; }
 
-	const timeout_query = $.query.get("timeout").toString();
-	if (timeout_query) { qa_timeout_range.value = timeout_query; qa_timeout_value.textContent = timeout_query; }
+	const timeout_query = getQueryString("timeout");
+	if (timeout_query) {
+		qa_timeout_range.value = timeout_query;
+		qa_timeout_value.textContent = timeout_query;
+	}
 
-	const prepend_query = $.query.get("prepend").toString();
+	const prepend_query = getQueryString("prepend");
 	if (prepend_query) { qa_prepend_input.value = prepend_query; }
 
-	const append_query = $.query.get("append").toString();
+	const append_query = getQueryString("append");
 	if (append_query) { qa_append_input.value = append_query; }
 
-	const counter_automatic_query = $.query.get("counter_automatic").toString();
-	if (counter_automatic_query) { qa_counter_automatic.checked = counter_automatic_query == '1'; }
+	const counter_automatic_query = getQueryString("counter_automatic");
+	if (counter_automatic_query) { qa_counter_automatic.checked = counter_automatic_query === '1'; }
 	if (qa_counter_automatic.checked) {
 		changeVisibility(qa_counter_itemlists, false);
 	} else {
 		changeVisibility(qa_counter_itemlists, true);
 	}
+
+	const cvCbx = document.getElementById('qa-compact-view');
+	if (cvCbx) {
+		const urlCompact = getQueryString("compact");
+		const cvDefault = !!(window.matchMedia && window.matchMedia('(max-width: 640px)').matches);
+		cvCbx.checked = urlCompact === '1' ? true : urlCompact === '0' ? false : cvDefault;
+	}
+
+	const advCbx = document.getElementById('qa-show-advanced-options');
+	if (advCbx) {
+		const urlAdv = getQueryString("adv");
+		const advDefault = !(window.matchMedia && window.matchMedia('(max-width: 640px)').matches);
+		advCbx.checked = urlAdv === '1' ? true : urlAdv === '0' ? false : advDefault;
+	}
 }
-
-
 
 function updateTextAreas() {
 	updateTextArea(qa_text);
@@ -1217,12 +1241,8 @@ window.onload = function () {
 		const counterAddBtn = document.getElementById('qa-counter-add-btn');
 		if (counterAddBtn) setupDropToDisable(counterAddBtn, counters_list, countersSortable, 'qa-counters');
 
-		// Initial state from URL or screen width
-		const urlCompact = $.query.get('compact').toString();
-		const defaultOn = !!(window.matchMedia && window.matchMedia('(max-width: 640px)').matches);
-		const initialOn = urlCompact === '1' ? true : urlCompact === '0' ? false : defaultOn;
-		cbx.checked = initialOn;
-		setCompactView(initialOn);
+		// Initial state set by load_history_internal()
+		setCompactView(cbx.checked);
 	})();
 
 	// Show/hide advanced options
@@ -1233,11 +1253,8 @@ window.onload = function () {
 		}
 		const cbx = document.getElementById('qa-show-advanced-options');
 		if (!cbx) return;
-		const urlAdv = $.query.get('adv').toString();
-		const defaultOn = !(window.matchMedia && window.matchMedia('(max-width: 640px)').matches);
-		const initialOn = urlAdv === '1' ? true : urlAdv === '0' ? false : defaultOn;
-		cbx.checked = initialOn;
-		applyAdvanced(initialOn);
+		// Initial state set by load_history_internal()
+		applyAdvanced(cbx.checked);
 		cbx.addEventListener('change', () => {
 			applyAdvanced(cbx.checked);
 			if (typeof update_history === 'function') update_history();
