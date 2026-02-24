@@ -401,6 +401,7 @@ body {
 .qa-item:active .qa-tooltiptext,
 body.qa-dragging .qa-tooltiptext {
     transition: none !important;
+    display: none !important;
 }
 
 @media (hover: hover) {
