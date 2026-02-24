@@ -206,12 +206,13 @@ function load_history_internal() {
 	// parse configuration from GET url parameters
 	const getQueryString = (key) => {
 		const value = $.query.get(key);
+		// value === true implies the parameter is present and empty
+		if (value === true) return "";
 		// value === "" implies that the parameter is not present
 		if (value === "") return false;
 		// value === "<some string>" implies the parameter is present and non-empty
 		if (typeof value === "string") return value;
-		// value === true implies the parameter is present and empty
-		if (value === true) return "";
+		if (typeof value === "number") return "" + value;
 		return false;
 	};
 
