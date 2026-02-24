@@ -383,7 +383,9 @@ body {
 }
 
 .qa-tooltiptext {
-    display: none;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
     width: 300px;
     background-color: black;
     color: #fff;
@@ -398,11 +400,14 @@ body {
 
 .qa-item:active .qa-tooltiptext,
 body.qa-dragging .qa-tooltiptext {
-    display: none !important;
+    transition: none !important;
 }
 
-.qa-item:hover .qa-tooltiptext {
-    display: block;
+@media (hover: hover) {
+    .qa-item:hover .qa-tooltiptext {
+        opacity: 1;
+        transition-delay: 1s;
+    }
 }
 
 .qa-visible,
