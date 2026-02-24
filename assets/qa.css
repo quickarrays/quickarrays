@@ -347,6 +347,13 @@ body.qa-page-loading .qa-main {
     }
 }
 
+.qa-bin-icon {
+    width: 1em;
+    height: 1em;
+    fill: black;
+    vertical-align: -0.125em;
+}
+
 #qa-structures-add-btn,
 #qa-counter-add-btn {
     background-color: #6D6;

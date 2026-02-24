@@ -1255,13 +1255,20 @@ window.onload = function () {
 				draggable: '.qa-item-draggable-invisible',
 				onAdd: function (evt) {
 					list.disable(evt.item.dataset.ds);
+					// On mobile, a quick flick can cause onEnd on the source sortable to
+					// be skipped (Sortable.js 1.6.1 bug with touch fallback timing), leaving
+					// the bin wiggling and the UI frozen. Clean up here as a safety net;
+					// the cleanup in onEnd is idempotent so no harm if both run.
+					btnEl.classList.remove('qa-drag-active');
+					btnEl.textContent = '+';
+					if (selectEl) selectEl.style.pointerEvents = '';
 				}
 			});
 
 			const prevStart = sortable.option('onStart');
 			sortable.option('onStart', function (evt) {
 				if (prevStart) prevStart.call(this, evt);
-				btnEl.textContent = '🗑';
+				btnEl.innerHTML = '<svg class="qa-bin-icon" aria-hidden="true"><use href="#icon-trash-x"></use></svg>';
 				btnEl.classList.add('qa-drag-active');
 				if (selectEl) selectEl.style.pointerEvents = 'none';
 			});

@@ -13,6 +13,40 @@
 
 <body class="qa-page-loading">
 
+    <!-- 
+
+License for bin icon from: https://github.com/tabler/tabler-icons
+    
+MIT License
+
+Copyright (c) 2020-2026 Paweł Kuna
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE. -->
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+        <symbol id="icon-trash-x" viewBox="0 0 24 24">
+            <path
+                d="M20 6a1 1 0 0 1 .117 1.993l-.117 .007h-.081l-.919 11a3 3 0 0 1 -2.824 2.995l-.176 .005h-8c-1.598 0 -2.904 -1.249 -2.992 -2.75l-.005 -.167l-.923 -11.083h-.08a1 1 0 0 1 -.117 -1.993l.117 -.007h16zm-9.489 5.14a1 1 0 0 0 -1.218 1.567l1.292 1.293l-1.292 1.293l-.083 .094a1 1 0 0 0 1.497 1.32l1.293 -1.292l1.293 1.292l.094 .083a1 1 0 0 0 1.32 -1.497l-1.292 -1.293l1.292 -1.293l.083 -.094a1 1 0 0 0 -1.497 -1.32l-1.293 1.292l-1.293 -1.292l-.094 -.083z" />
+            <path
+                d="M14 2a2 2 0 0 1 2 2a1 1 0 0 1 -1.993 .117l-.007 -.117h-4l-.007 .117a1 1 0 0 1 -1.993 -.117a2 2 0 0 1 1.85 -1.995l.15 -.005h4z" />
+        </symbol>
+    </svg>
+
     <div class="qa-header">
         <div id="qa-loading-spinner"></div>
         <span id="qa-loading-text"><em>Loading...</em></span>
@@ -200,9 +234,9 @@
             <label class="qa-option qa-advanced-option"><label for="qa-timeout-range">Timeout:&nbsp;</label><input
                     type="range" id="qa-timeout-range" min="1" max="30" value="3" step="1"><span
                     id="qa-timeout-value">3</span></label>
-            <label class="qa-option qa-advanced-option"><label for="qa-counter-digits-range">Counter digits:&nbsp;</label><input
-                    type="range" id="qa-counter-digits-range" min="0" max="10" value="5" step="1"><span
-                    id="qa-counter-digits-value">5</span></label>
+            <label class="qa-option qa-advanced-option"><label for="qa-counter-digits-range">Counter
+                    digits:&nbsp;</label><input type="range" id="qa-counter-digits-range" min="0" max="10" value="5"
+                    step="1"><span id="qa-counter-digits-value">5</span></label>
         </div>
         <div class="qa-description qa-hidden">
             <span id="qa-computation-status"></span>
