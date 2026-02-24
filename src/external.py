@@ -2,54 +2,60 @@
 """   """
 # pylint: disable=bad-indentation,line-too-long,invalid-name
 
+import re
+
 import common as C
 
 
-# Patches applied to vendored files when copying to the build directory.
-# Each entry maps a filename to a list of (old, new) string replacements.
-PATCHES: dict[str, list[tuple[str, str]]] = {
-	"Sortable.js": [
-		# The passive event listener detection runs after the touchmove listener
-		# is registered, so that listener ends up passive and can't preventDefault.
-		# Swap the order so captureMode is set to {passive: false} first.
-		(
-			"\t// Fixed #973:\n"
-			"\t_on(document, 'touchmove', function (evt) {\n"
-			"\t\tif (Sortable.active) {\n"
-			"\t\t\tevt.preventDefault();\n"
-			"\t\t}\n"
-			"\t});\n"
-			"\n"
-			"\ttry {\n"
-			"\t\twindow.addEventListener('test', null, Object.defineProperty({}, 'passive', {\n"
-			"\t\t\tget: function () {\n"
-			"\t\t\t\tcaptureMode = {\n"
-			"\t\t\t\t\tcapture: false,\n"
-			"\t\t\t\t\tpassive: false\n"
-			"\t\t\t\t};\n"
-			"\t\t\t}\n"
-			"\t\t}));\n"
-			"\t} catch (err) {}",
-			"\ttry {\n"
-			"\t\twindow.addEventListener('test', null, Object.defineProperty({}, 'passive', {\n"
-			"\t\t\tget: function () {\n"
-			"\t\t\t\tcaptureMode = {\n"
-			"\t\t\t\t\tcapture: false,\n"
-			"\t\t\t\t\tpassive: false\n"
-			"\t\t\t\t};\n"
-			"\t\t\t}\n"
-			"\t\t}));\n"
-			"\t} catch (err) {}\n"
-			"\n"
-			"\t// Fixed #973:\n"
-			"\t_on(document, 'touchmove', function (evt) {\n"
-			"\t\tif (Sortable.active) {\n"
-			"\t\t\tevt.preventDefault();\n"
-			"\t\t}\n"
-			"\t});"
-		),
-	],
-}
+def _apply_patch(text: str, patch_text: str) -> str:
+	"""Apply a unified diff patch to text. Raises ValueError if a hunk doesn't match."""
+	lines = text.splitlines(keepends=True)
+	offset = 0
+
+	hunk_start: int | None = None
+	hunk_diff_lines: list[str] = []
+
+	def flush_hunk() -> None:
+		nonlocal offset
+		if hunk_start is None:
+			return
+
+		old_start = hunk_start - 1 + offset  # convert to 0-indexed
+		old_block: list[str] = []
+		new_block: list[str] = []
+
+		for dl in hunk_diff_lines:
+			# A bare newline is a blank context line written without the leading space.
+			if dl == '\n' or (dl and dl[0] == ' '):
+				content = dl[1:] if dl and dl[0] == ' ' else dl
+				old_block.append(content)
+				new_block.append(content)
+			elif dl and dl[0] == '-':
+				old_block.append(dl[1:])
+			elif dl and dl[0] == '+':
+				new_block.append(dl[1:])
+			# '\' (no newline at end of file) and anything else: skip
+
+		actual = lines[old_start : old_start + len(old_block)]
+		if actual != old_block:
+			raise ValueError(f"Patch hunk at line {hunk_start} does not match file content")
+
+		lines[old_start : old_start + len(old_block)] = new_block
+		offset += len(new_block) - len(old_block)
+
+	for raw_line in patch_text.splitlines(keepends=True):
+		if raw_line.startswith(('--- ', '+++ ')):
+			continue
+		if raw_line.startswith('@@ '):
+			flush_hunk()
+			hunk_diff_lines = []
+			m = re.match(r'@@ -(\d+)', raw_line)
+			hunk_start = int(m.group(1))  # type: ignore[union-attr]
+		elif hunk_start is not None:
+			hunk_diff_lines.append(raw_line)
+
+	flush_hunk()
+	return ''.join(lines)
 
 
 def main() -> None:
@@ -57,14 +63,13 @@ def main() -> None:
 
 	for src in sorted(C.EXTERNAL_ASSETS_DIR.glob('*.js')):
 		text = src.read_text(encoding='utf-8')
-		for old, new in PATCHES.get(src.name, []):
-			patched = text.replace(old, new)
-			if patched == text:
-				print(f"WARNING: patch for {src.name} did not match — skipping")
-			else:
-				text = patched
-				print(f"Patched {src.name}")
 		dest = C.EXTERNAL_JS_DIR / src.name
+
+		patch_file = C.EXTERNAL_ASSETS_DIR / (src.stem + '.patch')
+		if patch_file.exists():
+			text = _apply_patch(text, patch_file.read_text(encoding='utf-8'))
+			print(f"Patched {src.name}")
+
 		dest.write_text(text, encoding='utf-8')
 		print(f"Copied {src} -> {dest}")
 

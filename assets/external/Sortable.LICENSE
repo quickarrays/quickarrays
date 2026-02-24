@@ -4,9 +4,6 @@ https://github.com/RubaXa/Sortable
 Copyright (c) RubaXa <trash@rubaxa.org>
 Released under the MIT License
 
-Note: This vendored copy includes a patch for issue #973 (passive event
-listener detection ordering) applied on top of the original source.
-
 ---
 
 MIT License
