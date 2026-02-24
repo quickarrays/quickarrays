@@ -1,0 +1,29 @@
+--- a/Sortable.js
++++ b/Sortable.js
+@@ -1477,13 +1477,6 @@
+ 		return clearTimeout(id);
+ 	}
+
+-	// Fixed #973:
+-	_on(document, 'touchmove', function (evt) {
+-		if (Sortable.active) {
+-			evt.preventDefault();
+-		}
+-	});
+-
+ 	try {
+ 		window.addEventListener('test', null, Object.defineProperty({}, 'passive', {
+ 			get: function () {
+@@ -1495,5 +1488,12 @@
+ 		}));
+ 	} catch (err) {}
+
++	// Fixed #973:
++	_on(document, 'touchmove', function (evt) {
++		if (Sortable.active) {
++			evt.preventDefault();
++		}
++	});
++
+ 	// Export utils
+ 	Sortable.utils = {
