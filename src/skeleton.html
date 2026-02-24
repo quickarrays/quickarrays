@@ -87,9 +87,12 @@
                             class="qa-itemlist-colon">:</span></span><button type="button" class="qa-toggle-btn"
                         aria-expanded="true">(hide)</button></div>
                 <div id="qa-structures-compact-controls" class="qa-hidden">
-                    <select id="qa-structures-add-select">
-                        <option value="" selected disabled>+</option>
-                    </select>
+                    <div class="qa-add-wrapper">
+                        <div id="qa-structures-add-btn" class="qa-item">+</div>
+                        <select id="qa-structures-add-select">
+                            <option value="" selected disabled></option>
+                        </select>
+                    </div>
                 </div>
                 <div class="qa-item qa-structure qa-structure-string" data-ds="text">T<span class="qa-tooltiptext">Input
                         text</span></div>
@@ -134,9 +137,12 @@
                             class="qa-itemlist-colon">:</span></span><button type="button" class="qa-toggle-btn"
                         aria-expanded="true">(hide)</button></div>
                 <div id="qa-counter-compact-controls" class="qa-hidden">
-                    <select id="qa-counter-add-select">
-                        <option value="" selected disabled>+</option>
-                    </select>
+                    <div class="qa-add-wrapper">
+                        <div id="qa-counter-add-btn" class="qa-item">+</div>
+                        <select id="qa-counter-add-select">
+                            <option value="" selected disabled></option>
+                        </select>
+                    </div>
                 </div>
                 {{html/counters_enable.html}}
                 <div class="qa-item qa-counter qa-counter-rle" data-ds="text">runs(T)<span class="qa-tooltiptext">Size
