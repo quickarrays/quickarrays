@@ -463,6 +463,7 @@ function fill_updates(DS) {
 	qa_counter_output.innerHTML = [...result].map((el) => '<span class="qa-item">' + el + '</span>').join('&nbsp;');
 
 	updateTextAreas();
+	document.body.classList.remove('qa-page-loading');
 }
 
 var qa_worker = null;
@@ -1237,4 +1238,9 @@ window.onload = function () {
 	update_history_internal();
 	qa_is_loaded = true;
 	updateArrays();
+
+
+	setTimeout(() => {
+		document.body.classList.remove('qa-page-loading');
+	}, 250);
 };
