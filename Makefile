@@ -53,7 +53,7 @@ all: $(BUILD_HTML) $(STANDALONE_HTML) $(DIST_PACKED_HTML)
 ./build/js/gen/algorithm_pipeline.js: ./src/algorithm.ts ./src/algorithm.py
 	@mkdir -p ./build/js/gen
 	python3 ./src/algorithm.py
-$(EXTERNAL_JS_FILES): ./assets/external/Sortable.js ./assets/external/jquery-3.7.1.slim.js ./assets/external/jquery.query-object.js ./src/external.py
+$(EXTERNAL_JS_FILES): ./assets/external/Sortable.js ./assets/external/jquery-3.7.1.slim.js ./assets/external/jquery.query-object.js ./assets/external/Sortable.patch ./assets/external/Sortable.LICENSE ./assets/external/jquery-3.7.1.slim.LICENSE ./assets/external/jquery.query-object.LICENSE ./assets/external/Sortable.SOURCE ./assets/external/jquery-3.7.1.slim.SOURCE ./assets/external/jquery.query-object.SOURCE ./src/external.py
 	@mkdir -p ./build/js/ext
 	python3 ./src/external.py
 ./build/js/gen/generator_pipeline.js: ./src/generator.ts ./src/generator.py
