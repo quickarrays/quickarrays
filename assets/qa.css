@@ -261,12 +261,12 @@ body {
     opacity: .3;
 }
 
-.qa-item-ghost-invisible {
+.qa-item-draggable-invisible {
     display: none !important;
 }
 
-.qa-item>.qa-item {
-    background-color: #000 !important;
+.qa-item>.qa-item-ghost {
+    display: none !important;
 }
 
 #qa-transform-list,
@@ -320,8 +320,8 @@ body {
 
 #qa-structures-add-btn.qa-drag-active,
 #qa-counter-add-btn.qa-drag-active {
-    /*animation: qa-wiggle .9s ease-in-out infinite;
-    transform-origin: 50% 80%;*/
+    animation: qa-wiggle .9s ease-in-out infinite;
+    transform-origin: 50% 80%;
     background-color: #D00;
 }
 

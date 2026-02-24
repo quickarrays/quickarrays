@@ -1166,8 +1166,7 @@ window.onload = function () {
 			Sortable.create(btnEl, {
 				group: { name: groupName, put: true, pull: false },
 				sort: false,
-				draggable: '.qa-item-ghost-invisible',
-				ghostClass: 'qa-item-ghost-invisible',
+				draggable: '.qa-item-draggable-invisible',
 				onAdd: function (evt) {
 					list.disable(evt.item.dataset.ds);
 				}
