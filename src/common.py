@@ -182,7 +182,9 @@ def generate_makefile() -> str:
 	buffer.append(f'\tpython3 {ALGORITHM_PY}')
 
 	ext_patches = sorted(EXTERNAL_ASSETS_DIR.glob('*.patch'))
-	ext_deps = ' '.join([str(f) for f in ext_vendored] + [str(f) for f in ext_patches] + [str(EXTERNAL_PY)])
+	ext_licenses = sorted(EXTERNAL_ASSETS_DIR.glob('*.LICENSE'))
+	ext_sources = sorted(EXTERNAL_ASSETS_DIR.glob('*.SOURCE'))
+	ext_deps = ' '.join([str(f) for f in ext_vendored] + [str(f) for f in ext_patches] + [str(f) for f in ext_licenses] + [str(f) for f in ext_sources] + [str(EXTERNAL_PY)])
 	buffer.append(f'$(EXTERNAL_JS_FILES): {ext_deps}')
 	buffer.append(f'\t@mkdir -p {EXTERNAL_JS_DIR}')
 	buffer.append(f'\tpython3 {EXTERNAL_PY}')

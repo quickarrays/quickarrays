@@ -58,6 +58,29 @@ def _apply_patch(text: str, patch_text: str) -> str:
 	return ''.join(lines)
 
 
+def _build_header_comment(stem: str) -> str:
+	"""Build a JS block comment with license, source, and (if present) patch info."""
+	parts = []
+
+	lic_file = C.EXTERNAL_ASSETS_DIR / (stem + '.LICENSE')
+	if lic_file.exists():
+		parts.append(f"=== {lic_file.name} ===\n{lic_file.read_text(encoding='utf-8').rstrip()}")
+
+	src_file = C.EXTERNAL_ASSETS_DIR / (stem + '.SOURCE')
+	if src_file.exists():
+		parts.append(f"=== {src_file.name} ===\n{src_file.read_text(encoding='utf-8').rstrip()}")
+
+	patch_file = C.EXTERNAL_ASSETS_DIR / (stem + '.patch')
+	if patch_file.exists():
+		parts.append(f"=== {patch_file.name} ===\n{patch_file.read_text(encoding='utf-8').rstrip()}")
+
+	if not parts:
+		return ''
+
+	body = '\n\n'.join(parts).replace('*/', '* /')
+	return f'/*!\n{body}\n*/\n\n'
+
+
 def main() -> None:
 	C.EXTERNAL_JS_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -70,7 +93,8 @@ def main() -> None:
 			text = _apply_patch(text, patch_file.read_text(encoding='utf-8'))
 			print(f"Patched {src.name}")
 
-		dest.write_text(text, encoding='utf-8')
+		header = _build_header_comment(src.stem)
+		dest.write_text(header + text, encoding='utf-8')
 		print(f"Copied {src} -> {dest}")
 
 
