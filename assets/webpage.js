@@ -583,8 +583,8 @@ function updateArrays() {
 			if (qa_loading_spinner) qa_loading_spinner.classList.remove('qa-spinning');
 			qa_computation_status.textContent = `Killed after ${timeout_seconds}s`
 			qa_ds_output.value = `Timeout: killed after ${timeout_seconds}s.\n(limit can be adjusted in the advanced options)`;
-		updateOutputArea(qa_ds_output);
-		qa_counter_output.innerHTML = '';
+			updateOutputArea(qa_ds_output);
+			qa_counter_output.innerHTML = '';
 		}, timeout_seconds * 1000)
 		: null
 
@@ -1158,58 +1158,41 @@ window.onload = function () {
 		});
 
 		// Allow dragging enabled items onto the dropdown to disable them.
-		function setupDropToDisable(btnEl, list, sortable) {
-			let over = false;
-			// The invisible select sits on top and intercepts drag events; grab it so we
-			// can disable pointer-events during a drag, letting events reach btnEl instead.
+		function setupDropToDisable(btnEl, list, sortable, groupName) {
+			// The invisible select sits on top; disable pointer-events during drag so
+			// Sortable's hit-testing can reach btnEl beneath it.
 			const selectEl = btnEl.nextElementSibling;
 
-			function setOver(val) {
-				if (val === over) return;
-				over = val;
-				btnEl.classList.toggle('qa-drop-hover', over);
-			}
-
-			// Desktop: dragenter/dragleave fire directly on the element during HTML5 DnD,
-			// unaffected by SortableJS repositioning items around it.
-			btnEl.addEventListener('dragenter', () => setOver(true));
-			btnEl.addEventListener('dragleave', () => setOver(false));
-
-			// Mobile: SortableJS uses touch events, track position via document listener.
-			function onTouchMove(e) {
-				if (!e.touches[0]) return;
-				const r = btnEl.getBoundingClientRect();
-				const { clientX: x, clientY: y } = e.touches[0];
-				setOver(x >= r.left && x <= r.right && y >= r.top && y <= r.bottom);
-			}
+			Sortable.create(btnEl, {
+				group: { name: groupName, put: true, pull: false },
+				sort: false,
+				draggable: '.qa-item-ghost-invisible',
+				ghostClass: 'qa-item-ghost-invisible',
+				onAdd: function (evt) {
+					list.disable(evt.item.dataset.ds);
+				}
+			});
 
 			const prevStart = sortable.option('onStart');
-			sortable.option('onStart', function(evt) {
+			sortable.option('onStart', function (evt) {
 				if (prevStart) prevStart.call(this, evt);
 				btnEl.textContent = '🗑';
 				btnEl.classList.add('qa-drag-active');
 				if (selectEl) selectEl.style.pointerEvents = 'none';
-				document.addEventListener('touchmove', onTouchMove, { passive: true });
 			});
 
 			const prevEnd = sortable.option('onEnd');
-			sortable.option('onEnd', function(evt) {
+			sortable.option('onEnd', function (evt) {
 				if (prevEnd) prevEnd.call(this, evt);
-				document.removeEventListener('touchmove', onTouchMove);
 				if (selectEl) selectEl.style.pointerEvents = '';
 				btnEl.textContent = '+';
 				btnEl.classList.remove('qa-drag-active');
-				if (over) {
-					setOver(false);
-					const ds = evt.item.dataset.ds;
-					setTimeout(() => { list.disable(ds); }, 0);
-				}
 			});
 		}
 		const structsAddBtn = document.getElementById('qa-structures-add-btn');
-		if (structsAddBtn) setupDropToDisable(structsAddBtn, structures_list, structsSortable);
+		if (structsAddBtn) setupDropToDisable(structsAddBtn, structures_list, structsSortable, 'qa-structs');
 		const counterAddBtn = document.getElementById('qa-counter-add-btn');
-		if (counterAddBtn) setupDropToDisable(counterAddBtn, counters_list, countersSortable);
+		if (counterAddBtn) setupDropToDisable(counterAddBtn, counters_list, countersSortable, 'qa-counters');
 
 		// Initial state from URL or screen width
 		const urlCompact = $.query.get('compact').toString();
