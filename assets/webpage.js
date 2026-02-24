@@ -1318,6 +1318,26 @@ window.onload = function () {
 	updateArrays();
 
 
+	// Tooltip boundary clamping: keep tooltips within .qa-main horizontal bounds
+	(function () {
+		const main = document.querySelector('.qa-main');
+		if (!main) return;
+		main.addEventListener('mouseover', function (e) {
+			const item = e.target.closest('.qa-item');
+			if (!item) return;
+			if (item.contains(e.relatedTarget)) return;
+			const tooltip = item.querySelector('.qa-tooltiptext');
+			if (!tooltip) return;
+			const mainRect = main.getBoundingClientRect();
+			const itemRect = item.getBoundingClientRect();
+			const tooltipWidth = tooltip.offsetWidth || 300;
+			const minLeft = mainRect.left - itemRect.left;
+			const maxLeft = mainRect.right - itemRect.left - tooltipWidth;
+			const left = maxLeft >= minLeft ? Math.max(minLeft, Math.min(maxLeft, 0)) : minLeft;
+			tooltip.style.left = left + 'px';
+		});
+	})();
+
 	setTimeout(() => {
 		document.body.classList.remove('qa-page-loading');
 	}, 250);
