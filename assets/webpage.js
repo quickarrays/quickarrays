@@ -687,11 +687,12 @@ function initDragAndDropGrouped(groupName, enabledEl, disabledMap, categoryClass
 		const el = disabledMap[cat];
 		if (!el) continue;
 		const cls = categoryClassFn(cat);
+		const matchesCls = typeof cls === 'function' ? cls : (dragEl) => dragEl.classList.contains(cls);
 		Sortable.create(el, {
 			group: {
 				name: groupName,
 				put: function (_to, from, dragEl) {
-					return from.el === enabledEl && dragEl.classList.contains(cls);
+					return from.el === enabledEl && matchesCls(dragEl);
 				}
 			},
 			sort: false,
@@ -904,7 +905,10 @@ window.onload = function () {
 	document.querySelectorAll(".qa-option-cbx").forEach((elem) => { options_list.add(elem); });
 	options_default = options_list.getEnabled();
 
-	const structsSortable = initDragAndDropGrouped('qa-structs', ds_list_enabled, ds_list_disabled, cat => 'qa-structure-' + cat, 'qa-structure');
+	const structsSortable = initDragAndDropGrouped('qa-structs', ds_list_enabled, ds_list_disabled, cat => {
+		if (cat === 'other') return el => el.classList.contains('qa-structure-other') || el.classList.contains('qa-structure-other-index');
+		return 'qa-structure-' + cat;
+	}, 'qa-structure');
 	const countersSortable = initDragAndDropGrouped('qa-counters', counter_list_enabled, counter_list_disabled, cat => 'qa-counter-' + cat, 'qa-counter');
 
 	applyLegacyRedirects();

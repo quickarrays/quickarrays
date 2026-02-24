@@ -1173,7 +1173,7 @@ export function test_lexparse_factorization() {
 /**
  * @name NSS
  * @kind disable
- * @type other
+ * @type other-index
  * @description Next Smaller Suffix Array
  * @tutorial The Next Smaller Suffix (NSS) array identifies the subsequent suffix in text order that is lexicographically smaller than the current suffix. Given the inverse suffix array \(\mathsf{ISA}\) of a text \(T[1..n]\), the NSS array \(\mathsf{NSS}[1..n]\) is defined such that \(\mathsf{NSS}[i] = \min \{ j > i \mid \mathsf{ISA}[j] < \mathsf{ISA}[i] \}\) if such a \(j\) exists, and \(\mathsf{NSS}[i] = \bot \) otherwise, for each \(i \in [1..n]\).
  */
@@ -1206,7 +1206,7 @@ export function test_nss_array() {
 /**
  * @name PSS
  * @kind disable
- * @type other
+ * @type other-index
  * @description Previous Smaller Suffix Array
  * @tutorial The Previous Smaller Suffix (PSS) array identifies the preceding suffix in text order that is lexicographically smaller than the current suffix. Given the inverse suffix array \(\mathsf{ISA}\) of a text \(T[1..n]\), the PSS array \(\mathsf{PSS}[1..n]\) is defined such that \(\mathsf{PSS}[i] = \max \{ j < i \mid \mathsf{ISA}[j] < \mathsf{ISA}[i] \}\) if such a \(j\) exists, and \(\mathsf{PSS}[i] = \bot \) otherwise, for each \(i \in [1..n]\).
  */
