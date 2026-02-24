@@ -358,7 +358,7 @@ function updateSliderForGenerator(targetLength) {
 }
 
 
-function prettify_row(ds_text, dsName, varDs, varSep, varBase, do_padding) {
+function prettify_row(ds_text, dsName, varDs, varSep, varBase, do_padding, width) {
 	if (structures_list.isIndex(dsName)) {
 		if (varBase != 0) {
 			varDs = increment_array(varDs);
@@ -375,15 +375,15 @@ function prettify_row(ds_text, dsName, varDs, varSep, varBase, do_padding) {
 		if (options_list.enabled("whitespace")) {
 			varDs = encodeWhitespaces(varDs);
 		}
-		varDs = prettify_string(varDs, varSep, varBase, options_list.enabled("tabularize"));
+		varDs = prettify_string(varDs, varSep, varBase, options_list.enabled("tabularize"), width);
 	} else if (structures_list.isFactorization(dsName)) {
 		if (options_list.enabled("facttext")) {
-			varDs = prettify_factorization(options_list.enabled("whitespace") ? encodeWhitespaces(ds_text) : ds_text, varDs, varSep, varBase);
+			varDs = prettify_factorization(options_list.enabled("whitespace") ? encodeWhitespaces(ds_text) : ds_text, varDs, varSep, varBase, width);
 		} else {
-			varDs = prettify_array(varDs.map((b) => b ? 1 : 0), varSep, varBase);
+			varDs = prettify_array(varDs.map((b) => b ? 1 : 0), varSep, varBase, width);
 		}
 	} else {
-		varDs = prettify_array(varDs, varSep, varBase);
+		varDs = prettify_array(varDs, varSep, varBase, width);
 	}
 	return { 'name': ds_htmlname, 'data': varDs };
 }
@@ -399,6 +399,29 @@ function fill_updates(DS) {
 
 	const varBase = options_list.enabled("baseone") ? 1 : 0;
 
+	let globalWidth = 0;
+	structures_list.forEachEnabled(function (dsName) {
+		const varDs = DS[dsName];
+		if (!varDs) return;
+		let w;
+		if (structures_list.isString(dsName)) {
+			w = 1;
+		} else if (structures_list.isFactorization(dsName)) {
+			w = 1;
+			if (options_list.enabled("facttext") && varSep.length == 0) {
+				w = 2;
+			}
+		} else {
+			let arr = varDs;
+			if (structures_list.isIndex(dsName)) {
+				if (varBase != 0) arr = increment_array(arr);
+				arr = replace_invalid_position(arr, varBase + DS['text'].length);
+			}
+			w = arr.length === 0 ? 0 : Math.max(...arr.map((x) => ("" + x).length));
+		}
+		if (w > globalWidth) globalWidth = w;
+	});
+
 	const rows = [];
 	structures_list.forEachEnabled(function (dsName) {
 		let varDs = DS[dsName];
@@ -406,7 +429,7 @@ function fill_updates(DS) {
 			rows.push("Function " + dsName + ": not defined");
 			return;
 		}
-		rows.push(prettify_row(DS['text'], dsName, varDs, varSep, varBase, qa_output_select.value == 'plain'));
+		rows.push(prettify_row(DS['text'], dsName, varDs, varSep, varBase, qa_output_select.value == 'plain', globalWidth));
 	});
 
 	if (qa_output_select.value == 'plain') {

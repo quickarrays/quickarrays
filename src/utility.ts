@@ -5,7 +5,7 @@ function assert_eq(a: any, b: any, message: string): void {
     } else {
         equal = a === b;
     }
-    
+
     if (!equal) {
         const aStr = Array.isArray(a) ? `[${a}]` : a;
         const bStr = Array.isArray(b) ? `[${b}]` : b;
@@ -22,7 +22,7 @@ function assert_eq(a: any, b: any, message: string): void {
  * @returns The total number of runs in the string. Returns 0 for an empty string.
  */
 function number_of_runs(text: string): number {
-    if(!text) { return 0; }
+    if (!text) { return 0; }
 
     let runs: number = 1; /* Initialize runs to 1 because the first character always starts a run. */
     let runchar: string = text[0]; /* Store the character of the current run. */
@@ -55,7 +55,7 @@ export function test_number_of_runs(): void {
     assert_eq(number_of_runs("112233"), 3, "Test 9: Numeric string with runs.");
     assert_eq(number_of_runs("$$$$"), 1, "Test 10: Special characters all same.");
     assert_eq(number_of_runs("!@#$"), 4, "Test 11: Special characters all different.");
-    assert_eq(number_of_runs("  a b  c"), 6, "Test 12: Multiple spaces and single characters."); 
+    assert_eq(number_of_runs("  a b  c"), 6, "Test 12: Multiple spaces and single characters.");
 }
 
 /**
@@ -66,7 +66,7 @@ export function test_number_of_runs(): void {
  * @returns The total count of `true` booleans (factor ends) found in the factorization.
  */
 function number_of_factors(factorization: readonly boolean[]): number {
-    if(!factorization) { return 0; }
+    if (!factorization) { return 0; }
     return factorization.reduce((count, value) => count + (value ? 1 : 0), 0);
 }
 
@@ -104,7 +104,7 @@ export function test_number_of_factors(): void {
  * @returns {string} The padded string.
  */
 function pad_right(text: string, pad_char: string, length: number): string {
-    if(text.length >= length || pad_char.length === 0) { return text; }
+    if (text.length >= length || pad_char.length === 0) { return text; }
     const times = Math.ceil((length - text.length) / pad_char.length);
     return text + pad_char.repeat(times);
 }
@@ -121,7 +121,7 @@ function pad_right(text: string, pad_char: string, length: number): string {
  * @returns {string} The padded string.
  */
 function pad_left(text: string, pad_char: string, length: number): string {
-    if(text.length >= length || pad_char.length === 0) { return text; }
+    if (text.length >= length || pad_char.length === 0) { return text; }
     const times = Math.ceil((length - text.length) / pad_char.length);
     return pad_char.repeat(times) + text;
 }
@@ -170,7 +170,7 @@ export function test_padFunctions(): void {
     assert_eq(pad_left("", "", 3), "", "pad_left - empty str, empty char, padding needed (should return original due to fix)");
     assert_eq(pad_left("test", "", 4), "test", "pad_left - empty char, exact length (no padding needed anyway)");
     assert_eq(pad_left("test", "", 2), "test", "pad_left - empty char, already longer (no padding needed anyway)");
-    
+
 }
 
 /**
@@ -214,7 +214,7 @@ export function test_increment_array(): void {
     const largeNumberArray = [Number.MAX_SAFE_INTEGER - 1, Number.MAX_SAFE_INTEGER];
     const expectedLargeNumberArray = [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER + 1];
     assert_eq(increment_array(largeNumberArray, 1), expectedLargeNumberArray, "Test Case 9 Failed: Large numbers");
-    
+
     // Test case 10: Array with only one element
     assert_eq(increment_array([7], 3), [10], "Test Case 10 Failed: Single element array");
 }
@@ -267,28 +267,19 @@ export function test_replace_invalid_position(): void {
  * Prettifies a given string by replacing null characters, optionally
  * padding each character to a uniform width, and joining them with a separator.
  *
- * The `width` for padding is determined by the number of digits in `(text.length + base - 1)`.
- * For example, if `text.length + base - 1` is 9, `width` is 1. If it's 10, `width` is 2.
- * This can lead to characters not being padded if their length is already equal to or greater than `width`.
+ * The `width` for padding is the maximum printed width of any character in the string.
  *
  * @param {string} text The input string to prettify.
  * @param {string} [sep=" "] The separator to use between characters. Defaults to a space.
  *                           If `doTabularize` is false, this is overridden to an empty string.
- * @param {number} [base=0] A base number used in calculating the padding width.
- *                          The padding width is `String(text.length + base - 1).length`.
+ * @param {number} [_base=0] Unused. Kept for API compatibility.
  * @param {boolean} [doTabularize=true] If true, each character is padded to a uniform width
  *                                      and `sep` is used. If false, `sep` is ignored (becomes '')
  *                                      and no padding is applied (width becomes 0).
  * @returns {string} The prettified string.
  */
-function prettify_string(text: string, sep: string = " ", base: number = 0, do_tabularize: boolean = true): string {
+function prettify_string(text: string, sep: string = " ", _base: number = 0, do_tabularize: boolean = true, width?: number): string {
     text = text.split('\0').join("$");
-
-    // Calculate the width for padding.
-    // If do_tabularize is true, width is the length of the string representation of (text.length + base - 1).
-    // If do_tabularize is false, width is 0, meaning no padding will be applied effectively.
-    // Example: if (text.length + base - 1) is 123, then String(123).length is 3. So width will be 3.
-    const width: number = do_tabularize ? String(text.length + base - 1).length : 0;
 
     // Determine the effective separator. If do_tabularize is false, the separator is always an empty string.
     let effectiveSep: string = sep;
@@ -296,10 +287,14 @@ function prettify_string(text: string, sep: string = " ", base: number = 0, do_t
         effectiveSep = '';
     }
 
-    // Split the text into individual characters.
-    // For each character, pad it on the left with a space up to the calculated width.
-    // Finally, join the padded characters using the effective separator.
-    return text.split('').map((x: string) => pad_left(x, ' ', width)).join(effectiveSep);
+    // Calculate the width for padding. Use the provided width if given, otherwise derive it from the
+    // maximum printed width of any character. If do_tabularize is false, width is 0 (no padding).
+    const chars: string[] = text.split('');
+    const effectiveWidth: number = !do_tabularize ? 0
+        : width !== undefined ? width
+            : (chars.length > 0 ? Math.max(...chars.map((c: string) => c.length)) : 0);
+
+    return chars.map((x: string) => pad_left(x, ' ', effectiveWidth)).join(effectiveSep);
 }
 
 /**
@@ -321,18 +316,10 @@ export function test_prettify_string(): void {
     assert_eq(prettify_string("abc", "_"), "a_b_c", "Test Case 3 Failed: Custom separator");
     assert_eq(prettify_string("12345", "--"), "1--2--3--4--5", "Test Case 3.1 Failed: Custom separator multiple chars");
 
-    // Test Case 4: `base` affecting `width` (padding)
-    // text="abc", length=3. base=0. width = String(3+0-1).length = String(2).length = 1.
-    // pad_left(char, ' ', 1) -> char itself
+    // Test Case 4: `_base` is now unused; width is always the max character width (1).
     assert_eq(prettify_string("abc", " ", 0), "a b c", "Test Case 4 Failed: base=0, width=1");
-
-    // text="abc", length=3. base=10. width = String(3+10-1).length = String(12).length = 2.
-    // pad_left(char, ' ', 2) -> " char"
-    assert_eq(prettify_string("abc", " ", 10), " a  b  c", "Test Case 4.1 Failed: base=10, width=2");
-
-    // text="abc", length=3. base=100. width = String(3+100-1).length = String(102).length = 3.
-    // pad_left(char, ' ', 3) -> "  char"
-    assert_eq(prettify_string("abc", " ", 100), "  a   b   c", "Test Case 4.2 Failed: base=100, width=3");
+    assert_eq(prettify_string("abc", " ", 10), "a b c", "Test Case 4.1 Failed: base=10, width=1");
+    assert_eq(prettify_string("abc", " ", 100), "a b c", "Test Case 4.2 Failed: base=100, width=1");
 
     // Test Case 5: Empty string
     // width calculation for empty string (length=0, base=0): String(0+0-1).length = String(-1).length = 2.
@@ -351,38 +338,35 @@ export function test_prettify_string(): void {
 
     // Test Case 7: Single character string
     assert_eq(prettify_string("a"), "a", "Test Case 7 Failed: Single character");
-    // length=1, base=10. String(1+10-1).length = String(10).length = 2. So width=2.
-    // pad_left("a", ' ', 2) -> " a"
-    assert_eq(prettify_string("a", "-", 10), " a", "Test Case 7.1 Failed: Single character with base=10 (width=2)");
+    // _base is unused; width is max char width = 1, so no padding beyond the char itself.
+    assert_eq(prettify_string("a", "-", 10), "a", "Test Case 7.1 Failed: Single character with base=10 (width=1)");
     assert_eq(prettify_string("a", "-", 0, false), "a", "Test Case 7.2 Failed: Single character, no tabularize");
 
-    // Test Case 8: `width` calculation with unusual `base`
-    // text="a", length=1. base=-10. (1 + (-10) - 1) = -10. String(-10).length = 3. So width=3.
-    // pad_left("a", ' ', 3) -> "  a"
-    assert_eq(prettify_string("a", " ", -10, true), "  a", "Test Case 8 Failed: Single char, negative base, width=3");
+    // Test Case 8: `_base` is unused; width is always max char width (1).
+    assert_eq(prettify_string("a", " ", -10, true), "a", "Test Case 8 Failed: Single char, width=1");
 
 }
 
 /**
  * Formats an array of values into a neatly aligned string.
  * Each element is converted to a string and then left-padded to ensure uniform width,
- * based on the number of digits in the largest possible index (array.length + base - 1).
+ * based on the maximum printed width of any element in the array.
  *
  * @template T The type of elements in the array, must be convertible to string.
  * @param array The array of values to prettify.
  * @param sep The separator string to use between prettified array elements. Defaults to a single space.
- * @param base The base offset for calculating the maximum index width. Defaults to 0.
- *             For example, if you want indices to start from 1, pass base = 1.
+ * @param base Unused. Kept for API compatibility.
  * @returns A string with the prettified and joined array elements.
  */
 function prettify_array<T extends { toString(): string }>(
     array: T[],
     sep: string = " ",
-    base: number = 0
+    _base: number = 0,
+    width?: number
 ): string {
-    const maxIndexValue = Math.max(0, array.length + base - 1);
-    const width = ("" + maxIndexValue).toString().length;
-    return array.map((x) => pad_left("" + x, ' ', width)).join(sep);
+    const effectiveWidth = width !== undefined ? width
+        : (array.length === 0 ? 0 : Math.max(...array.map((x) => ("" + x).length)));
+    return array.map((x) => pad_left("" + x, ' ', effectiveWidth)).join(sep);
 }
 
 /**
@@ -390,17 +374,15 @@ function prettify_array<T extends { toString(): string }>(
  * Assumes `assert_eq(a, b, message)` is available globally or imported.
  */
 export function test_prettify_array(): void {
-    // Test Case 1: Basic array of numbers with default separator and base
-    assert_eq(prettify_array([1, 22, 333]), "1 22 333", "Test 1 Failed: Basic numbers");
+    // Test Case 1: Width = max value width = 3 ("333"), all entries padded to 3.
+    assert_eq(prettify_array([1, 22, 333]), "  1  22 333", "Test 1 Failed: Basic numbers");
 
     // Test Case 2: Array with different separator
-    assert_eq(prettify_array([1, 22, 333], "-"), "1-22-333", "Test 2 Failed: Custom separator");
+    assert_eq(prettify_array([1, 22, 333], "-"), "  1- 22-333", "Test 2 Failed: Custom separator");
 
-    // Test Case 3: Array with different base (should affect width calculation)
-    // For [1, 22, 333] with base=1, max index is (3+1-1) = 3. Width of "3" is 1.
-    assert_eq(prettify_array([1, 22, 333], " ", 1), "1 22 333", "Test 3 Failed: Custom base 1");
-    // For [1, 22, 333] with base=10, max index is (3+10-1) = 12. Width of "12" is 2.
-    assert_eq(prettify_array([1, 22, 333], " ", 10), " 1 22 333", "Test 3.1 Failed: Custom base 10");
+    // Test Case 3: _base is unused; width still comes from max value width = 3.
+    assert_eq(prettify_array([1, 22, 333], " ", 1), "  1  22 333", "Test 3 Failed: Custom base 1");
+    assert_eq(prettify_array([1, 22, 333], " ", 10), "  1  22 333", "Test 3.1 Failed: Custom base 10");
 
     assert_eq(prettify_array([]), "", "Test 5 Failed: Empty array");
     assert_eq(prettify_array([], "-", 10), "", "Test 5.1 Failed: Empty array with custom params");
@@ -424,23 +406,31 @@ export function test_prettify_array(): void {
  *            When `factorization[i]` is true, the first character of `sep` is replaced by `'|'`,
  *            e.g., if `sep` is `" X"`, it becomes `"|X"`.
  *            If `sep` is an empty string `""`, `substring(1)` will correctly yield `""`.
- * @param base A base number used to influence the calculation of the padding width. Defaults to 0.
- *             The width is determined by the length of the string representation of `(factorization.length + base - 1)`.
+ * @param _base Unused. Kept for API compatibility.
  * @returns A formatted string representing the prettified factorization.
  */
-function prettify_factorization(text: string[], factorization: boolean[], sep: string = " ", base: number = 0): string {
-    const n: number = text.length;
-    /* The width calculation ensures a minimum width of 1 (for String(0).length) even if n + base - 1 is negative. */
-    const width: number = String(Math.max(0, n + base - 1)).length;
+function prettify_factorization(text: string[], factorization: boolean[], sep: string = " ", _base: number = 0, width?: number): string {
+    const textArr: string[] = Array.from(text);
+    const n: number = textArr.length;
+    const displayed: string[] = textArr.map((el: string, i: number) => (i === n - 1 && el === '\0') ? '$' : el);
+    const effectiveWidth: number = width !== undefined ? width
+        : (n === 0 ? 0 : Math.max(...displayed.map((el: string) => el.length)));
 
     let result: string = "";
+    let nextEffectiveWidth: number = effectiveWidth;
     for (let i: number = 0; i < n; ++i) {
-        // Determine the element to display. If it's the last element and the string '\0', replace with '$'.
-        const elementToDisplay: string = (i === n - 1 && text[i] === '\0') ? '$' : text[i];
-        result += pad_left(elementToDisplay, ' ', width);
+        result += pad_left(displayed[i], ' ', nextEffectiveWidth);
         // Append separator. If `factorization[i]` is true, use '|' followed by the rest of `sep`.
         // `sep.substring(1)` is safe even if `sep` is an empty string, returning `""`.
-        result += (factorization[i] === true) ? ('|' + sep.substring(1)) : sep;
+
+        if (factorization[i] === true) {
+            result += '|' + sep.substring(1);
+            if (sep.length == 0) nextEffectiveWidth = effectiveWidth - 1;
+        }
+        else {
+            result += sep;
+            nextEffectiveWidth = effectiveWidth;
+        }
     }
     return result;
 }
@@ -489,13 +479,13 @@ export function test_prettify_factorization(): void {
  * @returns {string} The string with encoded whitespace characters.
  */
 function encodeWhitespaces(text: string): string {
-  return text
-    .replace(/\r/g, '\u240d')  // CR
-    .replace(/\n/g, '\u21b5')  // LF
-    .replace(/\t/g, '\u2409')  // Tab
-    .replace(/\v/g, '\u240b')  // VT
-    .replace(/\f/g, '\u240c')  // FF
-    .replace(/ /g, '\u23b5');  // Space
+    return text
+        .replace(/\r/g, '\u240d')  // CR
+        .replace(/\n/g, '\u21b5')  // LF
+        .replace(/\t/g, '\u2409')  // Tab
+        .replace(/\v/g, '\u240b')  // VT
+        .replace(/\f/g, '\u240c')  // FF
+        .replace(/ /g, '\u23b5');  // Space
 }
 
 /**
@@ -506,46 +496,46 @@ function encodeWhitespaces(text: string): string {
  */
 function decodeWhitespaces(text: string): string {
     return text
-    .replace(/\u240d/g, '\r')  // CR
-    .replace(/\u21b5/g, '\n')  // LF
-    .replace(/\u2409/g, '\t')  // Tab
-    .replace(/\u240b/g, '\v')  // VT
-    .replace(/\u240c/g, '\f')  // FF
-    .replace(/\u23b5/g, ' ');  // Space
+        .replace(/\u240d/g, '\r')  // CR
+        .replace(/\u21b5/g, '\n')  // LF
+        .replace(/\u2409/g, '\t')  // Tab
+        .replace(/\u240b/g, '\v')  // VT
+        .replace(/\u240c/g, '\f')  // FF
+        .replace(/\u23b5/g, ' ');  // Space
 }
 
 export function test_whitespace_encoding_decoding(): void {
-  // Test 1: Empty string
-  assert_eq(decodeWhitespaces(""), "", "Test 1: Empty string decode");
+    // Test 1: Empty string
+    assert_eq(decodeWhitespaces(""), "", "Test 1: Empty string decode");
 
-  // Test 2: String with no whitespaces
-  const noWhitespaceText = "HelloWorld";
-  assert_eq(encodeWhitespaces(noWhitespaceText), noWhitespaceText, "Test 2: No whitespaces encode");
+    // Test 2: String with no whitespaces
+    const noWhitespaceText = "HelloWorld";
+    assert_eq(encodeWhitespaces(noWhitespaceText), noWhitespaceText, "Test 2: No whitespaces encode");
 
-  // Test 3: String with only spaces
-  const spacesText = "   ";
-  assert_eq(encodeWhitespaces(spacesText), "\u23b5\u23b5\u23b5", "Test 3: Only spaces encode");
-  assert_eq(decodeWhitespaces("\u23b5\u23b5\u23b5"), spacesText, "Test 3: Only spaces decode");
+    // Test 3: String with only spaces
+    const spacesText = "   ";
+    assert_eq(encodeWhitespaces(spacesText), "\u23b5\u23b5\u23b5", "Test 3: Only spaces encode");
+    assert_eq(decodeWhitespaces("\u23b5\u23b5\u23b5"), spacesText, "Test 3: Only spaces decode");
 
-  // Test 4: String with mixed whitespaces
-  const mixedWhitespaceText = "Line1\r\nLine2\tTabbed\vVertical\fFormFeed ";
-  const encodedMixed = encodeWhitespaces(mixedWhitespaceText);
-  const expectedEncoded = "Line1\u240d\u21b5Line2\u2409Tabbed\u240bVertical\u240cFormFeed\u23b5";
-  assert_eq(encodedMixed, expectedEncoded, "Test 4: Mixed whitespaces encode");
-  assert_eq(decodeWhitespaces(expectedEncoded), mixedWhitespaceText, "Test 4: Mixed whitespaces decode");
+    // Test 4: String with mixed whitespaces
+    const mixedWhitespaceText = "Line1\r\nLine2\tTabbed\vVertical\fFormFeed ";
+    const encodedMixed = encodeWhitespaces(mixedWhitespaceText);
+    const expectedEncoded = "Line1\u240d\u21b5Line2\u2409Tabbed\u240bVertical\u240cFormFeed\u23b5";
+    assert_eq(encodedMixed, expectedEncoded, "Test 4: Mixed whitespaces encode");
+    assert_eq(decodeWhitespaces(expectedEncoded), mixedWhitespaceText, "Test 4: Mixed whitespaces decode");
 
-  // Test 5: String with consecutive whitespace characters
-  const consecutiveWhitespaceText = " \t\n\r\v\f ";
-  const encodedConsecutive = encodeWhitespaces(consecutiveWhitespaceText);
-  const expectedEncodedConsecutive = "\u23b5\u2409\u21b5\u240d\u240b\u240c\u23b5";
-  assert_eq(encodedConsecutive, expectedEncodedConsecutive, "Test 5: Consecutive whitespaces encode");
-  assert_eq(decodeWhitespaces(expectedEncodedConsecutive), consecutiveWhitespaceText, "Test 5: Consecutive whitespaces decode");
+    // Test 5: String with consecutive whitespace characters
+    const consecutiveWhitespaceText = " \t\n\r\v\f ";
+    const encodedConsecutive = encodeWhitespaces(consecutiveWhitespaceText);
+    const expectedEncodedConsecutive = "\u23b5\u2409\u21b5\u240d\u240b\u240c\u23b5";
+    assert_eq(encodedConsecutive, expectedEncodedConsecutive, "Test 5: Consecutive whitespaces encode");
+    assert_eq(decodeWhitespaces(expectedEncodedConsecutive), consecutiveWhitespaceText, "Test 5: Consecutive whitespaces decode");
 
-  // Test 6: Round-trip encoding and decoding
-  const originalText = "Sample text with \r\n various \t whitespace \v characters\f.";
-  const encodedText = encodeWhitespaces(originalText);
-  const decodedText = decodeWhitespaces(encodedText);
-  assert_eq(decodedText, originalText, "Test 6: Round-trip encoding and decoding");
+    // Test 6: Round-trip encoding and decoding
+    const originalText = "Sample text with \r\n various \t whitespace \v characters\f.";
+    const encodedText = encodeWhitespaces(originalText);
+    const decodedText = decodeWhitespaces(encodedText);
+    assert_eq(decodedText, originalText, "Test 6: Round-trip encoding and decoding");
 }
 
 /**
@@ -618,171 +608,171 @@ export function test_utility_edge_cases() {
 // NEW
 
 interface IntRow {
-	name: string;
-	data: number[];
+    name: string;
+    data: number[];
 }
 
 interface StringRow {
-	name: string;
-	data: string[];
+    name: string;
+    data: string[];
 }
 
 interface BoolRow {
-	name: string;
-	data: boolean[];
+    name: string;
+    data: boolean[];
 }
 
 type Row = IntRow | StringRow | BoolRow;
 
 function repeat(str: string, n: number): string {
-	let r = "";
-	while (n-- > 0) r += str;
-	return r;
+    let r = "";
+    while (n-- > 0) r += str;
+    return r;
 }
 
 function escapeLatex(s: unknown): string {
-	return String(s)
-		.replace(/\\/g, "\\textbackslash{}")
-		.replace(/([#$%&_{}])/g, "\\$1");
+    return String(s)
+        .replace(/\\/g, "\\textbackslash{}")
+        .replace(/([#$%&_{}])/g, "\\$1");
 }
 
 
 function isBoolRow(row: Row): row is BoolRow {
-        return typeof row.data[0] === "boolean";
+    return typeof row.data[0] === "boolean";
 }
 
 function isStringRow(row: Row): row is StringRow {
-        return typeof row.data[0] === "string";
+    return typeof row.data[0] === "string";
 }
 
 function partitionsFromBool(boolArr: boolean[]): number[] {
-	const parts: number[] = [];
-	let len = 0;
+    const parts: number[] = [];
+    let len = 0;
 
-	for (let i = 0; i < boolArr.length; i++) {
-		len++;
-		if (boolArr[i]) {
-			parts.push(len);
-			len = 0;
-		}
-	}
-	return parts;
+    for (let i = 0; i < boolArr.length; i++) {
+        len++;
+        if (boolArr[i]) {
+            parts.push(len);
+            len = 0;
+        }
+    }
+    return parts;
 }
 
 function export_latex(rows: Row[]): string {
-	const n = rows[0].data.length;
+    const n = rows[0].data.length;
 
-	const tRow = rows.find(isStringRow);
-	if (!tRow) {
-		throw new Error("Row T (string[]) required");
-	}
-	const T = tRow.data;
+    const tRow = rows.find(isStringRow);
+    if (!tRow) {
+        throw new Error("Row T (string[]) required");
+    }
+    const T = tRow.data;
 
-	const out: string[] = [];
-	out.push(`\\begin{tabular}{l|${"c".repeat(n)}}`);
-	out.push("\\hline");
+    const out: string[] = [];
+    out.push(`\\begin{tabular}{l|${"c".repeat(n)}}`);
+    out.push("\\hline");
 
-	for (const row of rows) {
-		let line = `${escapeLatex(row.name)} & `;
+    for (const row of rows) {
+        let line = `${escapeLatex(row.name)} & `;
 
-		if (isBoolRow(row)) {
-			const parts = partitionsFromBool(row.data);
-			let pos = 0;
+        if (isBoolRow(row)) {
+            const parts = partitionsFromBool(row.data);
+            let pos = 0;
 
-			for (let p = 0; p < parts.length; p++) {
-				const k = parts[p];
-				let text = "";
+            for (let p = 0; p < parts.length; p++) {
+                const k = parts[p];
+                let text = "";
 
-				for (let i = 0; i < k; i++) {
-					text += escapeLatex(T[pos++]);
-				}
+                for (let i = 0; i < k; i++) {
+                    text += escapeLatex(T[pos++]);
+                }
 
-				line += `\\multicolumn{${k}}{c}{${text}}`;
-				if (p !== parts.length - 1) line += " & ";
-			}
-		} else {
-			for (let i = 0; i < n; i++) {
-				line += escapeLatex(row.data[i]);
-				if (i !== n - 1) line += " & ";
-			}
-		}
+                line += `\\multicolumn{${k}}{c}{${text}}`;
+                if (p !== parts.length - 1) line += " & ";
+            }
+        } else {
+            for (let i = 0; i < n; i++) {
+                line += escapeLatex(row.data[i]);
+                if (i !== n - 1) line += " & ";
+            }
+        }
 
-		line += " \\\\";
-		out.push(line);
-	}
+        line += " \\\\";
+        out.push(line);
+    }
 
-	out.push("\\hline");
-	out.push("\\end{tabular}");
-	return out.join("\n");
+    out.push("\\hline");
+    out.push("\\end{tabular}");
+    return out.join("\n");
 }
 
 function export_markdown(rows: Row[]): string {
-	const n = rows[0].data.length;
+    const n = rows[0].data.length;
 
-	const tRow = rows.find(isStringRow);
-	if (!tRow) {
-		throw new Error("Row T (string[]) required for boolean partitions");
-	}
-	const T = tRow.data;
+    const tRow = rows.find(isStringRow);
+    if (!tRow) {
+        throw new Error("Row T (string[]) required for boolean partitions");
+    }
+    const T = tRow.data;
 
-	const out: string[] = [];
+    const out: string[] = [];
 
-	/* header */
-	const header: string[] = [" "];
-	for (let i = 0; i < n; i++) {
-		header.push(String(i + 1));
-	}
-	out.push("|" + header.join("|") + "|");
-	out.push("|" + repeat("---|", n + 1));
+    /* header */
+    const header: string[] = [" "];
+    for (let i = 0; i < n; i++) {
+        header.push(String(i + 1));
+    }
+    out.push("|" + header.join("|") + "|");
+    out.push("|" + repeat("---|", n + 1));
 
-	for (const row of rows) {
-		const cells: string[] = [row.name];
+    for (const row of rows) {
+        const cells: string[] = [row.name];
 
-		if (isBoolRow(row)) {
-			let s = "";
-			for (let i = 0; i < n; i++) {
-				s += T[i];
-				if (row.data[i]) s += "|";
-			}
-			cells.push(s);
-		} else {
-			for (let i = 0; i < n; i++) {
-				cells.push(String(row.data[i]));
-			}
-		}
+        if (isBoolRow(row)) {
+            let s = "";
+            for (let i = 0; i < n; i++) {
+                s += T[i];
+                if (row.data[i]) s += "|";
+            }
+            cells.push(s);
+        } else {
+            for (let i = 0; i < n; i++) {
+                cells.push(String(row.data[i]));
+            }
+        }
 
-		out.push("|" + cells.join("|") + "|");
-	}
+        out.push("|" + cells.join("|") + "|");
+    }
 
-	return out.join("\n");
+    return out.join("\n");
 }
 
 function escape_csv(value: unknown): string {
-	const s = String(value);
-	if (/[",\n]/.test(s)) {
-		return `"${s.replace(/"/g, '""')}"`;
-	}
-	return s;
+    const s = String(value);
+    if (/[",\n]/.test(s)) {
+        return `"${s.replace(/"/g, '""')}"`;
+    }
+    return s;
 }
 
 
 
 function export_csv(rows: Row[]): string {
-	const n = rows[0].data.length;
+    const n = rows[0].data.length;
 
-	const out: string[] = [];
-	for (const row of rows) {
-		const cells: string[] = [];
-		cells.push(row.name);
+    const out: string[] = [];
+    for (const row of rows) {
+        const cells: string[] = [];
+        cells.push(row.name);
 
-                for (let i = 0; i < n; i++) {
-                    cells.push(String(row.data[i]));
-                }
+        for (let i = 0; i < n; i++) {
+            cells.push(String(row.data[i]));
+        }
 
-		out.push(cells.map(escape_csv).join(","));
-	}
+        out.push(cells.map(escape_csv).join(","));
+    }
 
-	return out.join("\n");
+    return out.join("\n");
 }
 export function test_export_formats(): void {
     const rows: Row[] = [
