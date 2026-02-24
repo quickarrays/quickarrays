@@ -261,6 +261,13 @@ body {
     opacity: .3;
 }
 
+.qa-item-ghost-invisible {
+    display: none !important;
+}
+
+.qa-item>.qa-item {
+    background-color: #000 !important;
+}
 
 #qa-transform-list,
 #qa-generate-string-list {
@@ -313,8 +320,8 @@ body {
 
 #qa-structures-add-btn.qa-drag-active,
 #qa-counter-add-btn.qa-drag-active {
-    animation: qa-wiggle .9s ease-in-out infinite;
-    transform-origin: 50% 80%;
+    /*animation: qa-wiggle .9s ease-in-out infinite;
+    transform-origin: 50% 80%;*/
     background-color: #D00;
 }
 
