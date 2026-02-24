@@ -135,6 +135,7 @@ var transform_default;
 var prepend_default;
 var append_default;
 var timeout_default;
+var counter_digits_default;
 const counter_automatic_default = true;
 
 function update_history_internal() {
@@ -172,6 +173,11 @@ function update_history_internal() {
 	const timeout_query = qa_timeout_range.value;
 	if (timeout_query != timeout_default) {
 		newQuery = newQuery.set("timeout", timeout_query);
+	}
+
+	const counter_digits_query = qa_counter_digits_range.value;
+	if (counter_digits_query != counter_digits_default) {
+		newQuery = newQuery.set("counter_digits", counter_digits_query);
 	}
 
 	const prepend_query = qa_prepend_input.value;
@@ -256,6 +262,12 @@ function load_history_internal() {
 	if (timeout_query) {
 		qa_timeout_range.value = timeout_query;
 		qa_timeout_value.textContent = timeout_query;
+	}
+
+	const counter_digits_query = getQueryString("counter_digits");
+	if (counter_digits_query) {
+		qa_counter_digits_range.value = counter_digits_query;
+		qa_counter_digits_value.textContent = counter_digits_query == '10' ? '\u221e' : counter_digits_query;
 	}
 
 	const prepend_query = getQueryString("prepend");
@@ -469,7 +481,17 @@ function fill_updates(DS) {
 
 	const result = [];
 
-	const wrapVal = (v) => '<span class="qa-counter-value">' + v + '</span>';
+	const formatCounterVal = (v) => {
+		if (typeof v === 'number') {
+			const digits = Number(qa_counter_digits_range.value);
+			if (digits < 10) {
+				const rounded = v.toFixed(digits);
+				return parseFloat(rounded).toString();
+			}
+		}
+		return v;
+	};
+	const wrapVal = (v) => '<span class="qa-counter-value">' + formatCounterVal(v) + '</span>';
 	if (qa_counter_automatic.checked) {
 		if (DS["counter_n"] !== undefined) result.push("n: " + wrapVal(DS["counter_n"]));
 		if (DS["counter_sigma"] !== undefined) {
@@ -724,6 +746,8 @@ var qa_output_select;
 
 var qa_timeout_range;
 var qa_timeout_value;
+var qa_counter_digits_range;
+var qa_counter_digits_value;
 var qa_computation_status;
 
 function qa_html_to_text(html) {
@@ -808,6 +832,14 @@ window.onload = function () {
 		qa_timeout_value.textContent = qa_timeout_range.value;
 		update_history();
 	};
+
+	qa_counter_digits_range = document.getElementById('qa-counter-digits-range');
+	qa_counter_digits_value = document.getElementById('qa-counter-digits-value');
+	qa_counter_digits_range.oninput = () => {
+		qa_counter_digits_value.textContent = qa_counter_digits_range.value == '10' ? '\u221e' : qa_counter_digits_range.value;
+		updateArrays();
+		update_history();
+	};
 	qa_computation_status = document.getElementById('qa-computation-status');
 
 	qa_output_select = document.getElementById('qa-output-select');
@@ -834,6 +866,7 @@ window.onload = function () {
 	qa_loading_spinner = document.getElementById('qa-loading-spinner');
 
 	timeout_default = qa_timeout_range.value;
+	counter_digits_default = qa_counter_digits_range.value;
 	qa_separator_input.value = encodeWhitespaces(separator_default);
 	generate_string_default = qa_generate_string_list.value;
 	updateSliderForGenerator(16);
