@@ -315,7 +315,7 @@ body {
 
 #qa-structures-add-btn,
 #qa-counter-add-btn {
-    background-color: #DDD;
+    background-color: #6D6;
     cursor: pointer;
 }
 
@@ -323,7 +323,7 @@ body {
 #qa-counter-add-btn.qa-drag-active {
     animation: qa-wiggle .9s ease-in-out infinite;
     transform-origin: 50% 80%;
-    background-color: #D00;
+    background-color: #D66;
 }
 
 /* Compact view: controls wrapper is invisible to layout; add-wrapper sits in the flex row */
