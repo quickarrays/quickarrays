@@ -91,6 +91,38 @@ body {
     /* fade-in: 100ms duration, 50ms delay */
 }
 
+body.qa-page-loading #qa-loading-spinner {
+    opacity: 1;
+    transition: opacity 500ms 100ms;
+}
+
+#qa-loading-text {
+    position: absolute;
+    top: 50%;
+    left: 3.5em;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 500ms;
+    font-size: 0.9em;
+    color: #555;
+    white-space: nowrap;
+}
+
+#qa-loading-spinner.qa-spinning~#qa-loading-text,
+body.qa-page-loading #qa-loading-text {
+    opacity: 1;
+    transition: opacity 500ms 100ms;
+}
+
+body.qa-page-loading {
+    height: 100vh;
+}
+
+body.qa-page-loading .qa-main {
+    opacity: 0;
+    pointer-events: none;
+}
+
 @keyframes qa-spin {
     to {
         transform: translateY(-50%) rotate(360deg);
@@ -132,6 +164,7 @@ body {
     padding: 1em;
     border: 2px solid #9B9;
     border-radius: 0.5em;
+    transition: opacity 500ms;
     background-color: #CFC;
     width: 1680px;
     margin: 1em auto;
