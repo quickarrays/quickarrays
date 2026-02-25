@@ -1268,7 +1268,7 @@ window.onload = function () {
 			const prevStart = sortable.option('onStart');
 			sortable.option('onStart', function (evt) {
 				if (prevStart) prevStart.call(this, evt);
-				btnEl.innerHTML = '<svg class="qa-bin-icon" aria-hidden="true"><use href="#icon-trash-x"></use></svg>';
+				btnEl.textContent = '';
 				btnEl.classList.add('qa-drag-active');
 				if (selectEl) selectEl.style.pointerEvents = 'none';
 			});

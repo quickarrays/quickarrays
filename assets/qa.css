@@ -347,11 +347,44 @@ body.qa-page-loading .qa-main {
     }
 }
 
-.qa-bin-icon {
+/*
+License for bin icon from: https://github.com/tabler/tabler-icons
+    
+MIT License
+
+Copyright (c) 2020-2026 Paweł Kuna
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+/* Trash icon shown via ::before so btnEl has no DOM children during drag —
+   Sortable._onDragOver checks el.children.length === 0 to accept drops anywhere. */
+#qa-structures-add-btn.qa-drag-active::before,
+#qa-counter-add-btn.qa-drag-active::before {
+    content: '';
+    display: block;
     width: 1em;
     height: 1em;
-    fill: black;
-    vertical-align: -0.125em;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M20 6a1 1 0 0 1 .117 1.993l-.117 .007h-.081l-.919 11a3 3 0 0 1 -2.824 2.995l-.176 .005h-8c-1.598 0 -2.904 -1.249 -2.992 -2.75l-.005 -.167l-.923 -11.083h-.08a1 1 0 0 1 -.117 -1.993l.117 -.007h16zm-9.489 5.14a1 1 0 0 0 -1.218 1.567l1.292 1.293l-1.292 1.293l-.083 .094a1 1 0 0 0 1.497 1.32l1.293 -1.292l1.293 1.292l.094 .083a1 1 0 0 0 1.32 -1.497l-1.292 -1.293l1.292 -1.293l.083 -.094a1 1 0 0 0 -1.497 -1.32l-1.293 1.292l-1.293 -1.292l-.094 -.083z'/%3E%3Cpath d='M14 2a2 2 0 0 1 2 2a1 1 0 0 1 -1.993 .117l-.007 -.117h-4l-.007 .117a1 1 0 0 1 -1.993 -.117a2 2 0 0 1 1.85 -1.995l.15 -.005h4z'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 #qa-structures-add-btn,
@@ -379,6 +412,15 @@ body.qa-page-loading .qa-main {
     display: inline-flex;
     flex-shrink: 0;
     align-self: flex-start;
+    margin: .25em;
+    /* mirror the .qa-item margin removed below */
+}
+
+/* Remove margin so btnEl fills the wrapper completely — ensures elementFromPoint()
+   always returns btnEl (not the wrapper) for the full visual hit area, which lets
+   Sortable's touch hit-testing correctly identify the bin drop target. */
+.qa-add-wrapper>.qa-item {
+    margin: 0;
 }
 
 /* Invisible select overlays the qa-item button; bottom-left corners aligned */
