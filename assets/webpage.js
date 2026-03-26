@@ -406,6 +406,8 @@ function fill_updates(DS) {
 		qa_ds_output.value = export_latex(rows);
 	} else if (qa_output_select.value == 'markdown') {
 		qa_ds_output.value = export_markdown(rows);
+	} else if (qa_output_select.value == 'none') {
+		qa_ds_output.value = '';
 	} else {
 		qa_ds_output.value = export_csv(rows);
 	}
