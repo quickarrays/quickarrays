@@ -24,6 +24,11 @@ class AlgorithmError extends Error {
     }
 }
 
+function string_compare(textA: string, textB: string): number {
+    // localeCompare does not respect 0 bytes
+    return textA < textB ? -1 : textA > textB ? 1 : 0;
+}
+
 /**
  * @name n
  * @description Length of the text
@@ -158,7 +163,7 @@ function construct_suffix_array(text: string): number[] {
 
     // Sort the rotations array based on the lexicographical order of the conjugated strings (the second element of the tuple).
     // The sort method modifies the array in-place.
-    rotations.sort((a: RotationEntry, b: RotationEntry) => a[1].localeCompare(b[1]));
+    rotations.sort((a: RotationEntry, b: RotationEntry) => string_compare(a[1], b[1]));
 
     // Map the sorted rotations back to an array containing only their original indices.
     return rotations.map((rotation: RotationEntry) => rotation[0]);
@@ -302,7 +307,7 @@ function construct_rotation_array(text: string): number[] {
     // Sort the rotations array based on the lexicographical order of the conjugated strings (the second element of the tuple).
     // The sort method modifies the array in-place.
     rotations.sort((a: RotationEntry, b: RotationEntry) => {
-        const cmp = a[1].localeCompare(b[1]);
+        const cmp = string_compare(a[1], b[1]);
         if (cmp !== 0) return cmp;
         return a[0] - b[0]; // Stable sort: preserve original order for ties
     });
@@ -319,6 +324,8 @@ export function test_rotation_array() {
     assert_eq(construct_rotation_array("aaaaa"), [0, 1, 2, 3, 4], "Rotation array of 'aaaaa'");
     assert_eq(construct_rotation_array("edcba"), [4, 3, 2, 1, 0], "Rotation array of 'edcba'");
     assert_eq(construct_rotation_array("abcde"), [0, 1, 2, 3, 4], "Rotation array of 'abcde'");
+    assert_eq(construct_rotation_array("mississippi$"), [12,11,8,5,2,1,10,9,7,4,6,3], "Rotation array of 'mississippi$'");
+    assert_eq(construct_rotation_array("mississippi" + '\0'), [12,11,8,5,2,1,10,9,7,4,6,3], "Rotation array of 'mississippi0'");
 }
 
 
