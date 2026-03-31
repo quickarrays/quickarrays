@@ -324,8 +324,8 @@ export function test_rotation_array() {
     assert_eq(construct_rotation_array("aaaaa"), [0, 1, 2, 3, 4], "Rotation array of 'aaaaa'");
     assert_eq(construct_rotation_array("edcba"), [4, 3, 2, 1, 0], "Rotation array of 'edcba'");
     assert_eq(construct_rotation_array("abcde"), [0, 1, 2, 3, 4], "Rotation array of 'abcde'");
-    assert_eq(construct_rotation_array("mississippi$"), [12,11,8,5,2,1,10,9,7,4,6,3], "Rotation array of 'mississippi$'");
-    assert_eq(construct_rotation_array("mississippi" + '\0'), [12,11,8,5,2,1,10,9,7,4,6,3], "Rotation array of 'mississippi0'");
+    assert_eq(construct_rotation_array("mississippi$"), [11,10,7,4,1,0,9,8,6,3,5,2], "Rotation array of 'mississippi$'");
+    assert_eq(construct_rotation_array("mississippi" + '\0'), [11,10,7,4,1,0,9,8,6,3,5,2], "Rotation array of 'mississippi0'");
 }
 
 
@@ -2344,3 +2344,128 @@ export function test_gamma_factorization() {
     test_helper('edcba', [0, 1, 2, 3, 4]);
     test_helper('abab', [0, 1]);
 }
+
+
+function mapStringToRankArray(text : string): { ranks: number[], sigma: number } {
+	const n = text.length;
+
+	// Map: char -> integer
+	const charToInt = new Map();
+
+	let nextId = 1; // 0 is reserved for terminator
+	const ranks : number[] = new Array(n);
+
+	for (let i = 0; i < n; i++) {
+		const c = text[i];
+		if (!charToInt.has(c)) {
+			charToInt.set(c, nextId++);
+		}
+
+		ranks[i] = charToInt.get(c);
+	}
+
+	const sigma = nextId; // includes 0
+
+	return { ranks, sigma };
+}
+//
+// /**
+//  * @name smallest suffixient set
+//  * @kind disable
+//  * @type factor
+//  * @description Smallest Suffixient Set
+//  * @tutorial A suffixient set is a set of positions in a string such that every distinct substring has at least one occurrence that starts at one of these positions. The smallest suffixient set size is the minimum number of positions needed to form such a set. Here, we compute the smallest suffixient set using the LCP array, suffix array, and BWT of the string.
+//  * @cite 
+//  */
+// function construct_suffixient_set(lcp_array : number[], sa_array : number[], bw_transform : string) {
+// 	const n = sa_array.length;
+// 	const { ranks: BWT, sigma } = mapStringToRankArray(bw_transform);
+//
+// 	// candidate structure: {len, pos, active}
+// 	const R = Array.from({ length: sigma }, () => ({
+// 		len: -1,
+// 		pos: 0,
+// 		active: false
+// 	}));
+//
+// 	const S = [];
+//
+// 	function evalChar(c, m) {
+// 		if (m < R[c].len) {
+// 			if (R[c].active) {
+// 				S.push(R[c].pos);
+// 			}
+// 			R[c] = { len: m, pos: 0, active: false };
+// 		}
+// 	}
+//
+// 	// build LF pointers
+// 	const pointers = new Array(sigma).fill(0);
+// 	pointers[0] = 0;
+//
+// 	for (let i = 1; i < n; i++) {
+// 		if (BWT[i - 1] !== BWT[i]) {
+// 			pointers[BWT[i]] = i;
+// 		}
+// 	}
+//
+// 	// main scan
+// 	let m = Number.MAX_SAFE_INTEGER;
+//
+// 	let c = BWT[0];
+// 	pointers[c]++;
+//
+// 	for (let i = 1; i < n; i++) {
+// 		c = BWT[i];
+// 		pointers[c]++;
+//
+// 		m = Math.min(m, lcp_array[i]);
+//
+// 		if (BWT[i] !== BWT[i - 1]) {
+// 			for (let ip = i - 1; ip <= i; ip++) {
+// 				const ch = BWT[ip];
+//
+// 				if (ip === i - 1) {
+// 					evalChar(ch, m);
+// 				} else if (R[ch].len !== -1) {
+// 					evalChar(ch, lcp_array[pointers[ch] - 1] - 1);
+// 				}
+//
+// 				if (lcp_array[i] > R[ch].len && ch !== 0) {
+// 					R[ch] = {
+// 						len: lcp_array[i],
+// 						pos: n - sa_array[ip],
+// 						active: true
+// 					};
+// 				}
+// 			}
+// 			m = Number.MAX_SAFE_INTEGER;
+// 		}
+// 	}
+//
+// 	// finalize remaining candidates
+// 	for (let c = 1; c < sigma; c++) {
+// 		evalChar(c, -1);
+// 	}
+//
+// 	return S;
+// }
+//
+// export function test_suffixient_set() {
+//
+//     function get_suffixient_positions(text: string): number[] {
+//         const sa = construct_suffix_array(text);
+//         const isa = construct_inverse_suffix_array(sa);
+//         const lcp = construct_lcp_array(text, sa);
+//         const bwt = construct_bw_transform(text, sa);
+//         const sigma = new Set(text).size + 1; // +1 for terminator
+//
+//         const suffixientSet = construct_suffixient_set(lcp, sa, bwt);
+//         return suffixientSet;
+//     }
+//
+//     assert_eq(get_suffixient_positions("banana").sort(), [0, 1, 2], "Suffixient set of 'banana'");
+//     assert_eq(get_suffixient_positions("a"), [0], "Suffixient set of 'a'");
+//     assert_eq(get_suffixient_positions(""), [], "Suffixient set of empty string");
+// }
+//
