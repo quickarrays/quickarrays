@@ -2368,104 +2368,114 @@ function mapStringToRankArray(text : string): { ranks: number[], sigma: number }
 
 	return { ranks, sigma };
 }
-//
-// /**
-//  * @name smallest suffixient set
-//  * @kind disable
-//  * @type factor
-//  * @description Smallest Suffixient Set
-//  * @tutorial A suffixient set is a set of positions in a string such that every distinct substring has at least one occurrence that starts at one of these positions. The smallest suffixient set size is the minimum number of positions needed to form such a set. Here, we compute the smallest suffixient set using the LCP array, suffix array, and BWT of the string.
-//  * @cite 
-//  */
-// function construct_suffixient_set(lcp_array : number[], sa_array : number[], bw_transform : string) {
-// 	const n = sa_array.length;
-// 	const { ranks: BWT, sigma } = mapStringToRankArray(bw_transform);
-//
-// 	// candidate structure: {len, pos, active}
-// 	const R = Array.from({ length: sigma }, () => ({
-// 		len: -1,
-// 		pos: 0,
-// 		active: false
-// 	}));
-//
-// 	const S = [];
-//
-// 	function evalChar(c, m) {
-// 		if (m < R[c].len) {
-// 			if (R[c].active) {
-// 				S.push(R[c].pos);
-// 			}
-// 			R[c] = { len: m, pos: 0, active: false };
-// 		}
-// 	}
-//
-// 	// build LF pointers
-// 	const pointers = new Array(sigma).fill(0);
-// 	pointers[0] = 0;
-//
-// 	for (let i = 1; i < n; i++) {
-// 		if (BWT[i - 1] !== BWT[i]) {
-// 			pointers[BWT[i]] = i;
-// 		}
-// 	}
-//
-// 	// main scan
-// 	let m = Number.MAX_SAFE_INTEGER;
-//
-// 	let c = BWT[0];
-// 	pointers[c]++;
-//
-// 	for (let i = 1; i < n; i++) {
-// 		c = BWT[i];
-// 		pointers[c]++;
-//
-// 		m = Math.min(m, lcp_array[i]);
-//
-// 		if (BWT[i] !== BWT[i - 1]) {
-// 			for (let ip = i - 1; ip <= i; ip++) {
-// 				const ch = BWT[ip];
-//
-// 				if (ip === i - 1) {
-// 					evalChar(ch, m);
-// 				} else if (R[ch].len !== -1) {
-// 					evalChar(ch, lcp_array[pointers[ch] - 1] - 1);
-// 				}
-//
-// 				if (lcp_array[i] > R[ch].len && ch !== 0) {
-// 					R[ch] = {
-// 						len: lcp_array[i],
-// 						pos: n - sa_array[ip],
-// 						active: true
-// 					};
-// 				}
-// 			}
-// 			m = Number.MAX_SAFE_INTEGER;
-// 		}
-// 	}
-//
-// 	// finalize remaining candidates
-// 	for (let c = 1; c < sigma; c++) {
-// 		evalChar(c, -1);
-// 	}
-//
-// 	return S;
-// }
-//
-// export function test_suffixient_set() {
-//
-//     function get_suffixient_positions(text: string): number[] {
-//         const sa = construct_suffix_array(text);
-//         const isa = construct_inverse_suffix_array(sa);
-//         const lcp = construct_lcp_array(text, sa);
-//         const bwt = construct_bw_transform(text, sa);
-//         const sigma = new Set(text).size + 1; // +1 for terminator
-//
-//         const suffixientSet = construct_suffixient_set(lcp, sa, bwt);
-//         return suffixientSet;
-//     }
-//
-//     assert_eq(get_suffixient_positions("banana").sort(), [0, 1, 2], "Suffixient set of 'banana'");
-//     assert_eq(get_suffixient_positions("a"), [0], "Suffixient set of 'a'");
-//     assert_eq(get_suffixient_positions(""), [], "Suffixient set of empty string");
-// }
-//
+
+/**
+ * @name χ
+ * @kind disable
+ * @type factor
+ * @description Smallest Suffixient Set
+ * @tutorial A set of text positions is suffixient if for every right-maximal substring, every one-character right-extension of it is a suffix of a prefix of the text that ends at one of the positions in the set. A substring is right-maximal if it is a suffix of the text or can be extended to the right with at least two different characters. A one-character right-extension of a substring \(T[i..j]\) is \(T[i, j+1]\). A smallest suffixient set is a suffixient set with the minimum number of positions. 
+ * @cite cenzato24computing
+ *
+ *
+ */
+function construct_suffixient_set(lcp_array : number[], suffix_array : number[], bw_transform : string) : boolean[] {
+	const n = suffix_array.length;
+  if(n === 0) { return []; }
+  if(n === 1) { return [true]; }
+	const { ranks: BWT, sigma } = mapStringToRankArray(bw_transform);
+
+	// candidate structure: {len, pos, active}
+	const R = Array.from({ length: sigma }, () => ({
+		len: -1,
+		pos: 0,
+		active: false
+	}));
+
+	const S = [];
+
+	function evalChar(c, m) {
+		if (m < R[c].len) {
+			if (R[c].active) {
+				S.push(R[c].pos);
+			}
+			R[c] = { len: m, pos: 0, active: false };
+		}
+	}
+
+	// build LF pointers
+	const pointers = new Array(sigma).fill(0);
+	pointers[0] = 0;
+
+	for (let i = 1; i < n; i++) {
+		if (BWT[i - 1] !== BWT[i]) {
+			pointers[BWT[i]] = i;
+		}
+	}
+
+	// main scan
+	let m = Number.MAX_SAFE_INTEGER;
+
+	let c = BWT[0];
+	pointers[c]++;
+
+	for (let i = 1; i < n; i++) {
+		c = BWT[i];
+		pointers[c]++;
+
+		m = Math.min(m, lcp_array[i]);
+
+		if (BWT[i] !== BWT[i - 1]) {
+			for (let ip = i - 1; ip <= i; ip++) {
+				const ch = BWT[ip];
+
+				if (ip === i - 1) {
+					evalChar(ch, m);
+				} else if (R[ch].len !== -1) {
+					evalChar(ch, lcp_array[pointers[ch] - 1] - 1);
+				}
+
+				if (lcp_array[i] > R[ch].len && ch !== 0) {
+					R[ch] = {
+						len: lcp_array[i],
+						pos: n - suffix_array[ip],
+						active: true
+					};
+				}
+			}
+			m = Number.MAX_SAFE_INTEGER;
+		}
+	}
+
+	// finalize remaining candidates
+	for (let c = 1; c < sigma; c++) {
+		evalChar(c, -1);
+	}
+
+  const result: boolean[] = new Array<boolean>(n).fill(false);
+  for (let i = 0; i < S.length; i++) {
+    result[S[i]] = true;
+  }
+	return result;
+}
+
+export function test_suffixient_set() {
+
+    function get_suffixient_positions(text: string): number[] {
+        const sa = construct_suffix_array(text);
+        const isa = construct_inverse_suffix_array(sa);
+        const lcp = construct_lcp_array(text, sa);
+        const bwt = construct_bw_transform(text, sa);
+        const sigma = new Set(text).size + 1; // +1 for terminator
+
+        const suffixientSet = construct_suffixient_set(lcp, sa, bwt);
+        return factorization_to_positions(suffixientSet);
+    }
+
+    assert_eq(get_suffixient_positions(""), [], "Suffixient set of empty string");
+    assert_eq(get_suffixient_positions("a"), [0], "Suffixient set of 'a'");
+    assert_eq(get_suffixient_positions("a$"), [1,2], "Suffixient set of 'a'");
+    assert_eq(get_suffixient_positions("aaaa$"), [4,5], "Suffixient set of 'a'");
+    assert_eq(get_suffixient_positions("banana$").sort(), [1,4,6,7], "Suffixient set of 'banana'");
+}
+
