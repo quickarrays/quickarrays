@@ -2422,21 +2422,9 @@ function construct_suffixient_set_factorization(text : string) : boolean[] {
     }
   }
 
-  // build LF pointers
-  const pointers = new Array(sigma).fill(0);
-  pointers[0] = 0;
-  for (let i = 1; i < n; i++) {
-    if (BWT(i - 1) !== BWT(i)) {
-      pointers[BWT(i)] = i;
-    }
-  }
   // main scan
   let m = Number.MAX_SAFE_INTEGER;
-  let c = BWT(0);
-  pointers[c]++;
   for (let i = 1; i < n; i++) {
-    c = BWT(i);
-    pointers[c]++;
     m = Math.min(m, lcp_array[i]);
     if (BWT(i) !== BWT(i - 1)) {
       evalChar(m);
