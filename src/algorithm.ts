@@ -29,6 +29,7 @@ function string_compare(textA: string, textB: string): number {
     return textA < textB ? -1 : textA > textB ? 1 : 0;
 }
 
+
 /**
  * @name n
  * @description Length of the text
@@ -2345,30 +2346,50 @@ export function test_gamma_factorization() {
     test_helper('abab', [0, 1]);
 }
 
+// function mapStringToRankArray(text) {
+//   const n = text.length;
+//   const chars = new Set();
+//   for (let i = 0; i < n; i++) {
+//     chars.add(text[i]);
+//   }
+//   const chars_sorted = Array.from(chars).sort();
+//   const charToInt = new Map();
+//   for (let i = 0; i < chars_sorted.length; i++) {
+//     charToInt.set(chars_sorted[i], i);
+//   }
+//   const ranks = new Array(n);
+//   for (let i = 0; i < n; i++) {
+//       ranks[i] = charToInt.get(text[i]);
+//   }
+//   const sigma = chars_sorted.length;
+//   return {
+//     ranks,
+//     sigma
+//   };
+// }
 
-function mapStringToRankArray(text : string): { ranks: number[], sigma: number } {
-	const n = text.length;
-
-	// Map: char -> integer
-	const charToInt = new Map();
-
-	let nextId = 1; // 0 is reserved for terminator
-	const ranks : number[] = new Array(n);
-
-	for (let i = 0; i < n; i++) {
-		const c = text[i];
-		if (!charToInt.has(c)) {
-			charToInt.set(c, nextId++);
-		}
-
-		ranks[i] = charToInt.get(c);
-	}
-
-	const sigma = nextId; // includes 0
-
-	return { ranks, sigma };
+function mapStringToRankArray(text : string) : {ranks: number[], sigma: number} {
+  const n = text.length;
+  const chars = new Set();
+  for (let i = 0; i < n; i++) {
+    chars.add(text[i]);
+  }
+  const chars_sorted = Array.from(chars).sort();
+  const charToInt = new Map();
+  for (let i = 0; i < chars_sorted.length; i++) {
+    charToInt.set(chars_sorted[i], i);
+  }
+  const ranks = new Array(n);
+  for (let i = 0; i < n; i++) {
+      ranks[i] = charToInt.get(text[i]);
+  }
+  const sigma = chars_sorted.length;
+  return {
+    ranks,
+    sigma
+  };
 }
-
+    
 /**
  * @name χ
  * @kind disable
@@ -2379,103 +2400,200 @@ function mapStringToRankArray(text : string): { ranks: number[], sigma: number }
  *
  *
  */
-function construct_suffixient_set(lcp_array : number[], suffix_array : number[], bw_transform : string) : boolean[] {
-	const n = suffix_array.length;
-  if(n === 0) { return []; }
-  if(n === 1) { return [true]; }
-	const { ranks: BWT, sigma } = mapStringToRankArray(bw_transform);
 
-	// candidate structure: {len, pos, active}
-	const R = Array.from({ length: sigma }, () => ({
-		len: -1,
-		pos: 0,
-		active: false
-	}));
+// function construct_suffixient_set(text) {
+//   if(text.length === 0) { return []; }
+//   if(text.includes('\0')) {
+//     const ret = construct_suffixient_set(text.slice(0,-1));
+//     ret.push(true);
+//     return ret;
+//   }
+//
+//   const revtext = text.split('').reverse().join('') + '\0'; // reverse and append terminator
+//   const suffix_array = construct_suffix_array(revtext);
+//   const lcp_array = construct_lcp_array(revtext, suffix_array);
+//   const n = suffix_array.length;
+//   const {
+//     ranks: mytext,
+//     sigma
+//   } = mapStringToRankArray(revtext);
+//   function BWT(i) {
+//     if (suffix_array[i] === 0) {
+//       return mytext[mytext.length - 1];
+//     }
+//     return mytext[suffix_array[i] - 1];
+//   }
+//   // candidate structure: {len, pos, active}
+//   const R = Array.from({
+//     length: sigma
+//   }, () => ({
+//     len: -1,
+//     pos: 0,
+//     active: false
+//   }));
+//   const S = [];
+//   function evalChar(m) {
+//     for(let c = 1; c < sigma; ++c) {
+//       if (m < R[c].len) {
+//         if (R[c].active) {
+//           S.push(R[c].pos);
+//         }
+//         R[c] = {
+//           len: m,
+//           pos: 0,
+//           active: false
+//         };
+//       }
+//     }
+//   }
+//
+//   // build LF pointers
+//   const pointers = new Array(sigma).fill(0);
+//   pointers[0] = 0;
+//   for (let i = 1; i < n; i++) {
+//     if (BWT(i - 1) !== BWT(i)) {
+//       pointers[BWT(i)] = i;
+//     }
+//   }
+//   // main scan
+//   let m = Number.MAX_SAFE_INTEGER;
+//   let c = BWT(0);
+//   pointers[c]++;
+//   for (let i = 1; i < n; i++) {
+//     c = BWT(i);
+//     pointers[c]++;
+//     m = Math.min(m, lcp_array[i]);
+//     if (BWT(i) !== BWT(i - 1)) {
+//       evalChar(m);
+//       for (let ip = i - 1; ip <= i; ip++) {
+//         const ch = BWT(ip);
+//         if (lcp_array[i] > R[ch].len) {
+//           R[ch] = {
+//             len: lcp_array[i],
+//             pos: n - suffix_array[ip]-1,
+//             active: true
+//           };
+//         }
+//       }
+//       m = Number.MAX_SAFE_INTEGER;
+//     }
+//   }
+//   // finalize remaining candidates
+//   evalChar(-1);
+//   const result = new Array(n - 1).fill(false);
+//   for (let i = 0; i < S.length; i++) {
+//     if (S[i] < n - 1) {
+//       result[S[i]] = true;
+//     }
+//   }
+//   return result;
+// }
 
-	const S = [];
-
-	function evalChar(c, m) {
-		if (m < R[c].len) {
-			if (R[c].active) {
-				S.push(R[c].pos);
-			}
-			R[c] = { len: m, pos: 0, active: false };
-		}
-	}
-
-	// build LF pointers
-	const pointers = new Array(sigma).fill(0);
-	pointers[0] = 0;
-
-	for (let i = 1; i < n; i++) {
-		if (BWT[i - 1] !== BWT[i]) {
-			pointers[BWT[i]] = i;
-		}
-	}
-
-	// main scan
-	let m = Number.MAX_SAFE_INTEGER;
-
-	let c = BWT[0];
-	pointers[c]++;
-
-	for (let i = 1; i < n; i++) {
-		c = BWT[i];
-		pointers[c]++;
-
-		m = Math.min(m, lcp_array[i]);
-
-		if (BWT[i] !== BWT[i - 1]) {
-			for (let ip = i - 1; ip <= i; ip++) {
-				const ch = BWT[ip];
-
-				if (ip === i - 1) {
-					evalChar(ch, m);
-				} else if (R[ch].len !== -1) {
-					evalChar(ch, lcp_array[pointers[ch] - 1] - 1);
-				}
-
-				if (lcp_array[i] > R[ch].len && ch !== 0) {
-					R[ch] = {
-						len: lcp_array[i],
-						pos: n - suffix_array[ip],
-						active: true
-					};
-				}
-			}
-			m = Number.MAX_SAFE_INTEGER;
-		}
-	}
-
-	// finalize remaining candidates
-	for (let c = 1; c < sigma; c++) {
-		evalChar(c, -1);
-	}
-
-  const result: boolean[] = new Array<boolean>(n).fill(false);
-  for (let i = 0; i < S.length; i++) {
-    result[S[i]] = true;
+function construct_suffixient_set(text : string) : boolean[] {
+  if(text.length === 0) { return []; }
+  if(text.includes('\0')) {
+    const ret = construct_suffixient_set(text.slice(0,-1));
+    ret.push(true);
+    return ret;
   }
-	return result;
+
+  const revtext = text.split('').reverse().join('') + '\0'; // reverse and append terminator
+  const suffix_array = construct_suffix_array(revtext);
+  const lcp_array = construct_lcp_array(revtext, suffix_array);
+  const n = suffix_array.length;
+  const {
+    ranks: mytext,
+    sigma
+  } = mapStringToRankArray(revtext);
+  function BWT(i) {
+    if (suffix_array[i] === 0) {
+      return mytext[mytext.length - 1];
+    }
+    return mytext[suffix_array[i] - 1];
+  }
+  // candidate structure: {len, pos, active}
+  const R = Array.from({
+    length: sigma
+  }, () => ({
+    len: -1,
+    pos: 0,
+    active: false
+  }));
+  const S = [];
+  function evalChar(m) {
+    for(let c = 1; c < sigma; ++c) {
+      if (m < R[c].len) {
+        if (R[c].active) {
+          S.push(R[c].pos);
+        }
+        R[c] = {
+          len: m,
+          pos: 0,
+          active: false
+        };
+      }
+    }
+  }
+
+  // build LF pointers
+  const pointers = new Array(sigma).fill(0);
+  pointers[0] = 0;
+  for (let i = 1; i < n; i++) {
+    if (BWT(i - 1) !== BWT(i)) {
+      pointers[BWT(i)] = i;
+    }
+  }
+  // main scan
+  let m = Number.MAX_SAFE_INTEGER;
+  let c = BWT(0);
+  pointers[c]++;
+  for (let i = 1; i < n; i++) {
+    c = BWT(i);
+    pointers[c]++;
+    m = Math.min(m, lcp_array[i]);
+    if (BWT(i) !== BWT(i - 1)) {
+      evalChar(m);
+      for (let ip = i - 1; ip <= i; ip++) {
+        const ch = BWT(ip);
+        if (lcp_array[i] > R[ch].len) {
+          R[ch] = {
+            len: lcp_array[i],
+            pos: n - suffix_array[ip]-1,
+            active: true
+          };
+        }
+      }
+      m = Number.MAX_SAFE_INTEGER;
+    }
+  }
+  // finalize remaining candidates
+  evalChar(-1);
+  const result = new Array(n - 1).fill(false);
+  for (let i = 0; i < S.length; i++) {
+    if (S[i] < n - 1) {
+      result[S[i]] = true;
+    }
+  }
+  return result;
 }
 
 export function test_suffixient_set() {
 
     function get_suffixient_positions(text: string): number[] {
-        const sa = construct_suffix_array(text);
-        const isa = construct_inverse_suffix_array(sa);
-        const lcp = construct_lcp_array(text, sa);
-        const bwt = construct_bw_transform(text, sa);
-        const sigma = new Set(text).size + 1; // +1 for terminator
-
-        const suffixientSet = construct_suffixient_set(lcp, sa, bwt);
+        const suffixientSet = construct_suffixient_set(text);
         return factorization_to_positions(suffixientSet);
     }
 
     assert_eq(get_suffixient_positions(""), [], "Suffixient set of empty string");
     assert_eq(get_suffixient_positions("a"), [0], "Suffixient set of 'a'");
-    assert_eq(get_suffixient_positions("a$"), [1,2], "Suffixient set of 'a'");
-    assert_eq(get_suffixient_positions("aaaa$"), [4,5], "Suffixient set of 'a'");
-    assert_eq(get_suffixient_positions("banana$").sort(), [1,4,6,7], "Suffixient set of 'banana'");
+    assert_eq(get_suffixient_positions("ab"), [0,1], "Suffixient set of 'ab'");
+    assert_eq(get_suffixient_positions("aaaa$"), [3,4], "Suffixient set of 'aaaa'");
+    // assert_eq(get_suffixient_positions("banana"), [0,1,2], "Suffixient set of 'banana'");
+    assert_eq(get_suffixient_positions("banana$"), [0,1,4,6], "Suffixient set of 'banana'");
+    // assert_eq(get_suffixient_positions("ananas"), [0,3,5], "Suffixient set of 'banana'");
+    assert_eq(get_suffixient_positions("ananas$"), [0,3,5,6], "Suffixient set of 'ananas'");
+    // assert_eq(get_suffixient_positions("abracadbra"), [0,1,2,4,6], "Suffixient set of 'banana'");
+    assert_eq(get_suffixient_positions("abracadbra$"), [0,1,2,4,6,10], "Suffixient set of 'abracadbra$'");
+    // assert_eq(get_suffixient_positions("alabar a la alabarda"), [5,6,8,9,11,12,13,15,18], "Suffixient set of 'banana'");
+    assert_eq(get_suffixient_positions("alabar a la alabarda$"), [3, 5,6,8,9,11,12,13,18,20], "Suffixient set of 'alabar_a_la_alabarda$'");
 }
-
