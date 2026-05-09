@@ -2346,28 +2346,6 @@ export function test_gamma_factorization() {
     test_helper('abab', [0, 1]);
 }
 
-// function mapStringToRankArray(text) {
-//   const n = text.length;
-//   const chars = new Set();
-//   for (let i = 0; i < n; i++) {
-//     chars.add(text[i]);
-//   }
-//   const chars_sorted = Array.from(chars).sort();
-//   const charToInt = new Map();
-//   for (let i = 0; i < chars_sorted.length; i++) {
-//     charToInt.set(chars_sorted[i], i);
-//   }
-//   const ranks = new Array(n);
-//   for (let i = 0; i < n; i++) {
-//       ranks[i] = charToInt.get(text[i]);
-//   }
-//   const sigma = chars_sorted.length;
-//   return {
-//     ranks,
-//     sigma
-//   };
-// }
-
 function mapStringToRankArray(text : string) : {ranks: number[], sigma: number} {
   const n = text.length;
   const chars = new Set();
@@ -2391,108 +2369,17 @@ function mapStringToRankArray(text : string) : {ranks: number[], sigma: number} 
 }
     
 /**
- * @name χ
+ * @name &Chi;
  * @kind disable
  * @type factor
  * @description Smallest Suffixient Set
  * @tutorial A set of text positions is suffixient if for every right-maximal substring, every one-character right-extension of it is a suffix of a prefix of the text that ends at one of the positions in the set. A substring is right-maximal if it is a suffix of the text or can be extended to the right with at least two different characters. A one-character right-extension of a substring \(T[i..j]\) is \(T[i, j+1]\). A smallest suffixient set is a suffixient set with the minimum number of positions. 
  * @cite cenzato24computing
- *
- *
  */
-
-// function construct_suffixient_set(text) {
-//   if(text.length === 0) { return []; }
-//   if(text.includes('\0')) {
-//     const ret = construct_suffixient_set(text.slice(0,-1));
-//     ret.push(true);
-//     return ret;
-//   }
-//
-//   const revtext = text.split('').reverse().join('') + '\0'; // reverse and append terminator
-//   const suffix_array = construct_suffix_array(revtext);
-//   const lcp_array = construct_lcp_array(revtext, suffix_array);
-//   const n = suffix_array.length;
-//   const {
-//     ranks: mytext,
-//     sigma
-//   } = mapStringToRankArray(revtext);
-//   function BWT(i) {
-//     if (suffix_array[i] === 0) {
-//       return mytext[mytext.length - 1];
-//     }
-//     return mytext[suffix_array[i] - 1];
-//   }
-//   // candidate structure: {len, pos, active}
-//   const R = Array.from({
-//     length: sigma
-//   }, () => ({
-//     len: -1,
-//     pos: 0,
-//     active: false
-//   }));
-//   const S = [];
-//   function evalChar(m) {
-//     for(let c = 1; c < sigma; ++c) {
-//       if (m < R[c].len) {
-//         if (R[c].active) {
-//           S.push(R[c].pos);
-//         }
-//         R[c] = {
-//           len: m,
-//           pos: 0,
-//           active: false
-//         };
-//       }
-//     }
-//   }
-//
-//   // build LF pointers
-//   const pointers = new Array(sigma).fill(0);
-//   pointers[0] = 0;
-//   for (let i = 1; i < n; i++) {
-//     if (BWT(i - 1) !== BWT(i)) {
-//       pointers[BWT(i)] = i;
-//     }
-//   }
-//   // main scan
-//   let m = Number.MAX_SAFE_INTEGER;
-//   let c = BWT(0);
-//   pointers[c]++;
-//   for (let i = 1; i < n; i++) {
-//     c = BWT(i);
-//     pointers[c]++;
-//     m = Math.min(m, lcp_array[i]);
-//     if (BWT(i) !== BWT(i - 1)) {
-//       evalChar(m);
-//       for (let ip = i - 1; ip <= i; ip++) {
-//         const ch = BWT(ip);
-//         if (lcp_array[i] > R[ch].len) {
-//           R[ch] = {
-//             len: lcp_array[i],
-//             pos: n - suffix_array[ip]-1,
-//             active: true
-//           };
-//         }
-//       }
-//       m = Number.MAX_SAFE_INTEGER;
-//     }
-//   }
-//   // finalize remaining candidates
-//   evalChar(-1);
-//   const result = new Array(n - 1).fill(false);
-//   for (let i = 0; i < S.length; i++) {
-//     if (S[i] < n - 1) {
-//       result[S[i]] = true;
-//     }
-//   }
-//   return result;
-// }
-
-function construct_suffixient_set(text : string) : boolean[] {
+function construct_suffixient_set_factorization(text : string) : boolean[] {
   if(text.length === 0) { return []; }
   if(text.includes('\0')) {
-    const ret = construct_suffixient_set(text.slice(0,-1));
+    const ret = construct_suffixient_set_factorization(text.slice(0,-1));
     ret.push(true);
     return ret;
   }
@@ -2577,10 +2464,10 @@ function construct_suffixient_set(text : string) : boolean[] {
   return result;
 }
 
-export function test_suffixient_set() {
+export function test_suffixient_set_factorization() {
 
     function get_suffixient_positions(text: string): number[] {
-        const suffixientSet = construct_suffixient_set(text);
+        const suffixientSet = construct_suffixient_set_factorization(text);
         return factorization_to_positions(suffixientSet);
     }
 
