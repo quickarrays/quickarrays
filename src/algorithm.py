@@ -62,6 +62,7 @@ def generate_counters_html(code : str):
 	count_funcs = []
 	factor_funcs = []
 	transform_funcs = []
+	position_funcs = []
 	annotations = {}  # fname → annotation fields
 
 	
@@ -81,6 +82,10 @@ def generate_counters_html(code : str):
 
 		if fname.endswith("_transform") and fname.startswith("construct_"):
 			transform_funcs.append((fname, args))
+			continue
+
+		if fname.endswith("_positions") and fname.startswith("construct_"):
+			position_funcs.append((fname, args))
 			continue
 
 	html_items = []
@@ -126,6 +131,8 @@ def generate_counters_html(code : str):
 		add_html(fname, "factor")
 	for fname, _ in transform_funcs:
 		add_html(fname, "rle")
+	for fname, _ in position_funcs:
+		add_html(fname, "factor")
 
 	sort_key = lambda x: (x[1] is None, html_module.unescape(x[1]).lower())
 	html_items.sort(key=sort_key)
@@ -138,6 +145,7 @@ def generate_counters_js(code : str) -> typing.List[str]:
 	count_funcs = []
 	factor_funcs = []
 	transform_funcs = []
+	position_funcs = []
 	annotations = {}  # fname → annotation fields
 
 	for block, fname, argstr in C.BLOCK_FUNC_RE.findall(code):
@@ -152,6 +160,10 @@ def generate_counters_js(code : str) -> typing.List[str]:
 
 		if fname.endswith("_transform") and fname.startswith("construct_"):
 			transform_funcs.append((fname, args))
+			continue
+
+		if fname.endswith("_positions") and fname.startswith("construct_"):
+			position_funcs.append((fname, args))
 			continue
 
 	# ---------------- COUNTERS JAVASCRIPT ----------------
@@ -173,6 +185,11 @@ def generate_counters_js(code : str) -> typing.List[str]:
 	for fname, args in transform_funcs:
 		prop = C.short_prop(fname)
 		js.append(f"\t\tcounter_{prop} : number_of_runs(var_{prop})")
+
+	# ---- *_positions → XXX_positions : number_of_factors(var_XXX_positions)
+	for fname, args in position_funcs:
+		prop = C.short_prop(fname)
+		js.append(f"\t\tcounter_{prop} : number_of_factors(var_{prop})")
 
 	return js
 

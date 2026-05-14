@@ -482,6 +482,33 @@ export function test_prettify_factorization(): void {
 
 
 /**
+ * Formats a position array as a string, mapping marked positions to '*' and unmarked positions to ' '.
+ * Each cell is padded to a consistent width based on the array length and base.
+ *
+ * @param positions An array of booleans where `true` marks a selected position.
+ * @param sep The separator string to use between elements. Defaults to " ".
+ * @param base A base number used to influence the calculation of the padding width. Defaults to 0.
+ * @returns A formatted string with '*' for marked positions and ' ' for unmarked positions.
+ */
+function prettify_position(positions: boolean[], sep: string = " ", base: number = 0): string {
+    const n = positions.length;
+    const width = String(Math.max(0, n + base - 1)).length;
+    return positions.map(p => pad_left(p ? '*' : ' ', ' ', width)).join(sep);
+}
+
+export function test_prettify_position(): void {
+    assert_eq(prettify_position([true, false, true]), "*   *", "Case 1: Basic position array");
+    assert_eq(prettify_position([false, false, false]), "     ", "Case 2: No marked positions");
+    assert_eq(prettify_position([true, true, true]), "* * *", "Case 3: All marked positions");
+    assert_eq(prettify_position([true]), "*", "Case 4: Single marked position");
+    assert_eq(prettify_position([false]), " ", "Case 5: Single unmarked position");
+    assert_eq(prettify_position([]), "", "Case 6: Empty array");
+    assert_eq(prettify_position([true, false, true], "-"), "*- -*", "Case 7: Custom separator");
+    assert_eq(prettify_position([true, false], "", 0), "* ", "Case 8: Empty separator");
+}
+
+
+/**
  * Replaces whitespace characters in a string with visible symbols.
  * This is useful for making whitespaces visible in text.
  *

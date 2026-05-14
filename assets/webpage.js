@@ -372,6 +372,8 @@ function prettify_row(ds_text, dsName, varDs, varSep, varBase, do_padding) {
 		} else {
 			varDs = prettify_array(varDs.map((b) => b ? 1 : 0), varSep, varBase);
 		}
+	} else if (structures_list.isPosition(dsName)) {
+		varDs = prettify_position(varDs, varSep, varBase);
 	} else {
 		varDs = prettify_array(varDs, varSep, varBase);
 	}
@@ -788,6 +790,7 @@ window.onload = function () {
 		index: document.getElementById('qa-structures-disabled-index'),
 		length: document.getElementById('qa-structures-disabled-length'),
 		factor: document.getElementById('qa-structures-disabled-factor'),
+		position: document.getElementById('qa-structures-disabled-position'),
 		other: document.getElementById('qa-structures-disabled-other'),
 	};
 
@@ -800,6 +803,7 @@ window.onload = function () {
 			else if (el.classList.contains('qa-structure-index')) ds_list_disabled.index.appendChild(el);
 			else if (el.classList.contains('qa-structure-length')) ds_list_disabled.length.appendChild(el);
 			else if (el.classList.contains('qa-structure-factor')) ds_list_disabled.factor.appendChild(el);
+			else if (el.classList.contains('qa-structure-position')) ds_list_disabled.position.appendChild(el);
 			else ds_list_disabled.other.appendChild(el);
 		});
 		src.remove();
@@ -950,6 +954,7 @@ window.onload = function () {
 	setupShowHide('qa-structures-disabled-index');
 	setupShowHide('qa-structures-disabled-length');
 	setupShowHide('qa-structures-disabled-factor');
+	setupShowHide('qa-structures-disabled-position');
 	setupShowHide('qa-structures-disabled-other');
 	setupShowHide('qa-counter-enabled');
 	setupShowHide('qa-counter-disabled-rle');

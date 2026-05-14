@@ -2227,12 +2227,12 @@ function is_stringattractor(text: string, attractor: readonly number[]): boolean
 /**
  * @name &Gamma;
  * @kind disable
- * @type factor
+ * @type position
  * @description Leftmost Smallest String Attractor
  * @tutorial A string attractor is a set of positions in a string such that every distinct substring has at least one occurrence that crosses one of these positions. The smallest string attractor size is the minimum number of positions needed to form such a set. Here, \(\Gamma\) is the leftmost such smallest string attractor, i.e., the one that has the lexicographically smallest sequence of positions.
  * @cite kempa18stringattractors
  */
-function construct_gamma_factorization(text: string): boolean[] {
+function construct_attractor_positions(text: string): boolean[] {
     if (!text) { return []; }
     const n = text.length;
 
@@ -2327,9 +2327,9 @@ function factorization_to_positions(factorization: readonly boolean[]): number[]
     return positions;
 }
 
-export function test_gamma_factorization() {
+export function test_attractor_positions() {
     function test_helper(text: string, exp_attr: readonly number[]) {
-        const attractor_fact = construct_gamma_factorization(text);
+        const attractor_fact = construct_attractor_positions(text);
         const attractor = factorization_to_positions(attractor_fact);
         assert_eq(is_stringattractor(text, attractor), true, `Valid attractor '${attractor}' for text '${text}'`);
         assert_eq(attractor, exp_attr, `Expected gamma size for text '${text}'`);
@@ -2371,15 +2371,15 @@ function mapStringToRankArray(text : string) : {ranks: number[], sigma: number} 
 /**
  * @name &Chi;
  * @kind disable
- * @type factor
+ * @type position
  * @description Smallest Suffixient Set
  * @tutorial A set of text positions is suffixient if for every right-maximal substring, every one-character right-extension of it is a suffix of a prefix of the text that ends at one of the positions in the set. A substring is right-maximal if it is a suffix of the text or can be extended to the right with at least two different characters. A one-character right-extension of a substring \(T[i..j]\) is \(T[i, j+1]\). A smallest suffixient set is a suffixient set with the minimum number of positions. 
  * @cite cenzato24computing
  */
-function construct_suffixient_set_factorization(text : string) : boolean[] {
+function construct_suffixient_positions(text : string) : boolean[] {
   if(text.length === 0) { return []; }
   if(text.includes('\0')) {
-    const ret = construct_suffixient_set_factorization(text.slice(0,-1));
+    const ret = construct_suffixient_positions(text.slice(0,-1));
     ret.push(true);
     return ret;
   }
@@ -2452,10 +2452,10 @@ function construct_suffixient_set_factorization(text : string) : boolean[] {
   return result;
 }
 
-export function test_suffixient_set_factorization() {
+export function test_suffixient_positions() {
 
     function get_suffixient_positions(text: string): number[] {
-        const suffixientSet = construct_suffixient_set_factorization(text);
+        const suffixientSet = construct_suffixient_positions(text);
         return factorization_to_positions(suffixientSet);
     }
 
