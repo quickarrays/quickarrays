@@ -2483,6 +2483,7 @@ export function test_suffixient_positions() {
  * @cite goto15lzd
  */
 
+
 function construct_lzd_factorization(text: string): boolean[] {
     if (!text) { return []; }
 
@@ -2508,29 +2509,29 @@ function construct_lzd_factorization(text: string): boolean[] {
     let currentIndex: number = 0;
 
     while (currentIndex < n) {
-        let factor: string;
+        // Left-hand side
+        let left: string = longestMatch(currentIndex);
 
-        const first: string = longestMatch(currentIndex);
-
-        // No previous factor matches: emit a single character
-        if (first.length === 0) {
-            factor = text[currentIndex];
-        } else {
-            const secondIndex: number = currentIndex + first.length;
-
-            let second: string = "";
-
-            if (secondIndex < n) {
-                second = longestMatch(secondIndex);
-
-                // Fallback to a single character if no factor matches
-                if (second.length === 0) {
-                    second = text[secondIndex];
-                }
-            }
-
-            factor = first + second;
+        // If nothing matches, use one character
+        if (left.length === 0) {
+            left = text[currentIndex];
         }
+
+        const rightIndex: number = currentIndex + left.length;
+
+        // Right-hand side
+        let right: string = "";
+
+        if (rightIndex < n) {
+            right = longestMatch(rightIndex);
+
+            // If nothing matches, use one character
+            if (right.length === 0) {
+                right = text[rightIndex];
+            }
+        }
+
+        const factor: string = left + right;
 
         dictionary.add(factor);
 
@@ -2543,33 +2544,38 @@ function construct_lzd_factorization(text: string): boolean[] {
 
 export function test_lzd_factorization() {
     assert_eq(
+        construct_lzd_factorization("aabbcc"),
+        [false, true, false, true, false, true],
+        "LZD factorization of 'aabbcc'"
+    );
+
+    assert_eq(
         construct_lzd_factorization("ababc"),
-        [true, true, false, true, true],
+        [false, true, false, false, true],
         "LZD factorization of 'ababc'"
     );
 
     assert_eq(
         construct_lzd_factorization("aaaaa"),
-        [true, false, true, false, true],
+        [false, true, false, false, true],
         "LZD factorization of 'aaaaa'"
     );
 
     assert_eq(
         construct_lzd_factorization("banana"),
-        [true, true, true, false, true, true],
+        [false, true, false, true, false, true],
         "LZD factorization of 'banana'"
     );
 
     assert_eq(
         construct_lzd_factorization("abracadabra"),
-        [true, true, true, false, true, false, true, false, true, false, true],
+				[false,true,false,true,   false,true,false,false,true,false,true],
         "LZD factorization of 'abracadabra'"
     );
 
-    // Different from LZ78: "ab" + "ab" => "abab"
     assert_eq(
         construct_lzd_factorization("ababa"),
-        [true, true, false, false, true],
+        [false, true, false, false, true],
         "LZD factorization of 'ababa'"
     );
 
@@ -2587,13 +2593,13 @@ export function test_lzd_factorization() {
 
     assert_eq(
         construct_lzd_factorization("abcde"),
-        [true, true, true, true, true],
+        [false, true, false, true, true],
         "LZD factorization of 'abcde'"
     );
 
     assert_eq(
         construct_lzd_factorization("edcba"),
-        [true, true, true, true, true],
+        [false, true, false, true, true],
         "LZD factorization of 'edcba'"
     );
 
@@ -2603,6 +2609,7 @@ export function test_lzd_factorization() {
         "LZD factorization of null input"
     );
 }
+
 
 /**
  * @name LZMW
@@ -2677,14 +2684,14 @@ export function test_lzmw_factorization() {
     // b | a | n | an | a
     assert_eq(
         construct_lzmw_factorization("banana"),
-        [true, true, true, false, false, true],
+        [true, true, true, false, true, true],
         "LZMW factorization of 'banana'"
     );
 
     // a | b | r | a | c | a | d | ab | ra
     assert_eq(
         construct_lzmw_factorization("abracadabra"),
-        [true, true, true, true, true, true, true, false, false, true, true],
+        [true,true,true,true,true,true,true,false,true,false,true],
         "LZMW factorization of 'abracadabra'"
     );
 
@@ -2699,7 +2706,7 @@ export function test_lzmw_factorization() {
     // a | a | aa | aaa | aaaaa
     assert_eq(
         construct_lzmw_factorization("aaaaaaaaaaaa"),
-        [true, true, false, false, true, false, false, true, false, false, false, true],
+        [true, true, false, true, false, false, true, false, false, false, false, true],
         "LZMW factorization of repeated 'a'"
     );
 
