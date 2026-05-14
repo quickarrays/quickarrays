@@ -2472,3 +2472,264 @@ export function test_suffixient_set_factorization() {
     // assert_eq(get_suffixient_positions("alabar a la alabarda"), [5,6,8,9,11,12,13,15,18], "Suffixient set of 'banana'");
     assert_eq(get_suffixient_positions("alabar a la alabarda$"), [3, 5,6,8,9,11,12,13,18,20], "Suffixient set of 'alabar_a_la_alabarda$'");
 }
+
+
+/**
+ * @name LZD
+ * @kind disable
+ * @type factor
+ * @description LZ Double-factor (LZD) Factorization
+ * @tutorial The LZD factorization decomposes a string into a sequence of factors. Each factor is formed by concatenating two previously seen factors whenever possible. More precisely, if \(F_j\) is the longest previous factor matching the current position, and \(F_k\) is the longest previous factor matching immediately after \(F_j\), then the next factor is \(F_j\)\(F_k\). If no such \(F_k\) exists, a single character is appended instead.
+ * @cite goto15lzd
+ */
+
+function construct_lzd_factorization(text: string): boolean[] {
+    if (!text) { return []; }
+
+    const n: number = text.length;
+    const factorization: boolean[] = new Array(n).fill(false);
+    const dictionary: Set<string> = new Set();
+
+    function longestMatch(start: number): string {
+        let best: string = "";
+
+        for (const factor of dictionary) {
+            if (
+                factor.length > best.length &&
+                text.startsWith(factor, start)
+            ) {
+                best = factor;
+            }
+        }
+
+        return best;
+    }
+
+    let currentIndex: number = 0;
+
+    while (currentIndex < n) {
+        let factor: string;
+
+        const first: string = longestMatch(currentIndex);
+
+        // No previous factor matches: emit a single character
+        if (first.length === 0) {
+            factor = text[currentIndex];
+        } else {
+            const secondIndex: number = currentIndex + first.length;
+
+            let second: string = "";
+
+            if (secondIndex < n) {
+                second = longestMatch(secondIndex);
+
+                // Fallback to a single character if no factor matches
+                if (second.length === 0) {
+                    second = text[secondIndex];
+                }
+            }
+
+            factor = first + second;
+        }
+
+        dictionary.add(factor);
+
+        factorization[currentIndex + factor.length - 1] = true;
+        currentIndex += factor.length;
+    }
+
+    return factorization;
+}
+
+export function test_lzd_factorization() {
+    assert_eq(
+        construct_lzd_factorization("ababc"),
+        [true, true, false, true, true],
+        "LZD factorization of 'ababc'"
+    );
+
+    assert_eq(
+        construct_lzd_factorization("aaaaa"),
+        [true, false, true, false, true],
+        "LZD factorization of 'aaaaa'"
+    );
+
+    assert_eq(
+        construct_lzd_factorization("banana"),
+        [true, true, true, false, true, true],
+        "LZD factorization of 'banana'"
+    );
+
+    assert_eq(
+        construct_lzd_factorization("abracadabra"),
+        [true, true, true, false, true, false, true, false, true, false, true],
+        "LZD factorization of 'abracadabra'"
+    );
+
+    // Different from LZ78: "ab" + "ab" => "abab"
+    assert_eq(
+        construct_lzd_factorization("ababa"),
+        [true, true, false, false, true],
+        "LZD factorization of 'ababa'"
+    );
+
+    assert_eq(
+        construct_lzd_factorization(""),
+        [],
+        "LZD factorization of empty string"
+    );
+
+    assert_eq(
+        construct_lzd_factorization("a"),
+        [true],
+        "LZD factorization of 'a'"
+    );
+
+    assert_eq(
+        construct_lzd_factorization("abcde"),
+        [true, true, true, true, true],
+        "LZD factorization of 'abcde'"
+    );
+
+    assert_eq(
+        construct_lzd_factorization("edcba"),
+        [true, true, true, true, true],
+        "LZD factorization of 'edcba'"
+    );
+
+    assert_eq(
+        construct_lzd_factorization(null),
+        [],
+        "LZD factorization of null input"
+    );
+}
+
+/**
+ * @name LZMW
+ * @kind disable
+ * @type factor
+ * @description Lempel-Ziv-Miller-Wegman (LZMW) Factorization
+ * @tutorial The LZMW factorization decomposes a string into factors such that each new factor is the longest concatenation of two consecutive previous factors. If no such concatenation matches, a single character is emitted. After parsing a factor \(F_x\), the concatenation \(F_{x-1}\)\(F_x\) is added to the dictionary.
+ * @cite miller85variations
+ */
+
+function construct_lzmw_factorization(text: string): boolean[] {
+    if (!text) { return []; }
+
+    const n: number = text.length;
+    const factorization: boolean[] = new Array(n).fill(false);
+
+    // Previously emitted factors
+    const factors: string[] = [];
+
+    // Dictionary of valid LZMW phrases
+    const dictionary: Set<string> = new Set();
+
+    let currentIndex: number = 0;
+
+    while (currentIndex < n) {
+        let best: string = "";
+
+        // Greedily select the longest dictionary phrase
+        for (const phrase of dictionary) {
+            if (
+                phrase.length > best.length &&
+                text.startsWith(phrase, currentIndex)
+            ) {
+                best = phrase;
+            }
+        }
+
+        // Fallback to a single character
+        if (best.length === 0) {
+            best = text[currentIndex];
+        }
+
+        factors.push(best);
+
+        // Add previous_factor + current_factor to dictionary
+        const m: number = factors.length;
+        if (m >= 2) {
+            dictionary.add(factors[m - 2] + factors[m - 1]);
+        }
+
+        factorization[currentIndex + best.length - 1] = true;
+        currentIndex += best.length;
+    }
+
+    return factorization;
+}
+
+export function test_lzmw_factorization() {
+    assert_eq(
+        construct_lzmw_factorization("ababc"),
+        [true, true, false, true, true],
+        "LZMW factorization of 'ababc'"
+    );
+
+    // a | a | aa | a
+    assert_eq(
+        construct_lzmw_factorization("aaaaa"),
+        [true, true, false, true, true],
+        "LZMW factorization of 'aaaaa'"
+    );
+
+    // b | a | n | an | a
+    assert_eq(
+        construct_lzmw_factorization("banana"),
+        [true, true, true, false, false, true],
+        "LZMW factorization of 'banana'"
+    );
+
+    // a | b | r | a | c | a | d | ab | ra
+    assert_eq(
+        construct_lzmw_factorization("abracadabra"),
+        [true, true, true, true, true, true, true, false, false, true, true],
+        "LZMW factorization of 'abracadabra'"
+    );
+
+    // a | b | ab | a
+    assert_eq(
+        construct_lzmw_factorization("ababa"),
+        [true, true, false, true, true],
+        "LZMW factorization of 'ababa'"
+    );
+
+    // Fibonacci-style growth behavior
+    // a | a | aa | aaa | aaaaa
+    assert_eq(
+        construct_lzmw_factorization("aaaaaaaaaaaa"),
+        [true, true, false, false, true, false, false, true, false, false, false, true],
+        "LZMW factorization of repeated 'a'"
+    );
+
+    assert_eq(
+        construct_lzmw_factorization(""),
+        [],
+        "LZMW factorization of empty string"
+    );
+
+    assert_eq(
+        construct_lzmw_factorization("a"),
+        [true],
+        "LZMW factorization of 'a'"
+    );
+
+    assert_eq(
+        construct_lzmw_factorization("abcde"),
+        [true, true, true, true, true],
+        "LZMW factorization of 'abcde'"
+    );
+
+    assert_eq(
+        construct_lzmw_factorization("edcba"),
+        [true, true, true, true, true],
+        "LZMW factorization of 'edcba'"
+    );
+
+    assert_eq(
+        construct_lzmw_factorization(null),
+        [],
+        "LZMW factorization of null input"
+    );
+}
