@@ -132,7 +132,7 @@ def generate_counters_html(code : str):
 	for fname, _ in transform_funcs:
 		add_html(fname, "rle")
 	for fname, _ in position_funcs:
-		add_html(fname, "factor")
+		add_html(fname, "position")
 
 	sort_key = lambda x: (x[1] is None, html_module.unescape(x[1]).lower())
 	html_items.sort(key=sort_key)

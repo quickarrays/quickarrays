@@ -922,6 +922,7 @@ window.onload = function () {
 	const counter_list_disabled = {
 		rle: document.getElementById('qa-counter-disabled-rle'),
 		factor: document.getElementById('qa-counter-disabled-factor'),
+		position: document.getElementById('qa-counter-disabled-position'),
 		other: document.getElementById('qa-counter-disabled-other'),
 	};
 
@@ -932,6 +933,7 @@ window.onload = function () {
 		Array.from(src.querySelectorAll('.qa-counter')).forEach(el => {
 			if (el.classList.contains('qa-counter-rle')) counter_list_disabled.rle.appendChild(el);
 			else if (el.classList.contains('qa-counter-factor')) counter_list_disabled.factor.appendChild(el);
+			else if (el.classList.contains('qa-counter-position')) counter_list_disabled.position.appendChild(el);
 			else counter_list_disabled.other.appendChild(el);
 		});
 		src.remove();
@@ -1069,6 +1071,7 @@ window.onload = function () {
 	setupShowHide('qa-counter-enabled');
 	setupShowHide('qa-counter-disabled-rle');
 	setupShowHide('qa-counter-disabled-factor');
+	setupShowHide('qa-counter-disabled-position');
 	setupShowHide('qa-counter-disabled-other');
 
 	// Compact view
@@ -1081,7 +1084,7 @@ window.onload = function () {
 				: '<strong>Step 4:</strong> Choose structures:<br /><span>(' + action + ' to enable/disable, drag-and-drop to enable/disable/reorder)</span>';
 		}
 		const DISABLED_IDS = ['qa-structures-disabled-string', 'qa-structures-disabled-index', 'qa-structures-disabled-length', 'qa-structures-disabled-factor', 'qa-structures-disabled-position', 'qa-structures-disabled-other'];
-		const COUNTER_DISABLED_IDS = ['qa-counter-disabled-rle', 'qa-counter-disabled-factor', 'qa-counter-disabled-other'];
+		const COUNTER_DISABLED_IDS = ['qa-counter-disabled-rle', 'qa-counter-disabled-factor', 'qa-counter-disabled-position', 'qa-counter-disabled-other'];
 
 		function structureGroup(el) {
 			if (!el) return 'other';
@@ -1100,12 +1103,13 @@ window.onload = function () {
 			return (node ? node.textContent : el.textContent).trim();
 		}
 
-		const COUNTER_GROUP_TITLES = { rle: 'Size of run length encoding', factor: 'Number of factors', other: 'Other counters' };
+		const COUNTER_GROUP_TITLES = { rle: 'Size of run length encoding', factor: 'Number of factors', position: 'Number of positions', other: 'Other counters' };
 
 		function counterGroup(el) {
 			if (!el) return 'other';
 			if (el.classList.contains('qa-counter-rle')) return 'rle';
 			if (el.classList.contains('qa-counter-factor')) return 'factor';
+			if (el.classList.contains('qa-counter-position')) return 'position';
 			return 'other';
 		}
 
