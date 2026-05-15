@@ -1152,7 +1152,7 @@ window.onload = function () {
 			select.innerHTML = '';
 			if (placeholder) select.appendChild(placeholder);
 			if (placeholder) placeholder.selected = true;
-			const groups = { rle: [], factor: [], other: [] };
+			const groups = { rle: [], factor: [], position: [], other: [] };
 			for (const ds in counters_list.dictionary) {
 				if (!counters_list.dictionary.hasOwnProperty(ds)) continue;
 				if (counters_list.enabled(ds)) continue;
@@ -1160,7 +1160,7 @@ window.onload = function () {
 				groups[counterGroup(el)].push(el);
 			}
 			for (const k in groups) groups[k].sort((a, b) => getLabel(a).localeCompare(getLabel(b)));
-			['rle', 'factor', 'other'].forEach(key => {
+			['rle', 'factor', 'position', 'other'].forEach(key => {
 				if (!groups[key].length) return;
 				const og = document.createElement('optgroup');
 				og.label = COUNTER_GROUP_TITLES[key] || key;
