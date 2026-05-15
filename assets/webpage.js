@@ -965,7 +965,7 @@ window.onload = function () {
 	(function () {
 		const DESC_NORMAL = 'Choose your data structures and factorizations (drag and drop or double-click):<br />\n        You can use drag and drop to reorder your selection!';
 		const DESC_COMPACT = 'Choose your data structures and factorizations (use the dropdown to add; double-click to remove):<br />\n        You can use drag and drop to reorder your selection!';
-		const DISABLED_IDS = ['qa-structures-disabled-string', 'qa-structures-disabled-index', 'qa-structures-disabled-length', 'qa-structures-disabled-factor', 'qa-structures-disabled-other'];
+		const DISABLED_IDS = ['qa-structures-disabled-string', 'qa-structures-disabled-index', 'qa-structures-disabled-length', 'qa-structures-disabled-factor', 'qa-structures-disabled-position', 'qa-structures-disabled-other'];
 
 		function structureGroup(el) {
 			if (!el) return 'other';
@@ -973,10 +973,11 @@ window.onload = function () {
 			if (el.classList.contains('qa-structure-index')) return 'index';
 			if (el.classList.contains('qa-structure-length')) return 'length';
 			if (el.classList.contains('qa-structure-factor')) return 'factor';
+			if (el.classList.contains('qa-structure-position')) return 'position';
 			return 'other';
 		}
 
-		const GROUP_TITLES = { string: 'String transforms', index: 'Index permutations', length: 'Length arrays', factor: 'Factorizations', other: 'Other' };
+		const GROUP_TITLES = { string: 'String transforms', index: 'Index permutations', length: 'Length arrays', factor: 'Factorizations', position: 'Positions', other: 'Other' };
 
 		function getLabel(el) {
 			const node = Array.from(el.childNodes).find(n => n.nodeType === Node.TEXT_NODE);
@@ -990,7 +991,7 @@ window.onload = function () {
 			select.innerHTML = '';
 			if (placeholder) select.appendChild(placeholder);
 			if (placeholder) placeholder.selected = true;
-			const groups = { string: [], index: [], length: [], factor: [], other: [] };
+			const groups = { string: [], index: [], length: [], factor: [], position: [], other: [] };
 			for (const ds in structures_list.dictionary) {
 				if (!structures_list.dictionary.hasOwnProperty(ds)) continue;
 				if (structures_list.enabled(ds)) continue;
@@ -998,7 +999,7 @@ window.onload = function () {
 				groups[structureGroup(el)].push(el);
 			}
 			for (const k in groups) groups[k].sort((a, b) => getLabel(a).localeCompare(getLabel(b)));
-			['string', 'index', 'length', 'factor', 'other'].forEach(key => {
+			['string', 'index', 'length', 'factor', 'position', 'other'].forEach(key => {
 				if (!groups[key].length) return;
 				const og = document.createElement('optgroup');
 				og.label = GROUP_TITLES[key] || key;
