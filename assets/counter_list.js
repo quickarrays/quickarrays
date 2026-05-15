@@ -4,6 +4,7 @@ class CounterList extends ItemList {
         super(enabledParent, disabledParent, onChange, enableDblClick, 'qa-counter', el => {
             if (el.classList.contains('qa-counter-rle')) return 'rle';
             if (el.classList.contains('qa-counter-factor')) return 'factor';
+            if (el.classList.contains('qa-counter-position')) return 'position';
             return null;
         });
     }
