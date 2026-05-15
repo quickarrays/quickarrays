@@ -728,6 +728,7 @@ function initDragAndDropGrouped(groupName, enabledEl, disabledMap, categoryClass
 		Sortable.create(el, {
 			group: {
 				name: groupName,
+				pull: true,
 				put: function (_to, from, dragEl) {
 					return from.el === enabledEl && matchesCls(dragEl);
 				}
@@ -736,6 +737,8 @@ function initDragAndDropGrouped(groupName, enabledEl, disabledMap, categoryClass
 			draggable: '.qa-item',
 			ghostClass: 'qa-item-ghost',
 			dragClass: 'qa-item-drag',
+			forceFallback: true,
+			fallbackOnBody: true,
 			onStart: () => document.body.classList.add('qa-dragging'),
 			onEnd: () => document.body.classList.remove('qa-dragging'),
 			onAdd: function (evt) {
