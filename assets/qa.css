@@ -481,6 +481,10 @@ SOFTWARE.
     z-index: 1;
 }
 
+body.qa-dragging {
+    user-select: none;
+}
+
 .qa-item:active .qa-tooltiptext,
 body.qa-dragging .qa-tooltiptext {
     transition: none !important;
