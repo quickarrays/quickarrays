@@ -706,6 +706,16 @@ function initDragAndDropGrouped(groupName, enabledEl, disabledMap, categoryClass
 		draggable: '.qa-item',
 		ghostClass: 'qa-item-ghost',
 		dragClass: 'qa-item-drag',
+		// Use the CSS/pointer fallback on all devices instead of native HTML5 drag.
+		// The fallback uses elementFromPoint for hit detection, giving smooth
+		// x-position-based reordering. Native drag only fires dragover on registered
+		// Sortable containers, which causes reordering to stall after the first move.
+		forceFallback: true,
+		// With fallbackOnBody the ghost clone is appended to document.body instead of
+		// rootEl. Without this, ghostEl is rootEl's last child and _ghostIsLast()
+		// compares cursor position against the ghost's own rect (which follows the
+		// cursor), so it always returns false and drops past the last item break.
+		fallbackOnBody: true,
 		onStart: () => document.body.classList.add('qa-dragging'),
 		onEnd: () => document.body.classList.remove('qa-dragging'),
 		onSort: updateArrays
@@ -1254,28 +1264,23 @@ window.onload = function () {
 		// Allow dragging enabled items onto the dropdown to disable them.
 		function setupDropToDisable(btnEl, list, sortable, groupName) {
 			// The invisible select sits on top; disable pointer-events during drag so
-			// Sortable's hit-testing can reach btnEl beneath it.
+			// the bin button receives pointer and native-drag events.
 			const selectEl = btnEl.nextElementSibling;
+			let currentDragEl = null;
 
-			Sortable.create(btnEl, {
-				group: { name: groupName, put: true, pull: false },
-				sort: false,
-				draggable: '.qa-item-draggable-invisible',
-				onAdd: function (evt) {
-					list.disable(evt.item.dataset.ds);
-					// On mobile, a quick flick can cause onEnd on the source sortable to
-					// be skipped (Sortable.js 1.6.1 bug with touch fallback timing), leaving
-					// the bin wiggling and the UI frozen. Clean up here as a safety net;
-					// the cleanup in onEnd is idempotent so no harm if both run.
-					btnEl.classList.remove('qa-drag-active');
-					btnEl.textContent = '+';
-					if (selectEl) selectEl.style.pointerEvents = '';
-				}
+			// Block Sortable from inserting dragEl into or sorting it adjacent to
+			// btnEl. _onMove always reads rootEl[expando] (= source Sortable), so this
+			// override covers both the enabled-list's and the bin's _onDragOver calls.
+			const prevMove = sortable.option('onMove');
+			sortable.option('onMove', function (evt, originalEvt) {
+				if (evt.to === btnEl || evt.related === btnEl) return false;
+				if (prevMove) return prevMove.call(this, evt, originalEvt);
 			});
 
 			const prevStart = sortable.option('onStart');
 			sortable.option('onStart', function (evt) {
 				if (prevStart) prevStart.call(this, evt);
+				currentDragEl = evt.item;
 				btnEl.textContent = '';
 				btnEl.classList.add('qa-drag-active');
 				if (selectEl) selectEl.style.pointerEvents = 'none';
@@ -1283,10 +1288,30 @@ window.onload = function () {
 
 			const prevEnd = sortable.option('onEnd');
 			sortable.option('onEnd', function (evt) {
+				currentDragEl = null;
 				if (prevEnd) prevEnd.call(this, evt);
 				if (selectEl) selectEl.style.pointerEvents = '';
 				btnEl.textContent = '+';
 				btnEl.classList.remove('qa-drag-active');
+			});
+
+			// forceFallback: true means native drop events never fire; use coordinate
+			// hit-testing at pointer-up / touch-end for all pointer types.
+			function hitTestBin(clientX, clientY) {
+				if (!currentDragEl) return;
+				const r = btnEl.getBoundingClientRect();
+				if (clientX >= r.left && clientX <= r.right && clientY >= r.top && clientY <= r.bottom) {
+					const item = currentDragEl;
+					currentDragEl = null;
+					list.disable(item.dataset.ds);
+				}
+			}
+			document.addEventListener('touchend', (e) => {
+				const t = e.changedTouches && e.changedTouches[0];
+				if (t) hitTestBin(t.clientX, t.clientY);
+			}, { passive: true });
+			document.addEventListener('pointerup', (e) => {
+				hitTestBin(e.clientX, e.clientY);
 			});
 		}
 		const structsAddBtn = document.getElementById('qa-structures-add-btn');
