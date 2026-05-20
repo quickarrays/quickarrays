@@ -637,20 +637,29 @@ export function test_utility_edge_cases() {
 
 interface IntRow {
     name: string;
+    type: "int";
     data: number[];
 }
 
 interface StringRow {
     name: string;
+    type: "string";
     data: string[];
 }
 
-interface BoolRow {
+interface FactorizationRow {
     name: string;
+    type: "factorization";
     data: boolean[];
 }
 
-type Row = IntRow | StringRow | BoolRow;
+interface PositionRow {
+    name: string;
+    type: "position";
+    data: Array<number | boolean>;
+}
+
+type Row = IntRow | StringRow | FactorizationRow | PositionRow;
 
 function repeat(str: string, n: number): string {
     let r = "";
@@ -665,12 +674,16 @@ function escapeLatex(s: unknown): string {
 }
 
 
-function isBoolRow(row: Row): row is BoolRow {
-    return typeof row.data[0] === "boolean";
+function isFactorizationRow(row: Row): row is FactorizationRow {
+    return row.type === "factorization";
 }
 
 function isStringRow(row: Row): row is StringRow {
-    return typeof row.data[0] === "string";
+    return row.type === "string";
+}
+
+function isPositionRow(row: Row): row is PositionRow {
+    return row.type === "position";
 }
 
 function partitionsFromBool(boolArr: boolean[]): number[] {
@@ -687,14 +700,22 @@ function partitionsFromBool(boolArr: boolean[]): number[] {
     return parts;
 }
 
+function positionToSymbol(value: number | boolean): string {
+    return value === 1 || value === true ? "*" : " ";
+}
+
 function export_latex(rows: Row[]): string {
     const n = rows[0].data.length;
 
-    const tRow = rows.find(isStringRow);
-    if (!tRow) {
-        throw new Error("Row T (string[]) required");
+    const needsFactorization = rows.some(isFactorizationRow);
+    let T: string[] = [];
+    if (needsFactorization) {
+        const tRow = rows.find(isStringRow);
+        if (!tRow) {
+            throw new Error("Row T (string[]) required");
+        }
+        T = tRow.data;
     }
-    const T = tRow.data;
 
     const out: string[] = [];
     out.push(`\\begin{tabular}{l|${"c".repeat(n)}}`);
@@ -703,7 +724,7 @@ function export_latex(rows: Row[]): string {
     for (const row of rows) {
         let line = `${escapeLatex(row.name)} & `;
 
-        if (isBoolRow(row)) {
+        if (isFactorizationRow(row)) {
             const parts = partitionsFromBool(row.data);
             let pos = 0;
 
@@ -717,6 +738,11 @@ function export_latex(rows: Row[]): string {
 
                 line += `\\multicolumn{${k}}{c}{${text}}`;
                 if (p !== parts.length - 1) line += " & ";
+            }
+        } else if (isPositionRow(row)) {
+            for (let i = 0; i < n; i++) {
+                line += escapeLatex(positionToSymbol(row.data[i]));
+                if (i !== n - 1) line += " & ";
             }
         } else {
             for (let i = 0; i < n; i++) {
@@ -737,11 +763,15 @@ function export_latex(rows: Row[]): string {
 function export_markdown(rows: Row[]): string {
     const n = rows[0].data.length;
 
-    const tRow = rows.find(isStringRow);
-    if (!tRow) {
-        throw new Error("Row T (string[]) required for boolean partitions");
+    const needsFactorization = rows.some(isFactorizationRow);
+    let T: string[] = [];
+    if (needsFactorization) {
+        const tRow = rows.find(isStringRow);
+        if (!tRow) {
+            throw new Error("Row T (string[]) required for boolean partitions");
+        }
+        T = tRow.data;
     }
-    const T = tRow.data;
 
     const out: string[] = [];
 
@@ -756,13 +786,17 @@ function export_markdown(rows: Row[]): string {
     for (const row of rows) {
         const cells: string[] = [row.name];
 
-        if (isBoolRow(row)) {
+        if (isFactorizationRow(row)) {
             let s = "";
             for (let i = 0; i < n; i++) {
                 s += T[i];
                 if (row.data[i]) s += "|";
             }
             cells.push(s);
+        } else if (isPositionRow(row)) {
+            for (let i = 0; i < n; i++) {
+                cells.push(positionToSymbol(row.data[i]));
+            }
         } else {
             for (let i = 0; i < n; i++) {
                 cells.push(String(row.data[i]));
@@ -794,7 +828,7 @@ function export_csv(rows: Row[]): string {
         cells.push(row.name);
 
         for (let i = 0; i < n; i++) {
-            cells.push(String(row.data[i]));
+            cells.push(isPositionRow(row) ? positionToSymbol(row.data[i]) : String(row.data[i]));
         }
 
         out.push(cells.map(escape_csv).join(","));
@@ -804,16 +838,18 @@ function export_csv(rows: Row[]): string {
 }
 export function test_export_formats(): void {
     const rows: Row[] = [
-        { name: "T", data: ["a", "b", "c", "d", "e"] },
-        { name: "F", data: [true, false, true, true, false] },
-        { name: "N", data: [1, 2, 3, 4, 5] },
-        { name: "S", data: ["one", "two", "three", "four", "five"] },
+        { name: "T", type: "string", data: ["a", "b", "c", "d", "e"] },
+        { name: "F", type: "factorization", data: [true, false, true, true, false] },
+        { name: "P", type: "position", data: [1, 0, 1, 1, 0] },
+        { name: "N", type: "int", data: [1, 2, 3, 4, 5] },
+        { name: "S", type: "string", data: ["one", "two", "three", "four", "five"] },
     ];
 
     const expectedLatex = `\\begin{tabular}{l|ccccc}
 \\hline
 T & a & b & c & d & e \\\\
 F & \\multicolumn{1}{c}{a} & \\multicolumn{2}{c}{bc} & \\multicolumn{1}{c}{d} \\\\
+P & * &   & * & * &   \\\\
 N & 1 & 2 & 3 & 4 & 5 \\\\
 S & one & two & three & four & five \\\\
 \\hline
@@ -823,11 +859,13 @@ S & one & two & three & four & five \\\\
 |---|---|---|---|---|---|
 |T|a|b|c|d|e|
 |F|a|bc|d|e|
+|P|*| |*|*| |
 |N|1|2|3|4|5|
 |S|one|two|three|four|five|`;
 
     const expectedCSV = `T,a,b,c,d,e
 F,true,false,true,true,false
+P,*, ,*,*, 
 N,1,2,3,4,5
 S,one,two,three,four,five`;
 
