@@ -480,9 +480,9 @@ export function test_prettify_factorization(): void {
  * @param base A base number used to influence the calculation of the padding width. Defaults to 0.
  * @returns A formatted string with '*' for marked positions and ' ' for unmarked positions.
  */
-function prettify_position(positions: boolean[], sep: string = " ", _base: number = 0, width?: number): string {
-    const mappedPositions: string[] = positions.map((position: boolean) => position ? '*' : ' ');
-    return prettify_array(mappedPositions, sep, _base, width);
+function prettify_position(positions: boolean[], sep: string = " ", base: number = 0, width?: number): string {
+    const mappedPositions: string[] = positions.map((position) => position ? '*' : ' ');
+    return prettify_array(mappedPositions, sep, base, width);
 }
 
 export function test_prettify_position(): void {
