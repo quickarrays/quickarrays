@@ -480,10 +480,9 @@ export function test_prettify_factorization(): void {
  * @param base A base number used to influence the calculation of the padding width. Defaults to 0.
  * @returns A formatted string with '*' for marked positions and ' ' for unmarked positions.
  */
-function prettify_position(positions: boolean[], sep: string = " ", base: number = 0): string {
-    const n = positions.length;
-    const width = String(Math.max(0, n + base - 1)).length;
-    return positions.map(p => pad_left(p ? '*' : ' ', ' ', width)).join(sep);
+function prettify_position(positions: boolean[], sep: string = " ", _base: number = 0, width?: number): string {
+    const mappedPositions: string[] = positions.map((position: boolean) => position ? '*' : ' ');
+    return prettify_array(mappedPositions, sep, _base, width);
 }
 
 export function test_prettify_position(): void {
@@ -495,6 +494,8 @@ export function test_prettify_position(): void {
     assert_eq(prettify_position([]), "", "Case 6: Empty array");
     assert_eq(prettify_position([true, false, true], "-"), "*- -*", "Case 7: Custom separator");
     assert_eq(prettify_position([true, false], "", 0), "* ", "Case 8: Empty separator");
+    assert_eq(prettify_position([true, false, true], " ", 100), "*   *", "Case 9: Base ignored for width compatibility");
+    assert_eq(prettify_position([true, false, true], " ", 0, 2), " *     *", "Case 10: Explicit width is respected");
 }
 
 
@@ -834,4 +835,3 @@ S,one,two,three,four,five`;
     assert_eq(export_markdown(rows), expectedMarkdown, "Markdown export failed");
     assert_eq(export_csv(rows), expectedCSV, "CSV export failed");
 }
-
