@@ -420,7 +420,7 @@ function prettify_row(ds_text, dsName, varDs, varSep, varBase, do_padding, width
 			varDs = prettify_array(varDs.map((b) => b ? 1 : 0), varSep, varBase, width);
 		}
 	} else if (structures_list.isPosition(dsName)) {
-		varDs = prettify_position(varDs, varSep, varBase);
+		varDs = prettify_position(varDs, varSep, varBase, width);
 	} else {
 		varDs = prettify_array(varDs, varSep, varBase, width);
 	}
@@ -443,7 +443,7 @@ function fill_updates(DS) {
 		const varDs = DS[dsName];
 		if (!varDs) return;
 		let w;
-		if (structures_list.isString(dsName)) {
+		if (structures_list.isString(dsName) || structures_list.isPosition(dsName) ) {
 			w = 1;
 		} else if (structures_list.isFactorization(dsName)) {
 			w = 1;
