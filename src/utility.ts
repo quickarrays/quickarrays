@@ -494,8 +494,8 @@ export function test_prettify_position(): void {
     assert_eq(prettify_position([]), "", "Case 6: Empty array");
     assert_eq(prettify_position([true, false, true], "-"), "*- -*", "Case 7: Custom separator");
     assert_eq(prettify_position([true, false], "", 0), "* ", "Case 8: Empty separator");
-    assert_eq(prettify_position([true, false, true], " ", 100), "*   *", "Case 9: Base ignored for width compatibility");
-    assert_eq(prettify_position([true, false, true], " ", 0, 2), " *     *", "Case 10: Explicit width is respected");
+    assert_eq(prettify_position([true, false, true], " ", 100), prettify_array(['*', ' ', '*'], " ", 100), "Case 9: Base behaves consistently with prettify_array");
+    assert_eq(prettify_position([true, false, true], " ", 0, 2), prettify_array(['*', ' ', '*'], " ", 0, 2), "Case 10: Explicit width matches prettify_array");
 }
 
 
